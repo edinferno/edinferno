@@ -1,0 +1,1 @@
+This is to experiment with sockets. The goal is to have a program that can communicate with another instance of itself across two computers, connected in the same LAN.
