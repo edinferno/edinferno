@@ -33,32 +33,26 @@ int main(int argc, char *argv[]) {
     target_addr.sin_addr = target_in_addr;
     memset(&(target_addr.sin_zero), '\0', 8);  // Zero the rest of the struct
 
-    printf("client: Trying %s:%d...\n", argv[1], target_in_port);
+    printf("client: Initializing socket...\n");
 
-    if ((sockfd = socket(PF_INET, SOCK_STREAM, 0)) == -1)
+    if ((sockfd = socket(PF_INET, SOCK_DGRAM, 0)) == -1)
         fatal("client: fatal error in socket!");
+
+    printf("client: Default UDP target: %s:%d...\n", argv[1], target_in_port);
 
     if (-1 == connect(sockfd,
                       (struct sockaddr *)&target_addr,
                       sizeof(struct sockaddr))) {
-        fatal("client: fatal error while connecting to target server!");
+        fatal("client: fatal error while setting target UDP target!");
     }
 
+    printf("client: Sending message...\n");
+
     unsigned char *msg = "Hello, Server!";
-    // Attempt to send
     if (-1 == send(sockfd, msg, strlen(msg), 0)) {
         fatal("client: fatal error while sending message!");
     }
-    printf("client: message sent: %s\n", msg);
-
-    recv_length = recv(sockfd, &buffer, 1024, 0);
-    while (recv_length > 0) {
-        printf("client: received message: %s\n", &buffer);
-        recv_length = recv(sockfd, &buffer, 1024, 0);
-    }
-    printf("client: disconnected from server\n");
-
-    close(sockfd);
+    printf("client: Message sent: [%s].\n", (char *)msg);
 
     return 0;
 }
