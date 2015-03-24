@@ -20,14 +20,14 @@ int main(void) {
     // specification allows multiple protocols for a protocol family; for IPv4,
     // however, there is a single protocol, so 0.
     if ((sockfd = socket(PF_INET, SOCK_STREAM, 0)) == -1)
-        fatal("in socket");
+        fatal("server: fatal error in socket!");
 
     // Allow socket to be reused for binding (SO_REUSEADDR). SOL_SOCKET is the
     // level of the option being set; &yes is a pointer to the value for the
     // option (1 meaning true); size(int) is the size of the data stored at the
     // given pointer.
     if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
-        fatal("setting socket option SO_REUSEADDR");
+        fatal("server: fatal error while setting socket option SO_REUSEADDR!");
 
     host_addr.sin_family = AF_INET;          // Host byte order
     host_addr.sin_port = htons(PORT);        // Short, network byte order
@@ -36,11 +36,11 @@ int main(void) {
 
     // Bind socket to address
     if (bind(sockfd, (struct sockaddr *)&host_addr, sizeof(struct sockaddr)) == -1)
-        fatal("binding to socket");
+        fatal("server: fatal error while binding to socket!");
 
     // Listen for incoming connections; 5 is the size of the backlog queue
     if (listen(sockfd, 5) == -1)
-        fatal("listening on socket");
+        fatal("server: fatal error while listening on socket!");
 
     while (1) {  // Accept loop
         sin_size = sizeof(struct sockaddr_in);
@@ -50,7 +50,7 @@ int main(void) {
         // to use for communicating to the client.
         new_sockfd = accept(sockfd, (struct sockaddr *)&client_addr, &sin_size);
         if (new_sockfd == -1)
-            fatal("accepting connection");
+            fatal("server: fatal error while accepting connection!");
 
         printf("server: got connection from %s port %d\n",
                 inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
