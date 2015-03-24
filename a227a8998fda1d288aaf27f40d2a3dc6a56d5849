@@ -70,6 +70,30 @@
       "revId": "a227a8998fda1d288aaf27f40d2a3dc6a56d5849",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_d1d0cff9",
+        "filename": "pippi/server.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-03-24T15:38:35Z",
+      "side": 1,
+      "message": "Then it will be stolen. But the only one else who could be using the same port on the same address is another instance of the server, as the ports are allocated to a specific function: in our case we assume that 7890 is allocated to our silly server. In RoboCup we will again choose a port that we agree to send messages on.\n\nAlso, this:\n\"Each team will be assigned a range of IP-addresses that can be used for direct robot-to-robot communication. Each team will also be allocated a single UDP port on which broadcast will be permitted. Specifically, a team’s port will be 10000 plus that team’s GameController number.\"",
+      "parentUuid": "1a106d94_71875b10",
+      "range": {
+        "startLine": 36,
+        "startChar": 46,
+        "endLine": 36,
+        "endChar": 58
+      },
+      "revId": "a227a8998fda1d288aaf27f40d2a3dc6a56d5849",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
     }
   ]
 }
