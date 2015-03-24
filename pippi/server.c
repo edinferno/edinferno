@@ -57,15 +57,21 @@ int main(void) {
 
         // Send a message to the client to indicate that the connection was
         // established.
-        send(new_sockfd, "Hello, world!\n", 13, 0);
+        char *msg = "Hello, Client!";
+        if (-1 == send(new_sockfd, msg, strlen(msg), 0)) {
+            fatal("server: fatal error while sending message!");
+        }
+        printf("server: message sent: %s\n", msg);
 
         // Receive messages from client as long as they have non-zero length.
         recv_length = recv(new_sockfd, &buffer, 1024, 0);
         while (recv_length > 0) {
-            printf("RECV: %d bytes\n", recv_length);
-            dump(buffer, recv_length);
+            printf("server: received message: %s\n", &buffer);
             recv_length = recv(new_sockfd, &buffer, 1024, 0);
         }
+
+        printf("server: disconnected from %s port %d\n",
+                inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
         close(new_sockfd);
     }
     return 0;
