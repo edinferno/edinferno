@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a106d94_919f7703",
+        "filename": "pippi/server.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-03-24T16:09:24Z",
+      "side": 1,
+      "message": "Removed junk code in PS2.",
+      "revId": "79b59750ced8ea74b5526eb8e18af991c54eddc2",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
