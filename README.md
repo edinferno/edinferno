@@ -1,5 +1,3 @@
-# edinferno
-Main edinferno repository
+# Edinferno
 
-Motion branch created v0.1
-Test I am Giuseppe
+Main edinferno repository
