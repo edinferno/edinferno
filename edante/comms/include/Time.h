@@ -5,10 +5,9 @@
 #include <stdint.h>
 
 /// Specifies a point in 1D time.
-class Timestamp {
+struct Timestamp {
 public:
-    /// Returns the timestamp value.
-    uint64_t getValue();
+    uint64_t value;
 };
 
 #endif
