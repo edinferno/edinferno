@@ -3,33 +3,23 @@
 #define EDANTE_SPACE_H
 
 /// Specifies a point in 2D space.
-class Point2D {
-public:
-    /// Returns the x coordinate.
-    double getX();
-    /// Returns the y coordinate.
-    double getY();
+struct Point2D {
+    double x;
+    double y;
 };
 
 
 /// Specifies a vector in 2D space.
-class Vector2D {
-public:
-    /// Returns the magnitude of the vector in the x direction.
-    double getDX();
-    /// Returns the magnitude of the vector in the y direction.
-    double getDY();
+struct Vector2D {
+    double dx;
+    double dy;
 };
 
 /// Specifies a point and orientation in 2D space.
-class Pose2D {
-public:
-    /// Returns the x coordinate.
-    double getX();
-    /// Returns the y coordinate.
-    double getY();
-    /// Returns the orientation θ.
-    double getTheta();
+struct Pose2D {
+    double x;
+    double y;
+    double theta;
 };
 
 #endif
