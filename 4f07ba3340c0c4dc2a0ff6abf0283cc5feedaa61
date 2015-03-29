@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a106d94_41923a58",
+        "filename": "pippi/client.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1003787
+      },
+      "writtenOn": "2015-03-29T12:13:49Z",
+      "side": 1,
+      "message": "Cast buffer to pointer.",
+      "revId": "4f07ba3340c0c4dc2a0ff6abf0283cc5feedaa61",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_6195b63f",
+        "filename": "pippi/server.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1003787
+      },
+      "writtenOn": "2015-03-29T12:13:49Z",
+      "side": 1,
+      "message": "Cast buffer to pointer",
+      "revId": "4f07ba3340c0c4dc2a0ff6abf0283cc5feedaa61",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
