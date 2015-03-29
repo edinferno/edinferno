@@ -34,6 +34,91 @@
       "revId": "79b59750ced8ea74b5526eb8e18af991c54eddc2",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_61965696",
+        "filename": "pippi/server.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1003787
+      },
+      "writtenOn": "2015-03-29T10:01:48Z",
+      "side": 1,
+      "message": "It is bad practice to write an if-case like this.\nYour should rather use:\n(-1 \u003d\u003d (sockfd \u003d socket(PF_INET, SOCK_STREAM, 0)))",
+      "revId": "79b59750ced8ea74b5526eb8e18af991c54eddc2",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_41935aa3",
+        "filename": "pippi/server.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1003787
+      },
+      "writtenOn": "2015-03-29T10:01:48Z",
+      "side": 1,
+      "message": "Same",
+      "revId": "79b59750ced8ea74b5526eb8e18af991c54eddc2",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_a1904e96",
+        "filename": "pippi/server.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1003787
+      },
+      "writtenOn": "2015-03-29T10:01:48Z",
+      "side": 1,
+      "message": "SAme",
+      "revId": "79b59750ced8ea74b5526eb8e18af991c54eddc2",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_818d527e",
+        "filename": "pippi/server.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1003787
+      },
+      "writtenOn": "2015-03-29T10:01:48Z",
+      "side": 1,
+      "message": "Same",
+      "revId": "79b59750ced8ea74b5526eb8e18af991c54eddc2",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_e1e9a61b",
+        "filename": "pippi/server.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1003787
+      },
+      "writtenOn": "2015-03-29T10:01:48Z",
+      "side": 1,
+      "message": "Same",
+      "revId": "79b59750ced8ea74b5526eb8e18af991c54eddc2",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
     }
   ]
 }
