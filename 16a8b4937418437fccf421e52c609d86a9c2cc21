@@ -1,0 +1,555 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a106d94_1ac70047",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-03-31T15:14:54Z",
+      "side": 1,
+      "message": "You can add here that you implemented the set functions of the class (and use the full name of the class too). You can also mention that the getSTDM method returns a copy of a private variable.",
+      "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_badd0c17",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-03-31T15:14:54Z",
+      "side": 1,
+      "message": "In fact, you overrode the stream output operator for the class to aid debugging. Otherwise, you would\u0027ve had a toString() function, which you don\u0027t normally do in C++. Also, as a preamble of the paragraph you can say that you importent the SPLStandardMessage.h file from the official RoboCup repository.",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 46
+      },
+      "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_5aefb8b0",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-03-31T15:14:54Z",
+      "side": 1,
+      "message": "Again, what are you testing? Where is the file? I know these are obvious when you look at the actual changes, but you want the commit message to summarize what one should expect to see.",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 51
+      },
+      "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_ba2b4cea",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-03-31T15:14:54Z",
+      "side": 1,
+      "message": "Ideally, \"the Space and Time classes\", but I like how this sounds now :)",
+      "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_1a1d4010",
+        "filename": "edante/comms/include/Communication.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-03-31T15:14:54Z",
+      "side": 1,
+      "message": "Rule of thumb: public variables have long and descriptive names; private variables have short and descriptive names :) Change to stdmsg, perhaps.",
+      "range": {
+        "startLine": 37,
+        "startChar": 23,
+        "endLine": 37,
+        "endChar": 38
+      },
+      "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_5a0058aa",
+        "filename": "edante/comms/include/Communication.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-03-31T15:14:54Z",
+      "side": 1,
+      "message": "Move the constants to the SPLStandardMessage class.\n\nIdeally, we would make SPLStandardMessage.h a c++ only class, rather than c/c++ as it is right now, but that would be in some next commits. Together with shortening the constant names.",
+      "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_7a0394b8",
+        "filename": "edante/comms/include/Communication.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-03-31T15:14:54Z",
+      "side": 1,
+      "message": "typo: DEFUALT -\u003e DEFAULT",
+      "range": {
+        "startLine": 76,
+        "startChar": 39,
+        "endLine": 76,
+        "endChar": 41
+      },
+      "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_1a926057",
+        "filename": "edante/comms/include/Communication.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-03-31T15:14:54Z",
+      "side": 1,
+      "message": "Default values for SPLStandardMessage are set upon construction of that object (see SPLStandardMessage.h/constructor) This constructor is unnecessary as of now. Later we would like to read these off a configuration file, but for now the constructor is unnecessary.",
+      "range": {
+        "startLine": 80,
+        "startChar": 0,
+        "endLine": 87,
+        "endChar": 1
+      },
+      "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_5a9cd869",
+        "filename": "edante/comms/include/Communication.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-03-31T15:14:54Z",
+      "side": 1,
+      "message": "Implicit conversion from double to float. Maybe we should change the types of pose.x pose.y and pose.theta, or add an explicit cast here (as in \"standardMessage.pose[0] \u003d static_cast\u003cfloat\u003e(pose.x);\" )\n\nSame for all the other assignments in this file.",
+      "range": {
+        "startLine": 90,
+        "startChar": 0,
+        "endLine": 92,
+        "endChar": 41
+      },
+      "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_fa99446f",
+        "filename": "edante/comms/include/Communication.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-03-31T15:14:54Z",
+      "side": 1,
+      "message": "Doing this in C++ would be \"static_cast\u003cint8_t\u003e(intention)\"",
+      "range": {
+        "startLine": 128,
+        "startChar": 32,
+        "endLine": 128,
+        "endChar": 50
+      },
+      "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_da9e0856",
+        "filename": "edante/comms/include/Communication.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-03-31T15:14:54Z",
+      "side": 1,
+      "message": "Ideally, we don\u0027t want TODO\u0027s in the codebase as they often are left as TODO\u0027s. Maybe summarize the same in a comment - saying that these fields of the standardMessage are currently using just the default values and we can extend this class by providing a mechanism to set them too, or use them in some other way (as in the case of data).",
+      "range": {
+        "startLine": 132,
+        "startChar": 0,
+        "endLine": 144,
+        "endChar": 32
+      },
+      "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_5a3178eb",
+        "filename": "edante/comms/include/SPLStandardMessage.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-03-31T15:14:54Z",
+      "side": 1,
+      "message": "Remove blood.",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 1
+      },
+      "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_ba4d0c75",
+        "filename": "edante/comms/include/SPLStandardMessage.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-03-31T15:14:54Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 25,
+        "startChar": 25,
+        "endLine": 25,
+        "endChar": 26
+      },
+      "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_9a52d011",
+        "filename": "edante/comms/include/SPLStandardMessage.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-03-31T15:14:54Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 41,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 2
+      },
+      "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_fa578400",
+        "filename": "edante/comms/include/SPLStandardMessage.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-03-31T15:14:54Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 46,
+        "startChar": 21,
+        "endLine": 46,
+        "endChar": 22
+      },
+      "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_da5c4828",
+        "filename": "edante/comms/include/SPLStandardMessage.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-03-31T15:14:54Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 47,
+        "startChar": 0,
+        "endLine": 47,
+        "endChar": 2
+      },
+      "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_3a411c3a",
+        "filename": "edante/comms/include/SPLStandardMessage.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-03-31T15:14:54Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 52,
+        "startChar": 22,
+        "endLine": 52,
+        "endChar": 23
+      },
+      "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_1a3ee0b8",
+        "filename": "edante/comms/include/SPLStandardMessage.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-03-31T15:14:54Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 67,
+        "startChar": 0,
+        "endLine": 67,
+        "endChar": 2
+      },
+      "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_7a4b9459",
+        "filename": "edante/comms/include/SPLStandardMessage.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-03-31T15:14:54Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 79,
+        "startChar": 0,
+        "endLine": 79,
+        "endChar": 2
+      },
+      "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_ba74ec9c",
+        "filename": "edante/comms/include/SPLStandardMessage.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-03-31T15:14:54Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 88,
+        "startChar": 0,
+        "endLine": 88,
+        "endChar": 2
+      },
+      "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_9a793096",
+        "filename": "edante/comms/include/SPLStandardMessage.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-03-31T15:14:54Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 95,
+        "startChar": 0,
+        "endLine": 95,
+        "endChar": 2
+      },
+      "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_fa6e64c8",
+        "filename": "edante/comms/include/SPLStandardMessage.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-03-31T15:14:54Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 114,
+        "startChar": 0,
+        "endLine": 114,
+        "endChar": 2
+      },
+      "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_3a68fcb9",
+        "filename": "edante/comms/include/SPLStandardMessage.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-03-31T15:14:54Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 163,
+        "startChar": 30,
+        "endLine": 163,
+        "endChar": 31
+      },
+      "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_ba9b4cc8",
+        "filename": "edante/comms/include/Space.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-03-31T15:14:54Z",
+      "side": 1,
+      "message": "Although the fields names are self-explanatory, I would like it more if the comments were still in. But objectively, this is also good, so do not change.",
+      "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_faa5c404",
+        "filename": "edante/comms/test/test-comms.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-03-31T15:14:54Z",
+      "side": 1,
+      "message": "Ideally, we would use just spaces or just tabs, to be coherent throughout the codebase. I would appreciate it if you replace the tabs with spaces (4 for example) here.",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 10
+      },
+      "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
