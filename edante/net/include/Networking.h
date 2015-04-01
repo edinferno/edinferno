@@ -4,6 +4,9 @@
 
 #ifndef EDANTE_NET_H
 #define EDANTE_NET_H
+
+
+#include "SPLStandardMessage.h"
 class Networking {
 public:
 
@@ -13,3 +16,5 @@ public:
     /// Receives a standard message from a teammate and returns it.
     void receiveStandardMessage(SPLStandardMessage splMsg);
 };
+
+#endif
