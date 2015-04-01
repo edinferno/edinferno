@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <iomanip>
+#include <ostream>
 
 #define SPL_STANDARD_MESSAGE_STRUCT_HEADER  "SPL "
 #define SPL_STANDARD_MESSAGE_STRUCT_VERSION 6
