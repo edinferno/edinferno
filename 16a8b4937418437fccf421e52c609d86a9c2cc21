@@ -145,6 +145,29 @@
     },
     {
       "key": {
+        "uuid": "1a106d94_15ad1332",
+        "filename": "edante/comms/include/Communication.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1003787
+      },
+      "writtenOn": "2015-04-01T14:14:43Z",
+      "side": 1,
+      "message": "Same typo here, DEFUALT -\u003e DEFAULT",
+      "range": {
+        "startLine": 82,
+        "startChar": 62,
+        "endLine": 82,
+        "endChar": 64
+      },
+      "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a106d94_1a926057",
         "filename": "edante/comms/include/Communication.h",
         "patchSetId": 1
@@ -248,6 +271,30 @@
       "writtenOn": "2015-03-31T15:14:54Z",
       "side": 1,
       "message": "Remove blood.",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 1
+      },
+      "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_d92f35a0",
+        "filename": "edante/comms/include/SPLStandardMessage.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1003787
+      },
+      "writtenOn": "2015-04-01T14:14:43Z",
+      "side": 1,
+      "message": "Can I ask what do you mean by blood?",
+      "parentUuid": "1a106d94_5a3178eb",
       "range": {
         "startLine": 17,
         "startChar": 0,
@@ -524,6 +571,23 @@
       "writtenOn": "2015-03-31T15:14:54Z",
       "side": 1,
       "message": "Although the fields names are self-explanatory, I would like it more if the comments were still in. But objectively, this is also good, so do not change.",
+      "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_d517fb4f",
+        "filename": "edante/comms/test/Makefile",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1003787
+      },
+      "writtenOn": "2015-04-01T14:14:43Z",
+      "side": 1,
+      "message": "I guess you could replace the tab here with spaces too, to keep the code coherent.",
       "revId": "16a8b4937418437fccf421e52c609d86a9c2cc21",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": false
