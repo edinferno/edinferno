@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a106d94_021836d2",
+        "filename": "edante/net/CMakeLists.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1003787
+      },
+      "writtenOn": "2015-04-01T16:50:45Z",
+      "side": 1,
+      "message": "Why do we need rospy?",
+      "revId": "dfdc6142dde7f43b5ccf48a6d704d8384dee4420",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_a2268214",
+        "filename": "edante/net/package.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1003787
+      },
+      "writtenOn": "2015-04-01T16:50:45Z",
+      "side": 1,
+      "message": "Remove blood please.",
+      "revId": "dfdc6142dde7f43b5ccf48a6d704d8384dee4420",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_82238604",
+        "filename": "edante/net/package.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1003787
+      },
+      "writtenOn": "2015-04-01T16:50:45Z",
+      "side": 1,
+      "message": "Once again, why do we need rospy?",
+      "revId": "dfdc6142dde7f43b5ccf48a6d704d8384dee4420",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_e2207af9",
+        "filename": "edante/net/package.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1003787
+      },
+      "writtenOn": "2015-04-01T16:50:45Z",
+      "side": 1,
+      "message": "Same.",
+      "revId": "dfdc6142dde7f43b5ccf48a6d704d8384dee4420",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
