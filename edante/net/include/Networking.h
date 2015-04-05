@@ -27,10 +27,15 @@ const vector<int>    TEAMMATE_PORT    = {
                          7893
                      };
 
+const int            MY_PORT = 7890;
+
 class Networking {
 private:
     int send_socket_fd;
+    int recv_socket_fd;
+
     vector<struct sockaddr_in> teammate_addresses;
+    struct sockaddr_in my_addr;
 public:
     Networking();
 
