@@ -1,13 +1,14 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
+#include "comms/SPLStandardMessage.h"
 
 #include "Communication.h"
 #include "SPLStandardMessage.h"
 
-typedef std_msgs::String OurMsg;
+typedef comms::SPLStandardMessage OurMsg;
 
 OurMsg convert(SPLStandardMessage msg) {
-    OurMsg msg_; msg_.data = "x";
+    OurMsg msg_; msg_.msg = "x";
     return msg_;
 }
 
