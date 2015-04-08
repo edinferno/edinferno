@@ -106,7 +106,11 @@ include_directories(
 # )
 
 ## Declare a cpp executable
-add_executable(comms src/CommsWrapper.cpp src/Communication.cpp)
+add_executable(comms
+    src/CommsWrapper.cpp
+    src/Communication.cpp
+    src/SPLStandardMessage.cpp
+)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
