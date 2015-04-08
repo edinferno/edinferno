@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(net)
+ 
+SET(CUSTOM_CXX_FLAGS "--std=c++11")
+SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${CUSTOM_CXX_FLAGS}")
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -79,7 +82,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
+ INCLUDE_DIRS include
 #  LIBRARIES net
 #  CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
@@ -91,7 +94,7 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-# include_directories(include)
+include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
 )
@@ -102,16 +105,16 @@ include_directories(
 # )
 
 ## Declare a cpp executable
-# add_executable(net_node src/net_node.cpp)
+add_executable(net src/Networking.cpp src/NetWrapper.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(net_node net_generate_messages_cpp)
+# add_dependencies(net net_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(net_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(net
+  ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##
@@ -128,7 +131,7 @@ include_directories(
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS net net_node
+# install(TARGETS net net
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
