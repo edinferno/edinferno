@@ -2,6 +2,144 @@
   "comments": [
     {
       "key": {
+        "uuid": "1a106d94_e93afacb",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-04-11T12:07:20Z",
+      "side": 1,
+      "message": "ROS comms wrapper?",
+      "range": {
+        "startLine": 7,
+        "startChar": 30,
+        "endLine": 7,
+        "endChar": 33
+      },
+      "revId": "4ad4d76a5b0d35aea745dc39653f34aeae966c47",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_694e0a71",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-04-11T12:07:20Z",
+      "side": 1,
+      "message": "Which specification?\n\nMaybe \"to reflect SPLStandardMessage structure provided by RoboCup.\"",
+      "range": {
+        "startLine": 9,
+        "startChar": 43,
+        "endLine": 9,
+        "endChar": 56
+      },
+      "revId": "4ad4d76a5b0d35aea745dc39653f34aeae966c47",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_49518e0d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-04-11T12:07:20Z",
+      "side": 1,
+      "message": "Convert what?",
+      "range": {
+        "startLine": 11,
+        "startChar": 26,
+        "endLine": 11,
+        "endChar": 33
+      },
+      "revId": "4ad4d76a5b0d35aea745dc39653f34aeae966c47",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_c93c5ec2",
+        "filename": "edante/comms/src/CommsWrapper.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-04-11T12:07:20Z",
+      "side": 1,
+      "message": "pass by reference",
+      "range": {
+        "startLine": 10,
+        "startChar": 19,
+        "endLine": 10,
+        "endChar": 37
+      },
+      "revId": "4ad4d76a5b0d35aea745dc39653f34aeae966c47",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_e9415a3a",
+        "filename": "edante/comms/src/CommsWrapper.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-04-11T12:07:20Z",
+      "side": 1,
+      "message": "Maybe use the constant here.",
+      "range": {
+        "startLine": 25,
+        "startChar": 27,
+        "endLine": 25,
+        "endChar": 28
+      },
+      "revId": "4ad4d76a5b0d35aea745dc39653f34aeae966c47",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_294c1270",
+        "filename": "edante/comms/src/CommsWrapper.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-04-11T12:07:20Z",
+      "side": 1,
+      "message": "pass by reference",
+      "range": {
+        "startLine": 40,
+        "startChar": 29,
+        "endLine": 40,
+        "endChar": 35
+      },
+      "revId": "4ad4d76a5b0d35aea745dc39653f34aeae966c47",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a106d94_093036e7",
         "filename": "edante/comms/src/CommsWrapper.cpp",
         "patchSetId": 1
@@ -13,6 +151,69 @@
       "writtenOn": "2015-04-11T11:53:25Z",
       "side": 1,
       "message": "Remove blood",
+      "revId": "4ad4d76a5b0d35aea745dc39653f34aeae966c47",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_a9580233",
+        "filename": "edante/comms/src/CommsWrapper.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-04-11T12:07:20Z",
+      "side": 1,
+      "message": "Small blood.",
+      "revId": "4ad4d76a5b0d35aea745dc39653f34aeae966c47",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_0947964c",
+        "filename": "edante/comms/src/CommsWrapper.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-04-11T12:07:20Z",
+      "side": 1,
+      "message": "use constant",
+      "range": {
+        "startLine": 55,
+        "startChar": 27,
+        "endLine": 55,
+        "endChar": 28
+      },
+      "revId": "4ad4d76a5b0d35aea745dc39653f34aeae966c47",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_a96f62c4",
+        "filename": "edante/comms/src/CommsWrapper.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-04-11T12:07:20Z",
+      "side": 1,
+      "message": "best of intentions",
+      "range": {
+        "startLine": 77,
+        "startChar": 39,
+        "endLine": 77,
+        "endChar": 51
+      },
       "revId": "4ad4d76a5b0d35aea745dc39653f34aeae966c47",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": false
