@@ -27,25 +27,16 @@ const vector<int>    TEAMMATE_PORT    = {
                          7893
                      };
 
-const int            MY_PORT = 7890;
-
-class Networking {
+class NetSender {
 private:
     int send_socket_fd;
-    int recv_socket_fd;
-
     vector<struct sockaddr_in> teammate_addresses;
-    struct sockaddr_in my_addr;
+
 public:
-    Networking();
+    NetSender();
 
     /// Sends the specified standard message to all teammates.
     void sendStandardMessage(SPLStandardMessage splMsg);
-
-    /// Receives a standard message from a teammate and returns it.
-    SPLStandardMessage receiveStandardMessage();
-    // Possible optimization: Try to use const & and see if performance is
-    // better.
 };
 
 #endif
