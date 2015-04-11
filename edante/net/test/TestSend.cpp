@@ -1,8 +1,8 @@
 #include "SPLStandardMessage.h"
-#include "Networking.h"
+#include "NetSender.h"
 
 int main() {
     SPLStandardMessage splMsg;
-    Networking net;
+    NetSender net;
     net.sendStandardMessage(splMsg);
 }
