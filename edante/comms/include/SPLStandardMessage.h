@@ -187,7 +187,7 @@ struct SPLStandardMessage
 
 #include "comms/SPLStandardMessage.h"
 
-comms::SPLStandardMessage convertToROS(SPLStandardMessage msg);
-SPLStandardMessage convertFromROS(comms::SPLStandardMessage msg);
+comms::SPLStandardMessage convertToROS(const SPLStandardMessage& msg);
+SPLStandardMessage convertFromROS(const comms::SPLStandardMessage& msg);
 
 #endif // SPLSTANDARDMESSAGE_H
