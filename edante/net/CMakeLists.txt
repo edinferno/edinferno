@@ -106,17 +106,22 @@ include_directories(
 # )
 
 ## Declare a cpp executable
-add_executable(net src/Networking.cpp src/NetWrapper.cpp)
+add_executable(net_receiver src/NetReceiver.cpp src/NetReceiverWrapper.cpp)
+add_executable(net_sender src/NetSender.cpp src/NetSenderWrapper.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 # add_dependencies(net net_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(net
+target_link_libraries(net_receiver
   ${catkin_LIBRARIES}
 )
 
+## Specify libraries to link a library or executable target against
+target_link_libraries(net_sender
+  ${catkin_LIBRARIES}
+)
 #############
 ## Install ##
 #############
