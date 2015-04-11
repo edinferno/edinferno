@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a106d94_89f706f5",
+        "filename": "edante/comms/src/CommsWrapper.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-04-11T13:18:13Z",
+      "side": 1,
+      "message": "Unneeded comment :)",
+      "range": {
+        "startLine": 24,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 44
+      },
+      "revId": "59acd57171aeed22e265125432e6a9c824551069",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_e9ddda71",
+        "filename": "edante/comms/src/CommsWrapper.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-04-11T13:18:13Z",
+      "side": 1,
+      "message": "Same",
+      "range": {
+        "startLine": 54,
+        "startChar": 0,
+        "endLine": 54,
+        "endChar": 44
+      },
+      "revId": "59acd57171aeed22e265125432e6a9c824551069",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
