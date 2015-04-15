@@ -2,8 +2,8 @@
 * @File: motion_wrapper.cpp
 * @Author: Alejandro Bordallo
 * @Date:   2015-04-04 20:47:59
-* @Last Modified by:   Alejandro
-* @Last Modified time: 2015-04-07 19:14:13
+* @Last Modified by:   Alejandro Bordallo
+* @Last Modified time: 2015-04-15 17:22:34
 * @Desc: Declares the Motion Wrapper functions
 */
 
@@ -12,12 +12,13 @@
 Motion::Motion(int argc, char *argv[])
 {
   ros::init(argc, argv, "motion");
+  nh_ = new ros::NodeHandle();
   INFO("Setting up Nao motion publishers" << std::endl);
-  wake_pub_ = nh_.advertise<std_msgs::Bool>("/isAwake", 10);
+  wake_pub_ = nh_->advertise<std_msgs::Bool>("/isAwake", 10);
   // INFO("Setting up Nao motion subscribers" << std::endl);
   INFO("Setting up Nao motion services" << std::endl);  
-  // set_stiffness_ = nh_.advertiseService("setStiffnesses", 
-  //                                       &Motion::recStiffness, this);
+  set_stiffness_ = nh_->advertiseService("setStiffness", 
+                                        &Motion::recStiffness, this);
 
   mProxy_ = new AL::ALMotionProxy("127.0.0.1", 9559);
   awake_ = false;
@@ -25,7 +26,8 @@ Motion::Motion(int argc, char *argv[])
 
 Motion::~Motion()
 {
-  ros::shutdown();  
+  ros::shutdown();
+  delete nh_;  
 }
 
 void Motion::wakeUp()
@@ -40,10 +42,19 @@ void Motion::rest()
   awake_ = false;
 }
 
+void Motion::spinTopics()
+{
+  std_msgs::Bool msg;
+  msg.data = awake_;
+  wake_pub_.publish(msg);
+}
+
 bool Motion::recStiffness(motion::setStiffness::Request &req, 
                           motion::setStiffness::Response &res)
 {
-  this->setStiffnesses(req.names, req.stiffnesses);
+  // this->setStiffnesses(req.names, req.stiffnesses);
+  DEBUG("Stiffness Received!");
+  res.res = true;
   return true;
 }
 
@@ -56,4 +67,26 @@ void Motion::setStiffnesses(const vector<string>& names,
 vector<float> Motion::getStiffnesses(const vector<string>& names)
 {
   return mProxy_->getStiffnesses(names);
+}
+
+void Motion::testSrv()
+{
+  ros::ServiceClient testClient = nh_->serviceClient<motion::setStiffness>("set_stiffness");
+  motion::setStiffness srv;
+  std::vector<string> test_names;
+  test_names.push_back("RArm");
+  srv.request.names = test_names;
+
+  std::vector<float> test_stiffness;
+  test_stiffness.push_back(1.0f);
+  srv.request.stiffnesses = test_stiffness;
+
+  if (testClient.call(srv))
+  {
+    INFO("Stiffness set");
+  }
+  else
+  {
+    ERR("Failed to call stiffness set!");
+  }
 }

@@ -34,15 +34,19 @@ class Motion{
                         const vector<float>& stiffnesses);
     vector<float> getStiffnesses(const vector<string>&);
 
+    // ROS publisher
+    void spinTopics();
+
     // ROS services
     bool recStiffness(motion::setStiffness::Request &req,
                       motion::setStiffness::Response &res);
+    void testSrv();
 
   private:
     // ROS
-    ros::NodeHandle nh_;
+    ros::NodeHandle* nh_;
     ros::Publisher wake_pub_;
-    ros::Subscriber set_stiffness_;
+    ros::ServiceServer set_stiffness_;
 
     // NAOqi
     AL::ALMotionProxy* mProxy_;
