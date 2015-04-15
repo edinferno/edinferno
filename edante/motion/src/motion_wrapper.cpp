@@ -1,4 +1,4 @@
-/* 
+/*
 * @File: motion_wrapper.cpp
 * @Author: Alejandro Bordallo
 * @Date:   2015-04-04 20:47:59
@@ -9,15 +9,14 @@
 
 #include "motion_wrapper.h"
 
-Motion::Motion(int argc, char *argv[])
+Motion::Motion()
 {
-  ros::init(argc, argv, "motion");
   nh_ = new ros::NodeHandle();
   INFO("Setting up Nao motion publishers" << std::endl);
   wake_pub_ = nh_->advertise<std_msgs::Bool>("/isAwake", 10);
   // INFO("Setting up Nao motion subscribers" << std::endl);
-  INFO("Setting up Nao motion services" << std::endl);  
-  set_stiffness_ = nh_->advertiseService("setStiffness", 
+  INFO("Setting up Nao motion services" << std::endl);
+  set_stiffness_ = nh_->advertiseService("setStiffness",
                                         &Motion::recStiffness, this);
 
   mProxy_ = new AL::ALMotionProxy("127.0.0.1", 9559);
@@ -27,7 +26,7 @@ Motion::Motion(int argc, char *argv[])
 Motion::~Motion()
 {
   ros::shutdown();
-  delete nh_;  
+  delete nh_;
 }
 
 void Motion::wakeUp()
@@ -49,7 +48,7 @@ void Motion::spinTopics()
   wake_pub_.publish(msg);
 }
 
-bool Motion::recStiffness(motion::setStiffness::Request &req, 
+bool Motion::recStiffness(motion::setStiffness::Request &req,
                           motion::setStiffness::Response &res)
 {
   // this->setStiffnesses(req.names, req.stiffnesses);
@@ -58,7 +57,7 @@ bool Motion::recStiffness(motion::setStiffness::Request &req,
   return true;
 }
 
-void Motion::setStiffnesses(const vector<string>& names, 
+void Motion::setStiffnesses(const vector<string>& names,
                             const vector<float>& stiffnesses)
 {
   mProxy_->setStiffnesses(names, stiffnesses);

@@ -1,4 +1,4 @@
-/* 
+/*
 * @File: motion_wrapper.h
 * @Author: Alejandro Bordallo
 * @Date:   2015-04-04 20:47:59
@@ -24,13 +24,13 @@ using namespace std;
 
 class Motion{
   public:
-    Motion(int argc, char *argv[]);
+    Motion();
     ~Motion();
 
     // Stiffness control API
     void wakeUp();
     void rest();
-    void setStiffnesses(const vector<string>& names, 
+    void setStiffnesses(const vector<string>& names,
                         const vector<float>& stiffnesses);
     vector<float> getStiffnesses(const vector<string>&);
 

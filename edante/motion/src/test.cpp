@@ -1,4 +1,4 @@
-/* 
+/*
 * @File: test.cpp
 * @Author: Alejandro Bordallo
 * @Date:   2015-04-04 20:53:31
@@ -15,15 +15,15 @@
 
 int main(int argc, char *argv[]){
 
-  
-  Motion* motionTest = new Motion(argc, argv);
+  ros::init(argc, argv, "motion");
+  Motion* motionTest = new Motion();
 
   ros::Rate r(10);
   motionTest->rest();
 
   // sleep(1);
 
-  
+
   // // ros::init(argc, argv, "testNode");
   // ros::NodeHandle testNode;
 
@@ -50,7 +50,7 @@ int main(int argc, char *argv[]){
 
   ros::AsyncSpinner spinner(4); // Use 4 threads
   spinner.start();
-  
+
   while (ros::ok())
   {
     DEBUG(".");
