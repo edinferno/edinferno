@@ -15,48 +15,16 @@
 
 int main(int argc, char *argv[]){
 
+  using namespace std;
   ros::init(argc, argv, "motion");
   Motion* motionTest = new Motion();
 
   ros::Rate r(10);
-  motionTest->rest();
-
-  // sleep(1);
-
-
-  // // ros::init(argc, argv, "testNode");
-  // ros::NodeHandle testNode;
-
-  // ros::ServiceClient testClient = testNode.serviceClient<motion::setStiffness>("set_stiffness");
-  // motion::setStiffness srv;
-  // std::vector<string> test_names;
-  // test_names.push_back("RArm");
-  // srv.request.names = test_names;
-
-  // std::vector<float> test_stiffness;
-  // test_stiffness.push_back(1.0f);
-  // srv.request.stiffnesses = test_stiffness;
-
-  // if (testClient.call(srv))
-  // {
-  //   INFO("Stiffness set");
-  //   // ROS_INFO("Stiffness set");
-  // }
-  // else
-  // {
-  //   ERR("Failed to call stiffness set!");
-  //   // ROS_ERROR("Failed to call stiffness set!");
-  // }
-
-  ros::AsyncSpinner spinner(4); // Use 4 threads
-  spinner.start();
 
   while (ros::ok())
   {
-    DEBUG(".");
-    motionTest->testSrv();
     motionTest->spinTopics();
-    // ros::spinOnce();
+    ros::spinOnce();
     r.sleep();
   }
 }
