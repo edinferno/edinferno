@@ -7,6 +7,7 @@ project(motion)
 find_package(catkin REQUIRED COMPONENTS
  roscpp 
  std_msgs
+ std_srvs
  message_generation)
 
 ## System dependencies are found with CMake's conventions
@@ -39,6 +40,7 @@ add_service_files(
 generate_messages(
   DEPENDENCIES
   std_msgs
+  std_srvs
 )
 
 ###################################
@@ -52,7 +54,7 @@ generate_messages(
 catkin_package(
    INCLUDE_DIRS include
 #  LIBRARIES motion
-  CATKIN_DEPENDS roscpp std_msgs
+  CATKIN_DEPENDS roscpp std_msgs std_srvs
 #  DEPENDS system_lib
 )
 
