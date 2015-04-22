@@ -19,12 +19,10 @@ bool Motion_Task::killMove(std_srvs::Empty::Request &req,
                     std_srvs::Empty::Response &res)
 {
   mProxy_->killMove();
-  return true;
 }
 
 bool Motion_Task::killAll(std_srvs::Empty::Request &req,
                     std_srvs::Empty::Response &res)
 {
   mProxy_->killAll();
-  return true;
 }
