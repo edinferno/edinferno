@@ -7,7 +7,6 @@ project(motion)
 find_package(catkin REQUIRED COMPONENTS
  roscpp 
  std_msgs
- std_srvs
  message_generation)
 
 ## System dependencies are found with CMake's conventions
@@ -40,7 +39,6 @@ add_service_files(
 generate_messages(
   DEPENDENCIES
   std_msgs
-  std_srvs
 )
 
 ###################################
@@ -54,7 +52,7 @@ generate_messages(
 catkin_package(
    INCLUDE_DIRS include
 #  LIBRARIES motion
-  CATKIN_DEPENDS roscpp std_msgs std_srvs
+  CATKIN_DEPENDS roscpp std_msgs
 #  DEPENDS system_lib
 )
 
@@ -74,17 +72,17 @@ include_directories(include
 # )
 
 ## Declare a cpp executable
- add_executable(motion_wrapper
+ add_executable(locomotion_control
  src/test.cpp
- src/motion_wrapper.cpp
+ src/locomotion_control.cpp
 )
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(motion_wrapper motion_generate_messages_cpp)
+add_dependencies(locomotion_control motion_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(motion_wrapper
+target_link_libraries(locomotion_control
   ${catkin_LIBRARIES}
   alcommon
   alerror
