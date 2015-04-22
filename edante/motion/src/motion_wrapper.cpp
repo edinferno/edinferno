@@ -135,7 +135,7 @@ bool Motion::setStiffnesses(const vector<string>& names, float& stiffness)
 {
   try{
     mProxy_->setStiffnesses(names, stiffness);
-    }
+  }
   catch (const std::exception& e){
     return false;
   }
@@ -147,7 +147,7 @@ bool Motion::setStiffnesses(const vector<string>& names,
 {
   try{
     mProxy_->setStiffnesses(names, stiffnesses);
-    }
+  }
   catch (const std::exception& e){
     return false;
   }
