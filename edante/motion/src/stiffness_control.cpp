@@ -1,15 +1,15 @@
 /*
-* @File: motion_wrapper.cpp
+* @File: motion.cpp
 * @Author: Alejandro Bordallo
 * @Date:   2015-04-04 20:47:59
 * @Last Modified by:   Alejandro Bordallo
-* @Last Modified time: 2015-04-15 17:22:34
-* @Desc: Declares the Motion Wrapper functions
+* @Last Modified time: 2015-04-22 16:15:00
+* @Desc: Declares the Stiffness Control Wrapper functions
 */
 
-#include "motion_wrapper.h"
+#include "stiffness_control.h"
 
-Motion::Motion()
+Stiffness_Control::Stiffness_Control()
 {
   nh_ = new ros::NodeHandle();
   mProxy_ = new AL::ALMotionProxy("127.0.0.1", 9559);
@@ -20,43 +20,43 @@ Motion::Motion()
 
   INFO("Setting up Nao motion services" << std::endl);
   set_stiffness_ = nh_->advertiseService("motion/setStiffness",
-                                        &Motion::recStiffness, this);
+                                        &Stiffness_Control::recStiffness, this);
   get_stiffness_ = nh_->advertiseService("motion/getStiffness",
-                                        &Motion::getStiffness, this);
-  srv_awake_ = nh_->advertiseService("motion/awake", &Motion::wakeUp, this);
-  srv_rest_ = nh_->advertiseService("motion/rest", &Motion::rest, this);
+                                        &Stiffness_Control::getStiffness, this);
+  srv_awake_ = nh_->advertiseService("motion/awake", &Stiffness_Control::wakeUp, this);
+  srv_rest_ = nh_->advertiseService("motion/rest", &Stiffness_Control::rest, this);
 
   awake_ = false;
 }
 
-Motion::~Motion()
+Stiffness_Control::~Stiffness_Control()
 {
   ros::shutdown();
   delete nh_;
 }
 
-bool Motion::wakeUp(std_srvs::Empty::Request &req,
+bool Stiffness_Control::wakeUp(std_srvs::Empty::Request &req,
                     std_srvs::Empty::Response &res)
 {
   mProxy_->wakeUp();
   awake_ = true;
 }
 
-bool Motion::rest(std_srvs::Empty::Request &req,
+bool Stiffness_Control::rest(std_srvs::Empty::Request &req,
                   std_srvs::Empty::Response &res)
 {
   mProxy_->rest();
   awake_ = false;
 }
 
-void Motion::spinTopics()
+void Stiffness_Control::spinTopics()
 {
   std_msgs::Bool msg;
   msg.data = awake_;
   wake_pub_.publish(msg);
 }
 
-bool Motion::recStiffness(motion::setStiffness::Request &req,
+bool Stiffness_Control::recStiffness(motion::setStiffness::Request &req,
                           motion::setStiffness::Response &res)
 {
   DEBUG("Service: setStiffness" << std::endl);
@@ -109,7 +109,7 @@ bool Motion::recStiffness(motion::setStiffness::Request &req,
   return true;
 }
 
-bool Motion::setStiffnesses(string& name, float& stiffness)
+bool Stiffness_Control::setStiffnesses(string& name, float& stiffness)
 {
   try{
     mProxy_->setStiffnesses(name, stiffness);
@@ -120,7 +120,7 @@ bool Motion::setStiffnesses(string& name, float& stiffness)
   return true;
 }
 
-bool Motion::setStiffnesses(string& name, const vector<float>& stiffnesses)
+bool Stiffness_Control::setStiffnesses(string& name, const vector<float>& stiffnesses)
 {
   try{
     mProxy_->setStiffnesses(name, stiffnesses);
@@ -131,7 +131,7 @@ bool Motion::setStiffnesses(string& name, const vector<float>& stiffnesses)
   return true;
 }
 
-bool Motion::setStiffnesses(const vector<string>& names, float& stiffness)
+bool Stiffness_Control::setStiffnesses(const vector<string>& names, float& stiffness)
 {
   try{
     mProxy_->setStiffnesses(names, stiffness);
@@ -142,7 +142,7 @@ bool Motion::setStiffnesses(const vector<string>& names, float& stiffness)
   return true;
 }
 
-bool Motion::setStiffnesses(const vector<string>& names,
+bool Stiffness_Control::setStiffnesses(const vector<string>& names,
                             const vector<float>& stiffnesses)
 {
   try{
@@ -154,7 +154,7 @@ bool Motion::setStiffnesses(const vector<string>& names,
   return true;
 }
 
-bool Motion::getStiffness(motion::getStiffness::Request &req,
+bool Stiffness_Control::getStiffness(motion::getStiffness::Request &req,
                           motion::getStiffness::Response &res)
 {
   DEBUG("Service: getStiffness" << std::endl);
@@ -164,7 +164,7 @@ bool Motion::getStiffness(motion::getStiffness::Request &req,
   return true;
 }
 
-vector<float> Motion::getStiffnesses(const vector<string>& names)
+vector<float> Stiffness_Control::getStiffnesses(const vector<string>& names)
 {
   return mProxy_->getStiffnesses(names);
 }

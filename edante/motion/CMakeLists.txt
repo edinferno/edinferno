@@ -74,17 +74,17 @@ include_directories(include
 # )
 
 ## Declare a cpp executable
- add_executable(motion_wrapper
+ add_executable(stiffness_control
  src/test.cpp
- src/motion_wrapper.cpp
+ src/stiffness_control.cpp
 )
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(motion_wrapper motion_generate_messages_cpp)
+add_dependencies(stiffness_control motion_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(motion_wrapper
+target_link_libraries(stiffness_control
   ${catkin_LIBRARIES}
   alcommon
   alerror
