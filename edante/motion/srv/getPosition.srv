@@ -1,0 +1,5 @@
+string name
+int32 space
+bool useSensorValues
+---
+float32[] position
