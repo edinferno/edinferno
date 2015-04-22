@@ -4,6 +4,8 @@
 
 #include <ros/ros.h>
 #include <std_msgs/Bool.h>
+#include <std_srvs/Empty.h>
+
 #include <vector>
 //#include <tuple>
 
@@ -36,7 +38,8 @@ class Locomotion_Control{
     //void moveToward(const float& x, const float& y, const float& theta);
     //void moveToward(const float& x, const float& y, const float& theta,  vector<tuple<string, int> >& moveConfig);
 
-    void moveInit();
+    bool moveInit(std_srvs::Empty::Request &req,
+                  std_srvs::Empty::Response &res);
     //void waitUntilMoveIsFinished();
     //bool moveIsActive();
     //void stopMove();
@@ -52,6 +55,7 @@ class Locomotion_Control{
     // ROS
     ros::NodeHandle* nh_;
     ros::Publisher moving_pub_;
+    ros::ServiceServer srv_moveInit_;
     // NAOqi
     AL::ALMotionProxy* mProxy_;
 
