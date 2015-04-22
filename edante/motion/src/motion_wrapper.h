@@ -27,45 +27,45 @@
 using namespace std;
 
 class Motion{
-  public:
-    Motion();
-    ~Motion();
+public:
+ Motion();
+ ~Motion();
 
-    // Stiffness control API
-    bool wakeUp(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
-    bool rest(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
+ // Stiffness control API
+ bool wakeUp(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
+ bool rest(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
 
-    bool setStiffnesses(string& name, float& stiffness);
-    bool setStiffnesses(string& name, const vector<float>& stiffnesses);
-    bool setStiffnesses(const vector<string>& names, float& stiffness);
-    bool setStiffnesses(const vector<string>& names,
-                        const vector<float>& stiffnesses);
+ bool setStiffnesses(string& name, float& stiffness);
+ bool setStiffnesses(string& name, const vector<float>& stiffnesses);
+ bool setStiffnesses(const vector<string>& names, float& stiffness);
+ bool setStiffnesses(const vector<string>& names,
+  const vector<float>& stiffnesses);
 
-    vector<float> getStiffnesses(const vector<string>&);
+ vector<float> getStiffnesses(const vector<string>&);
 
-    // ROS publisher
-    void spinTopics();
+ // ROS publisher
+ void spinTopics();
 
-    // ROS services
-    bool recStiffness(motion::setStiffness::Request &req,
-                      motion::setStiffness::Response &res);
-    bool getStiffness(motion::getStiffness::Request &req,
-                      motion::getStiffness::Response &res);
+ // ROS services
+ bool recStiffness(motion::setStiffness::Request &req,
+  motion::setStiffness::Response &res);
+ bool getStiffness(motion::getStiffness::Request &req,
+  motion::getStiffness::Response &res);
 
-  private:
-    // ROS
-    ros::NodeHandle* nh_;
-    ros::Publisher wake_pub_;
-    ros::ServiceServer set_stiffness_;
-    ros::ServiceServer get_stiffness_;
-    ros::ServiceServer srv_awake_;
-    ros::ServiceServer srv_rest_;
+private:
+ // ROS
+ ros::NodeHandle* nh_;
+ ros::Publisher wake_pub_;
+ ros::ServiceServer set_stiffness_;
+ ros::ServiceServer get_stiffness_;
+ ros::ServiceServer srv_awake_;
+ ros::ServiceServer srv_rest_;
 
-    // NAOqi
-    AL::ALMotionProxy* mProxy_;
+ // NAOqi
+ AL::ALMotionProxy* mProxy_;
 
-    // Internal
-    bool awake_;
+ // Internal
+ bool awake_;
 };
 
 #endif /* MOTION_WRAPPER_H_ */
