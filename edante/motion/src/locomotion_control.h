@@ -38,11 +38,10 @@ class Locomotion_Control{
     //void moveToward(const float& x, const float& y, const float& theta);
     //void moveToward(const float& x, const float& y, const float& theta,  vector<tuple<string, int> >& moveConfig);
 
-    bool moveInit(std_srvs::Empty::Request &req,
-                  std_srvs::Empty::Response &res);
-    //void waitUntilMoveIsFinished();
-    //bool moveIsActive();
-    //void stopMove();
+    bool moveInit(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
+    bool waitUntilMoveIsFinished(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
+    bool moveIsActive();
+    bool stopMove(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
     //vector<float> getRobotPosition(const bool& useSensors);
     //vector<float> getNextRobotPosition();
     //vector<float> getRobotVelocity();
@@ -56,6 +55,9 @@ class Locomotion_Control{
     ros::NodeHandle* nh_;
     ros::Publisher moving_pub_;
     ros::ServiceServer srv_moveInit_;
+    ros::ServiceServer srv_waitMoveFinished_;
+    ros::ServiceServer srv_stopMove_;
+
     // NAOqi
     AL::ALMotionProxy* mProxy_;
 

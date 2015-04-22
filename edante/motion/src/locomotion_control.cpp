@@ -8,6 +8,9 @@ Locomotion_Control::Locomotion_Control()
   moving_pub_ = nh_->advertise<std_msgs::Bool>("motion/isMoving", 10); 
   INFO("Setting up Nao motion publishers" << std::endl);
   srv_moveInit_ = nh_->advertiseService("motion/moveInit", &Locomotion_Control::moveInit, this);
+  srv_waitMoveFinished_ = nh_->advertiseService("motion/waitMoveFinish", &Locomotion_Control::waitUntilMoveIsFinished, this);
+  srv_stopMove_ = nh_->advertiseService("motion/stopMove", &Locomotion_Control::stopMove, this);
+  
   moving_ = false; 
 }
 
@@ -20,8 +23,26 @@ bool Locomotion_Control::moveInit(std_srvs::Empty::Request &req,
                   std_srvs::Empty::Response &res)
 {
 	mProxy_->moveInit();
-	moving_ = true;
+	moving_ = moveIsActive();
 }
+
+ bool Locomotion_Control::waitUntilMoveIsFinished(std_srvs::Empty::Request &req, 
+                    std_srvs::Empty::Response &res)
+ {
+  mProxy_->waitUntilMoveIsFinished();
+ }
+
+bool Locomotion_Control::moveIsActive()
+{
+  mProxy_->moveIsActive();
+}
+
+bool Locomotion_Control::stopMove(std_srvs::Empty::Request &req, 
+                    std_srvs::Empty::Response &res)
+{
+  mProxy_->stopMove();
+}
+
 
 void Locomotion_Control::spinTopics()
 {
