@@ -81,12 +81,26 @@ include_directories(include
  src/stiffness_control.cpp
 )
 
+ add_executable(cartesian_control
+ src/cartesian_test.cpp
+ src/cartesian_control.cpp
+)
+
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(stiffness_control motion_generate_messages_cpp)
+add_dependencies(cartesian_control motion_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(stiffness_control
+  ${catkin_LIBRARIES}
+  alcommon
+  alerror
+  alproxies
+  alvalue
+)
+
+target_link_libraries(cartesian_control
   ${catkin_LIBRARIES}
   alcommon
   alerror
