@@ -1,14 +1,14 @@
 /*
-* @File: motion_wrapper.h
+* @File: motion.h
 * @Author: Alejandro Bordallo
 * @Date:   2015-04-04 20:47:59
 * @Last Modified by:   Alejandro Bordallo
 * @Last Modified time: 2015-04-04 20:47:59
-* @Desc: Defines the Motion Wrapper functions
+* @Desc: Defines the Stiffness Control Wrapper functions
 */
 
-#ifndef MOTION_WRAPPER_H_
-#define MOTION_WRAPPER_H_
+#ifndef STIFFNESS_CONTROL_H_
+#define STIFFNESS_CONTROL_H_
 
 #include <ros/ros.h>
 #include <std_msgs/Bool.h>
@@ -26,10 +26,10 @@
 
 using namespace std;
 
-class Motion{
+class Stiffness_Control{
 public:
- Motion();
- ~Motion();
+ Stiffness_Control();
+ ~Stiffness_Control();
 
  // Stiffness control API
  bool wakeUp(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
@@ -68,4 +68,4 @@ private:
  bool awake_;
 };
 
-#endif /* MOTION_WRAPPER_H_ */
+#endif /* STIFFNESS_CONTROL_H_ */
