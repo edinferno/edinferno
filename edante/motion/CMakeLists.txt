@@ -34,6 +34,8 @@ add_service_files(
   FILES
   setStiffness.srv
   getStiffness.srv
+  getPosition.srv
+  getTransform.srv
 )
 
 ## Generate added messages and services with any dependencies listed here
