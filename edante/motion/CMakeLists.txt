@@ -73,7 +73,7 @@ include_directories(include
 
 ## Declare a cpp executable
  add_executable(locomotion_control
- src/test.cpp
+ src/locomotion_test.cpp
  src/locomotion_control.cpp
 )
 
