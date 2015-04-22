@@ -16,52 +16,52 @@
 using namespace std;
 
 class Locomotion_Control{
-  public:
-    Locomotion_Control();
-    ~Locomotion_Control();
-    // Locomotion Control API
-    //void setWalkTargetVelocity(const float& x, const float& y, const float& theta, const float& frequency);
-    //void setWalkTargetVelocity(const float& x, const float& y, const float& theta,
+public:
+ Locomotion_Control();
+ ~Locomotion_Control();
+ // Locomotion Control API
+ //void setWalkTargetVelocity(const float& x, const float& y, const float& theta, const float& frequency);
+ //void setWalkTargetVelocity(const float& x, const float& y, const float& theta,
       //                         const float& frequency, vector<tuple<string, int> >& feetGaitConfig);
-    //void setWalkTargetVelocity(const float& x, const float& y, const float& theta, 
-        //                const float& frequency, vector<tuple<string, int> >& leftFootGaitConfig, vector<tuple<string, int> >& rightFootGaitConfig);
+ //void setWalkTargetVelocity(const float& x, const float& y, const float& theta, 
+ //                const float& frequency, vector<tuple<string, int> >& leftFootGaitConfig, vector<tuple<string, int> >& rightFootGaitConfig);
 
-    //void move(const float& x, const float& y, const float& theta);
-    //void move(const float& x, const float& y, const float& theta, vector<tuple<string, int> >& moveConfig);
+ //void move(const float& x, const float& y, const float& theta);
+  //void move(const float& x, const float& y, const float& theta, vector<tuple<string, int> >& moveConfig);
 
-    //void moveTo(const float& x, const float& y, const float& theta);
-    //void moveTo(const float& x, const float& y, const float& theta, const vector<tuple<string, int> >& moveConfig);
-    //void moveTo(const vector<tuple<float, float, float> >& controlPoints);
-    //void moveTo(const vector<tuple<float, float, float> >& controlPoints,
+ //void moveTo(const float& x, const float& y, const float& theta);
+ //void moveTo(const float& x, const float& y, const float& theta, const vector<tuple<string, int> >& moveConfig);
+ //void moveTo(const vector<tuple<float, float, float> >& controlPoints);
+ //void moveTo(const vector<tuple<float, float, float> >& controlPoints,
                      //const vector<tuple<string, int> >& moveConfig);
 
-    //void moveToward(const float& x, const float& y, const float& theta);
-    //void moveToward(const float& x, const float& y, const float& theta,  vector<tuple<string, int> >& moveConfig);
+ //void moveToward(const float& x, const float& y, const float& theta);
+ //void moveToward(const float& x, const float& y, const float& theta,  vector<tuple<string, int> >& moveConfig);
 
-    bool moveInit(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
-    bool waitUntilMoveIsFinished(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
-    bool moveIsActive();
-    bool stopMove(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
-    //vector<float> getRobotPosition(const bool& useSensors);
-    //vector<float> getNextRobotPosition();
-    //vector<float> getRobotVelocity();
-    //vector<bool> getWalkArmsEnabled();
-    //void setWalkArmsEnabled(const bool& leftArmEnable, const bool& rightArmEnable);
+ bool moveInit(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
+ bool waitUntilMoveIsFinished(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
+ bool moveIsActive();
+ bool stopMove(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
+ //vector<float> getRobotPosition(const bool& useSensors);
+ //vector<float> getNextRobotPosition();
+ //vector<float> getRobotVelocity();
+ //vector<bool> getWalkArmsEnabled();
+ //void setWalkArmsEnabled(const bool& leftArmEnable, const bool& rightArmEnable);
 
-    // ROS publisher
-    void spinTopics();
-  private:
-    // ROS
-    ros::NodeHandle* nh_;
-    ros::Publisher moving_pub_;
-    ros::ServiceServer srv_moveInit_;
-    ros::ServiceServer srv_waitMoveFinished_;
-    ros::ServiceServer srv_stopMove_;
+ // ROS publisher
+ void spinTopics();
+private:
+ // ROS
+ ros::NodeHandle* nh_;
+ ros::Publisher moving_pub_;
+ ros::ServiceServer srv_moveInit_;
+ ros::ServiceServer srv_waitMoveFinished_;
+ ros::ServiceServer srv_stopMove_;
 
-    // NAOqi
-    AL::ALMotionProxy* mProxy_;
+ // NAOqi
+ AL::ALMotionProxy* mProxy_;
 
-    bool moving_;
+ bool moving_;
 
 };
 
