@@ -12,6 +12,8 @@
 
 #include <ros/ros.h>
 
+#include "motion/handName.h"
+
 #include <alproxies/almotionproxy.h>
 #include <alerror/alerror.h>
 
@@ -29,10 +31,14 @@ public:
  // ROS publishers
 
  // ROS services
+ bool closeHand(motion::handName::Request &req, motion::handName::Response &res);
+ bool openHand(motion::handName::Request &req, motion::handName::Response &res);
 
 private:
  // ROS
  ros::NodeHandle* nh_;
+ ros::ServiceServer srv_close_hand_;
+ ros::ServiceServer srv_open_hand_;
 
  // NAOqi
  AL::ALMotionProxy* mProxy_;
