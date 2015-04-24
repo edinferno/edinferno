@@ -23,7 +23,7 @@ Stiffness_Control::Stiffness_Control()
                                         &Stiffness_Control::recStiffness, this);
   get_stiffness_ = nh_->advertiseService("motion/getStiffness",
                                         &Stiffness_Control::getStiffness, this);
-  srv_awake_ = nh_->advertiseService("motion/awake", &Stiffness_Control::wakeUp, this);
+  srv_wake_up_ = nh_->advertiseService("motion/wakeUp", &Stiffness_Control::wakeUp, this);
   srv_rest_ = nh_->advertiseService("motion/rest", &Stiffness_Control::rest, this);
 
   awake_ = false;
