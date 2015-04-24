@@ -75,7 +75,7 @@ include_directories(include
 
 ## Declare a cpp executable
  add_executable(stiffness_control
-  src/test.cpp
+  src/stiffness_test.cpp
   src/stiffness_control.cpp)
 
  add_executable(joint_control
