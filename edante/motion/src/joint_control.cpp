@@ -58,7 +58,7 @@ bool Joint_Control::angleInterp(motion::angleInterp::Request &req,
 
   try{
     mProxy_->angleInterpolation(names, angleLists,
-                                timeLists, true);
+                                timeLists, req.isAbsolute);
     res.res = true;
   }
   catch (const std::exception& e){
