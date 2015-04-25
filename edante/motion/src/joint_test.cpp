@@ -13,7 +13,7 @@ int main(int argc, char *argv[]){
 
   using namespace std;
   ros::init(argc, argv, "joint_control");
-  // Stiffness_Control* StiffnessTest = new Stiffness_Control();
+  Joint_Control* JointTest = new Joint_Control();
 
   ros::Rate r(10);
 
