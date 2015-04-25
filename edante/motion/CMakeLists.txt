@@ -32,9 +32,14 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate services in the 'srv' folder
 add_service_files(
   FILES
+  # Stiffness_Control
   setStiffness.srv
   getStiffness.srv
-  handName.srv
+  # Joint_Control
+  setAngles.srv
+  changeAngles.srv
+  getAngles.srv
+  useHand.srv
 )
 
 ## Generate added messages and services with any dependencies listed here

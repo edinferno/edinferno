@@ -17,6 +17,12 @@ Joint_Control::Joint_Control()
   // INFO("Setting up Joint Control subscribers" << std::endl);
 
   INFO("Setting up Joint Control services" << std::endl);
+  srv_set_angles_ = nh_->advertiseService("motion/setAngles",
+                                          &Joint_Control::setAngles, this);
+  srv_change_angles_ = nh_->advertiseService("motion/changeAngles",
+                                            &Joint_Control::changeAngles, this);
+  srv_get_angles_ = nh_->advertiseService("motion/getAngles",
+                                          &Joint_Control::getAngles, this);
   srv_close_hand_ = nh_->advertiseService("motion/closeHand",
                                            &Joint_Control::closeHand, this);
   srv_open_hand_ = nh_->advertiseService("motion/openHand",
@@ -29,8 +35,46 @@ Joint_Control::~Joint_Control()
   delete nh_;
 }
 
-bool Joint_Control::closeHand(motion::handName::Request &req,
-                              motion::handName::Response &res)
+bool Joint_Control::setAngles(motion::setAngles::Request &req,
+                              motion::setAngles::Response &res)
+{
+  try{
+    mProxy_->setAngles(req.names, req.angles, req.fractionMaxSpeed);
+    res.res = true;
+  }
+  catch (const std::exception& e){
+    res.res = false;
+  }
+  return true;
+}
+
+bool Joint_Control::changeAngles(motion::changeAngles::Request &req,
+                                 motion::changeAngles::Response &res)
+{
+  try{
+    mProxy_->changeAngles(req.names, req.changes, req.fractionMaxSpeed);
+    res.res = true;
+  }
+  catch (const std::exception& e){
+    res.res = false;
+  }
+  return true;
+}
+
+bool Joint_Control::getAngles(motion::getAngles::Request &req,
+                              motion::getAngles::Response &res)
+{
+  try{
+    res.jointAngles = mProxy_->getAngles(req.names, req.useSensors);
+  }
+  catch (const std::exception& e){
+    return false;
+  }
+  return true;
+}
+
+bool Joint_Control::closeHand(motion::useHand::Request &req,
+                              motion::useHand::Response &res)
 {
   try{
     mProxy_->closeHand(req.handName);
@@ -41,8 +85,8 @@ bool Joint_Control::closeHand(motion::handName::Request &req,
   }
   return true;
 }
-bool Joint_Control::openHand(motion::handName::Request &req,
-                             motion::handName::Response &res)
+bool Joint_Control::openHand(motion::useHand::Request &req,
+                             motion::useHand::Response &res)
 {
   try{
     mProxy_->openHand(req.handName);

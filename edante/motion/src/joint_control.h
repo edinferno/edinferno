@@ -12,7 +12,10 @@
 
 #include <ros/ros.h>
 
-#include "motion/handName.h"
+#include "motion/setAngles.h"
+#include "motion/changeAngles.h"
+#include "motion/getAngles.h"
+#include "motion/useHand.h"
 
 #include <alproxies/almotionproxy.h>
 #include <alerror/alerror.h>
@@ -31,12 +34,18 @@ public:
  // ROS publishers
 
  // ROS services
- bool closeHand(motion::handName::Request &req, motion::handName::Response &res);
- bool openHand(motion::handName::Request &req, motion::handName::Response &res);
+ bool setAngles(motion::setAngles::Request &req, motion::setAngles::Response &res);
+ bool changeAngles(motion::changeAngles::Request &req, motion::changeAngles::Response &res);
+ bool getAngles(motion::getAngles::Request &req, motion::getAngles::Response &res);
+ bool closeHand(motion::useHand::Request &req, motion::useHand::Response &res);
+ bool openHand(motion::useHand::Request &req, motion::useHand::Response &res);
 
 private:
  // ROS
  ros::NodeHandle* nh_;
+ ros::ServiceServer srv_set_angles_;
+ ros::ServiceServer srv_change_angles_;
+ ros::ServiceServer srv_get_angles_;
  ros::ServiceServer srv_close_hand_;
  ros::ServiceServer srv_open_hand_;
 
