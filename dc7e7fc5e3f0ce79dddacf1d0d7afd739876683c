@@ -46,6 +46,23 @@
       "revId": "dc7e7fc5e3f0ce79dddacf1d0d7afd739876683c",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a106d94_210eb5e5",
+        "filename": "edante/comms/src/SPLStandardMessage.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1003787
+      },
+      "writtenOn": "2015-04-25T17:22:33Z",
+      "side": 1,
+      "message": "You are missing const before comms::SPLStandardMessage msg\nThe header file has it that way",
+      "revId": "dc7e7fc5e3f0ce79dddacf1d0d7afd739876683c",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
     }
   ]
 }
