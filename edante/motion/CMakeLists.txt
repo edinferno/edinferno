@@ -24,10 +24,10 @@ find_package(catkin REQUIRED COMPONENTS
 #######################################
 
 # Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   std_msgs.msg
-# )
+add_message_files(
+  FILES
+  float32List.msg
+)
 
 ## Generate services in the 'srv' folder
 add_service_files(
@@ -36,6 +36,8 @@ add_service_files(
   setStiffness.srv
   getStiffness.srv
   # Joint_Control
+  angleInterp.srv
+  angleInterpSpeed.srv
   setAngles.srv
   changeAngles.srv
   getAngles.srv
@@ -88,10 +90,14 @@ include_directories(include
   src/joint_test.cpp
   src/joint_control.cpp)
 
+ add_executable(srv_test
+  src/srv_test.cpp)
+
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(stiffness_control motion_generate_messages_cpp)
 add_dependencies(joint_control motion_generate_messages_cpp)
+add_dependencies(srv_test motion_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(stiffness_control
@@ -103,6 +109,14 @@ target_link_libraries(stiffness_control
 )
 
 target_link_libraries(joint_control
+  ${catkin_LIBRARIES}
+  alcommon
+  alerror
+  alproxies
+  alvalue
+)
+
+target_link_libraries(srv_test
   ${catkin_LIBRARIES}
   alcommon
   alerror
