@@ -32,9 +32,6 @@ public:
  ~Stiffness_Control();
 
  // Stiffness control API
- bool wakeUp(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
- bool rest(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
-
  bool setStiffnesses(string& name, float& stiffness);
  bool setStiffnesses(string& name, const vector<float>& stiffnesses);
  bool setStiffnesses(const vector<string>& names, float& stiffness);
@@ -47,6 +44,8 @@ public:
  void spinTopics();
 
  // ROS services
+ bool wakeUp(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
+ bool rest(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
  bool recStiffness(motion::setStiffness::Request &req,
   motion::setStiffness::Response &res);
  bool getStiffness(motion::getStiffness::Request &req,
@@ -58,7 +57,7 @@ private:
  ros::Publisher wake_pub_;
  ros::ServiceServer set_stiffness_;
  ros::ServiceServer get_stiffness_;
- ros::ServiceServer srv_awake_;
+ ros::ServiceServer srv_wake_up_;
  ros::ServiceServer srv_rest_;
 
  // NAOqi
