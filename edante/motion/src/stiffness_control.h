@@ -46,7 +46,7 @@ public:
  // ROS services
  bool wakeUp(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
  bool rest(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
- bool recStiffness(motion::setStiffness::Request &req,
+ bool secStiffness(motion::setStiffness::Request &req,
   motion::setStiffness::Response &res);
  bool getStiffness(motion::getStiffness::Request &req,
   motion::getStiffness::Response &res);

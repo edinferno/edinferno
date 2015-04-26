@@ -20,7 +20,7 @@ Stiffness_Control::Stiffness_Control()
 
   INFO("Setting up Nao motion services" << std::endl);
   set_stiffness_ = nh_->advertiseService("motion/setStiffness",
-                                        &Stiffness_Control::recStiffness, this);
+                                        &Stiffness_Control::secStiffness, this);
   get_stiffness_ = nh_->advertiseService("motion/getStiffness",
                                         &Stiffness_Control::getStiffness, this);
   srv_wake_up_ = nh_->advertiseService("motion/wakeUp", &Stiffness_Control::wakeUp, this);
@@ -56,7 +56,7 @@ void Stiffness_Control::spinTopics()
   wake_pub_.publish(msg);
 }
 
-bool Stiffness_Control::recStiffness(motion::setStiffness::Request &req,
+bool Stiffness_Control::secStiffness(motion::setStiffness::Request &req,
                           motion::setStiffness::Response &res)
 {
   bool nameIsVect;
