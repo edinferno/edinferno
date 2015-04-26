@@ -23,7 +23,7 @@ Stiffness_Control::Stiffness_Control()
                                         &Stiffness_Control::recStiffness, this);
   get_stiffness_ = nh_->advertiseService("motion/getStiffness",
                                         &Stiffness_Control::getStiffness, this);
-  srv_awake_ = nh_->advertiseService("motion/awake", &Stiffness_Control::wakeUp, this);
+  srv_wake_up_ = nh_->advertiseService("motion/wakeUp", &Stiffness_Control::wakeUp, this);
   srv_rest_ = nh_->advertiseService("motion/rest", &Stiffness_Control::rest, this);
 
   awake_ = false;
@@ -59,7 +59,6 @@ void Stiffness_Control::spinTopics()
 bool Stiffness_Control::recStiffness(motion::setStiffness::Request &req,
                           motion::setStiffness::Response &res)
 {
-  DEBUG("Service: setStiffness" << std::endl);
   bool nameIsVect;
   string jointName;
   vector<string> jointNameVect;
@@ -157,8 +156,6 @@ bool Stiffness_Control::setStiffnesses(const vector<string>& names,
 bool Stiffness_Control::getStiffness(motion::getStiffness::Request &req,
                           motion::getStiffness::Response &res)
 {
-  DEBUG("Service: getStiffness" << std::endl);
-
   vector<string> jointNameVect = req.names;
   res.stiffnesses = this->getStiffnesses(jointNameVect);
   return true;
