@@ -13,7 +13,9 @@ int main(int argc, char *argv[]){
 
   using namespace std;
   ros::init(argc, argv, "joint_control");
-  Joint_Control* JointTest = new Joint_Control();
+  ros::NodeHandle nh("motion");
+  AL::ALMotionProxy mProxy("127.0.0.1", 9559);
+  Joint_Control JointTest(&nh, &mProxy);
 
   ros::Rate r(10);
 

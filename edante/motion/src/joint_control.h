@@ -30,7 +30,7 @@ using namespace std;
 
 class Joint_Control{
 public:
- Joint_Control();
+ Joint_Control(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
  ~Joint_Control();
 
  // Joint control API
