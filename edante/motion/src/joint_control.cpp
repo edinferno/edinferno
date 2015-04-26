@@ -7,10 +7,10 @@
 
 #include "joint_control.h"
 
-Joint_Control::Joint_Control()
+Joint_Control::Joint_Control(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy)
 {
-  nh_ = new ros::NodeHandle();
-  mProxy_ = new AL::ALMotionProxy("127.0.0.1", 9559);
+  nh_ = nh;
+  mProxy_ = mProxy;
 
   // INFO("Setting up Joint Control publishers" << std::endl);
 
@@ -18,20 +18,20 @@ Joint_Control::Joint_Control()
 
   INFO("Setting up Joint Control services" << std::endl);
 
-  srv_angle_interp_ = nh_->advertiseService(
-                  "motion/angleInterp", &Joint_Control::angleInterp, this);
-  srv_angle_interp_speed_ = nh_->advertiseService(
-                  "motion/angleInterpSpeed", &Joint_Control::angleInterpSpeed, this);
-  srv_set_angles_ = nh_->advertiseService(
-                  "motion/setAngles", &Joint_Control::setAngles, this);
-  srv_change_angles_ = nh_->advertiseService(
-                  "motion/changeAngles", &Joint_Control::changeAngles, this);
-  srv_get_angles_ = nh_->advertiseService(
-                  "motion/getAngles", &Joint_Control::getAngles, this);
-  srv_close_hand_ = nh_->advertiseService(
-                  "motion/closeHand", &Joint_Control::closeHand, this);
-  srv_open_hand_ = nh_->advertiseService(
-                  "motion/openHand", &Joint_Control::openHand, this);
+  srv_angle_interp_ = nh_->advertiseService("angleInterp", 
+                                        &Joint_Control::angleInterp, this);
+  srv_angle_interp_speed_ = nh_->advertiseService("angleInterpSpeed", 
+                                        &Joint_Control::angleInterpSpeed, this);
+  srv_set_angles_ = nh_->advertiseService("setAngles", 
+                                        &Joint_Control::setAngles, this);
+  srv_change_angles_ = nh_->advertiseService("changeAngles", 
+                                        &Joint_Control::changeAngles, this);
+  srv_get_angles_ = nh_->advertiseService("getAngles", 
+                                        &Joint_Control::getAngles, this);
+  srv_close_hand_ = nh_->advertiseService("closeHand", 
+                                        &Joint_Control::closeHand, this);
+  srv_open_hand_ = nh_->advertiseService("openHand", 
+                                        &Joint_Control::openHand, this);
 }
 
 Joint_Control::~Joint_Control()
@@ -69,6 +69,14 @@ bool Joint_Control::angleInterp(motion::angleInterp::Request &req,
 bool Joint_Control::angleInterpSpeed(motion::angleInterpSpeed::Request &req,
                                      motion::angleInterpSpeed::Response &res)
 {
+  try{
+    mProxy_->angleInterpolationWithSpeed(req.names, req.targetAngles,
+                                         req.maxSpeedFraction);
+    res.res = true;
+  }
+  catch (const std::exception& e){
+    res.res = false;
+  }
   return true;
 }
 
