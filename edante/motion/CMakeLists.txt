@@ -42,6 +42,9 @@ add_service_files(
   changeAngles.srv
   getAngles.srv
   useHand.srv
+  # Motion_Task
+  getTaskList.srv
+  taskResource.srv
 )
 
 ## Generate added messages and services with any dependencies listed here
@@ -90,6 +93,10 @@ include_directories(include
   src/joint_test.cpp
   src/joint_control.cpp)
 
+ add_executable(motion_task
+  src/motion_task_test.cpp
+  src/motion_task.cpp)
+
  add_executable(srv_test
   src/srv_test.cpp)
 
@@ -97,6 +104,7 @@ include_directories(include
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(stiffness_control motion_generate_messages_cpp)
 add_dependencies(joint_control motion_generate_messages_cpp)
+add_dependencies(motion_task motion_generate_messages_cpp)
 add_dependencies(srv_test motion_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
@@ -109,6 +117,14 @@ target_link_libraries(stiffness_control
 )
 
 target_link_libraries(joint_control
+  ${catkin_LIBRARIES}
+  alcommon
+  alerror
+  alproxies
+  alvalue
+)
+
+target_link_libraries(motion_task
   ${catkin_LIBRARIES}
   alcommon
   alerror
