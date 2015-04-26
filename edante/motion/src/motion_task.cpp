@@ -1,17 +1,17 @@
 #include "motion_task.h"
 
-Motion_Task::Motion_Task()
+Motion_Task::Motion_Task(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy)
 {
-	nh_ = new ros::NodeHandle();
-  mProxy_ = new AL::ALMotionProxy("127.0.0.1", 9559);
+	nh_ = nh;
+  mProxy_ = mProxy;
 	INFO("Setting up Motion Task services" << std::endl);
-  srv_get_task_list_ = nh_->advertiseService("motion/getTaskList",
+  srv_get_task_list_ = nh_->advertiseService("getTaskList",
                                              &Motion_Task::getTaskList, this);
-  srv_kill_tasks_res_ = nh_->advertiseService("motion/killTasksUsingResources", 
+  srv_kill_tasks_res_ = nh_->advertiseService("killTasksUsingResources", 
                                         &Motion_Task::killTasksResources, this);
-	srv_kill_move_ = nh_->advertiseService("motion/killMove", 
+	srv_kill_move_ = nh_->advertiseService("killMove", 
                                         &Motion_Task::killMove, this);
-  srv_kill_all_ = nh_->advertiseService("motion/killAll", 
+  srv_kill_all_ = nh_->advertiseService("killAll", 
                               &Motion_Task::killAll, this);
   
 }

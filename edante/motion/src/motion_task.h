@@ -18,7 +18,7 @@ using namespace std;
 
 class Motion_Task{
 public:
- Motion_Task();
+ Motion_Task(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
  ~Motion_Task();
 
  //Motion task API
