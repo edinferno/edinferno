@@ -17,13 +17,15 @@ int main(int argc, char *argv[]){
 
   using namespace std;
   ros::init(argc, argv, "stiffness_control");
-  Stiffness_Control* StiffnessTest = new Stiffness_Control();
+  ros::NodeHandle nh("motion");
+  AL::ALMotionProxy mProxy("127.0.0.1", 9559);
+  Stiffness_Control StiffnessTest(&nh, &mProxy);
 
   ros::Rate r(10);
 
   while (ros::ok())
   {
-    StiffnessTest->spinTopics();
+    StiffnessTest.spinTopics();
     ros::spinOnce();
     r.sleep();
   }
