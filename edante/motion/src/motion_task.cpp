@@ -18,13 +18,20 @@ Motion_Task::Motion_Task(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy)
 
 Motion_Task::~Motion_Task()
 {
-  ros::shutdown();  
+  ros::shutdown();
 }
 
 bool Motion_Task::getTaskList(motion::getTaskList::Request &req,
                               motion::getTaskList::Response &res)
 {
-  res.taskList = mProxy_->getTaskList();
+  // DEBUG(mProxy_->getTaskList() << std::endl);
+  AL::ALValue taskList = mProxy_->getTaskList();
+  string tName = taskList[0][0];
+  int tID = taskList[0][1];
+  DEBUG(tName << tID << std::endl);
+  res.taskList.resize(2);
+  res.taskList[0].taskName = tName;
+  res.taskList[0].motionID = tID;
   return true;
 }
 

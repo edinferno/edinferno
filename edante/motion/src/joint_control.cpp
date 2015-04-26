@@ -37,7 +37,7 @@ Joint_Control::Joint_Control(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy)
 Joint_Control::~Joint_Control()
 {
   ros::shutdown();
-  delete nh_;
+  // delete nh_;
 }
 
 bool Joint_Control::angleInterp(motion::angleInterp::Request &req,
@@ -57,7 +57,7 @@ bool Joint_Control::angleInterp(motion::angleInterp::Request &req,
   }
 
   try{
-    mProxy_->angleInterpolation(names, angleLists,
+    mProxy_->post.angleInterpolation(names, angleLists,
                                 timeLists, req.isAbsolute);
     res.res = true;
   }

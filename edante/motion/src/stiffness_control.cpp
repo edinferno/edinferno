@@ -13,10 +13,10 @@ Stiffness_Control::Stiffness_Control(ros::NodeHandle* nh, AL::ALMotionProxy* mPr
 {
   nh_ = nh;
   mProxy_ = mProxy;
-  INFO("Setting up Nao motion publishers" << std::endl);
+  INFO("Setting up Stiffness Control publishers" << std::endl);
   wake_pub_ = nh_->advertise<std_msgs::Bool>("isAwake", 10);
 
-  INFO("Setting up Nao motion services" << std::endl);
+  INFO("Setting up Stiffness Control services" << std::endl);
   srv_wake_up_ = nh_->advertiseService("wakeUp",
                                        &Stiffness_Control::wakeUp, this);
   srv_rest_ = nh_->advertiseService("rest", 
@@ -34,7 +34,7 @@ Stiffness_Control::Stiffness_Control(ros::NodeHandle* nh, AL::ALMotionProxy* mPr
 Stiffness_Control::~Stiffness_Control()
 {
   ros::shutdown();
-  delete nh_;
+  // delete nh_;
 }
 
 bool Stiffness_Control::wakeUp(std_srvs::Empty::Request &req,

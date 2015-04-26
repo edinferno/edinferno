@@ -27,6 +27,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   float32List.msg
+  task.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -86,19 +87,25 @@ include_directories(include
 # )
 
 ## Declare a cpp executable
- add_executable(stiffness_control
+add_executable(motion
+  src/motion.cpp
+  src/stiffness_control.cpp
+  src/joint_control.cpp
+  src/motion_task.cpp)
+
+add_executable(stiffness_control
   src/stiffness_test.cpp
   src/stiffness_control.cpp)
 
- add_executable(joint_control
+add_executable(joint_control
   src/joint_test.cpp
   src/joint_control.cpp)
 
- add_executable(motion_task
+add_executable(motion_task
   src/motion_task_test.cpp
   src/motion_task.cpp)
 
- add_executable(srv_test
+add_executable(srv_test
   src/srv_test.cpp)
 
 ## Add cmake target dependencies of the executable/library
@@ -109,6 +116,14 @@ add_dependencies(motion_task motion_generate_messages_cpp)
 add_dependencies(srv_test motion_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
+target_link_libraries(motion
+  ${catkin_LIBRARIES}
+  alcommon
+  alerror
+  alproxies
+  alvalue
+)
+
 target_link_libraries(stiffness_control
   ${catkin_LIBRARIES}
   alcommon

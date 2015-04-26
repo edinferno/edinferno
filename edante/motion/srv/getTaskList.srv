@@ -1,2 +1,2 @@
 ---
-int32[] taskList
+task[] taskList

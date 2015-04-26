@@ -6,6 +6,8 @@
 #include <std_srvs/Empty.h>
 #include <vector>
 
+#include "motion/task.h"
+
 #include "motion/getTaskList.h"
 #include "motion/taskResource.h"
 
