@@ -33,6 +33,7 @@ add_message_files(
 add_service_files(
   FILES
   # Stiffness_Control
+  stiffnessInterp.srv
   setStiffness.srv
   getStiffness.srv
   # Joint_Control

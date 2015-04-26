@@ -19,12 +19,16 @@ Stiffness_Control::Stiffness_Control()
   // INFO("Setting up Nao motion subscribers" << std::endl);
 
   INFO("Setting up Nao motion services" << std::endl);
+  srv_wake_up_ = nh_->advertiseService("motion/wakeUp",
+                                       &Stiffness_Control::wakeUp, this);
+  srv_rest_ = nh_->advertiseService("motion/rest", 
+                                    &Stiffness_Control::rest, this);
+  stiffness_interp_=nh_->advertiseService("motion/stiffnessInterpolation",
+                                    &Stiffness_Control::stiffnessInterp, this);
   set_stiffness_ = nh_->advertiseService("motion/setStiffness",
                                         &Stiffness_Control::secStiffness, this);
   get_stiffness_ = nh_->advertiseService("motion/getStiffness",
                                         &Stiffness_Control::getStiffness, this);
-  srv_wake_up_ = nh_->advertiseService("motion/wakeUp", &Stiffness_Control::wakeUp, this);
-  srv_rest_ = nh_->advertiseService("motion/rest", &Stiffness_Control::rest, this);
 
   awake_ = false;
 }
@@ -56,8 +60,34 @@ void Stiffness_Control::spinTopics()
   wake_pub_.publish(msg);
 }
 
+ bool Stiffness_Control::stiffnessInterp(motion::stiffnessInterp::Request &req,
+                                         motion::stiffnessInterp::Response &res)
+{
+  int s = req.names.size();
+  AL::ALValue names = req.names;
+
+  AL::ALValue stiffnessLists;
+  stiffnessLists.arraySetSize(s);
+  AL::ALValue timeLists;
+  timeLists.arraySetSize(s);
+
+  for(unsigned i = 0; i < s; ++i) {
+    stiffnessLists[i] = req.stiffnessLists[i].floatList;
+    timeLists[i] = req.timeLists[i].floatList;
+  }
+
+  try{
+    mProxy_->stiffnessInterpolation(names, stiffnessLists, timeLists);
+    res.res = true;
+  }
+  catch (const std::exception& e){
+    res.res = false;
+  }
+  return true;
+}
+
 bool Stiffness_Control::secStiffness(motion::setStiffness::Request &req,
-                          motion::setStiffness::Response &res)
+                                     motion::setStiffness::Response &res)
 {
   bool nameIsVect;
   string jointName;
