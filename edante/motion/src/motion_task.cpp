@@ -35,8 +35,7 @@ bool Motion_Task::killTasksResources(motion::taskResource::Request &req,
     mProxy_->killTasksUsingResources(req.resourceNames);
     res.res = true;
   }
-  catch (const std::exception& e)
-  {
+  catch (const std::exception& e){
     ERR(e.what());
     res.res = false;
   }
