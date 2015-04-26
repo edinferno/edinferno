@@ -6,6 +6,9 @@
 #include <std_srvs/Empty.h>
 #include <vector>
 
+#include "motion/getTaskList.h"
+#include "motion/taskResource.h"
+
 #include <alproxies/almotionproxy.h>
 #include <alerror/alerror.h>
 
@@ -19,12 +22,18 @@ public:
  ~Motion_Task();
 
  //Motion task API
+ bool getTaskList(motion::getTaskList::Request &req,
+                  motion::getTaskList::Response &res);
+ bool killTasksResources(motion::taskResource::Request &req,
+                         motion::taskResource::Response &res);
  bool killMove(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
  bool killAll(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
 
 private:
  //ROS
  ros::NodeHandle *nh_;
+ ros::ServiceServer srv_get_task_list_;
+ ros::ServiceServer srv_kill_tasks_res_;
  ros::ServiceServer srv_kill_move_;
  ros::ServiceServer srv_kill_all_;
 

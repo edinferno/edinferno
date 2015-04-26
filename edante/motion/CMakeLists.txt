@@ -42,6 +42,9 @@ add_service_files(
   changeAngles.srv
   getAngles.srv
   useHand.srv
+  # Motion_Task
+  getTaskList.srv
+  taskResource.srv
 )
 
 ## Generate added messages and services with any dependencies listed here
