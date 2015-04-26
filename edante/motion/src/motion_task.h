@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <alproxies/almotionproxy.h>
+#include <alerror/alerror.h>
 
 #include "definitions.h"
 
@@ -20,7 +21,6 @@ public:
  //Motion task API
  bool killMove(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
  bool killAll(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
-
 
 private:
  //ROS
