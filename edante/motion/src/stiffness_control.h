@@ -29,7 +29,7 @@ using namespace std;
 
 class Stiffness_Control{
 public:
- Stiffness_Control();
+ Stiffness_Control(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
  ~Stiffness_Control();
 
  // Stiffness control API

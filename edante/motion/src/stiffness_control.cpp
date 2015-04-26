@@ -9,25 +9,23 @@
 
 #include "stiffness_control.h"
 
-Stiffness_Control::Stiffness_Control()
+Stiffness_Control::Stiffness_Control(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy)
 {
-  nh_ = new ros::NodeHandle();
-  mProxy_ = new AL::ALMotionProxy("127.0.0.1", 9559);
-
+  nh_ = nh;
+  mProxy_ = mProxy;
   INFO("Setting up Nao motion publishers" << std::endl);
-  wake_pub_ = nh_->advertise<std_msgs::Bool>("motion/isAwake", 10);
-  // INFO("Setting up Nao motion subscribers" << std::endl);
+  wake_pub_ = nh_->advertise<std_msgs::Bool>("isAwake", 10);
 
   INFO("Setting up Nao motion services" << std::endl);
-  srv_wake_up_ = nh_->advertiseService("motion/wakeUp",
+  srv_wake_up_ = nh_->advertiseService("wakeUp",
                                        &Stiffness_Control::wakeUp, this);
-  srv_rest_ = nh_->advertiseService("motion/rest", 
+  srv_rest_ = nh_->advertiseService("rest", 
                                     &Stiffness_Control::rest, this);
-  stiffness_interp_=nh_->advertiseService("motion/stiffnessInterpolation",
+  stiffness_interp_=nh_->advertiseService("stiffnessInterpolation",
                                     &Stiffness_Control::stiffnessInterp, this);
-  set_stiffness_ = nh_->advertiseService("motion/setStiffness",
+  set_stiffness_ = nh_->advertiseService("setStiffness",
                                         &Stiffness_Control::secStiffness, this);
-  get_stiffness_ = nh_->advertiseService("motion/getStiffness",
+  get_stiffness_ = nh_->advertiseService("getStiffness",
                                         &Stiffness_Control::getStiffness, this);
 
   awake_ = false;
@@ -117,21 +115,17 @@ bool Stiffness_Control::secStiffness(motion::setStiffness::Request &req,
   if (nameIsVect){
     if (stiffIsVect){
       succeeded = this->setStiffnesses(jointNameVect, jointStiffnessVect);
-      INFO(succeeded);
     }
     else{
       succeeded = this->setStiffnesses(jointNameVect, jointStiffness);
-      INFO(succeeded);
     }
   }
   else{
     if (stiffIsVect){
       succeeded = this->setStiffnesses(jointName, jointStiffnessVect);
-      INFO(succeeded);
     }
     else{
       succeeded = this->setStiffnesses(jointName, jointStiffness);
-      INFO(succeeded);
     }
   }
   res.res = succeeded;
