@@ -69,6 +69,14 @@ bool Joint_Control::angleInterp(motion::angleInterp::Request &req,
 bool Joint_Control::angleInterpSpeed(motion::angleInterpSpeed::Request &req,
                                      motion::angleInterpSpeed::Response &res)
 {
+  try{
+    mProxy_->angleInterpolationWithSpeed(req.names, req.targetAngles,
+                                         req.maxSpeedFraction);
+    res.res = true;
+  }
+  catch (const std::exception& e){
+    res.res = false;
+  }
   return true;
 }
 
