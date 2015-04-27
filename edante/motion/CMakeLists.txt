@@ -46,6 +46,7 @@ add_service_files(
   useHand.srv
   # Motion_Task
   getTaskList.srv
+  areResourcesAvailable.srv
   taskResource.srv
 )
 

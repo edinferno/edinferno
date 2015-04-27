@@ -7,6 +7,8 @@ Motion_Task::Motion_Task(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy)
 	INFO("Setting up Motion Task services" << std::endl);
   srv_get_task_list_ = nh_->advertiseService("getTaskList",
                                              &Motion_Task::getTaskList, this);
+  srv_are_res_avail_ = nh_->advertiseService("areResourcesAvailable",
+                                     &Motion_Task::areResourcesAvailable, this);
   srv_kill_tasks_res_ = nh_->advertiseService("killTasksUsingResources", 
                                         &Motion_Task::killTasksResources, this);
 	srv_kill_move_ = nh_->advertiseService("killMove", 
@@ -24,7 +26,6 @@ Motion_Task::~Motion_Task()
 bool Motion_Task::getTaskList(motion::getTaskList::Request &req,
                               motion::getTaskList::Response &res)
 {
-  // DEBUG(mProxy_->getTaskList() << std::endl);
   AL::ALValue taskList = mProxy_->getTaskList();
   string tName = taskList[0][0];
   int tID = taskList[0][1];
@@ -32,6 +33,13 @@ bool Motion_Task::getTaskList(motion::getTaskList::Request &req,
   res.taskList.resize(2);
   res.taskList[0].taskName = tName;
   res.taskList[0].motionID = tID;
+  return true;
+}
+
+bool Motion_Task::areResourcesAvailable(motion::areResourcesAvailable::Request &req,
+                                        motion::areResourcesAvailable::Response &res)
+{
+  res.available = mProxy_->areResourcesAvailable(req.resourceNames);
   return true;
 }
 
