@@ -75,7 +75,7 @@ void Stiffness_Control::spinTopics()
   }
 
   try{
-    mProxy_->stiffnessInterpolation(names, stiffnessLists, timeLists);
+    mProxy_->post.stiffnessInterpolation(names, stiffnessLists, timeLists);
     res.res = true;
   }
   catch (const std::exception& e){

@@ -70,7 +70,7 @@ bool Joint_Control::angleInterpSpeed(motion::angleInterpSpeed::Request &req,
                                      motion::angleInterpSpeed::Response &res)
 {
   try{
-    mProxy_->angleInterpolationWithSpeed(req.names, req.targetAngles,
+    mProxy_->post.angleInterpolationWithSpeed(req.names, req.targetAngles,
                                          req.maxSpeedFraction);
     res.res = true;
   }
