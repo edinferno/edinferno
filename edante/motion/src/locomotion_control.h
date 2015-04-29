@@ -12,6 +12,8 @@
 #include <motion/getRobotPosition.h>
 #include <motion/getNextRobotPosition.h>
 #include <motion/getRobotVelocity.h>
+#include <motion/getWalkArmsEnabled.h>
+#include <motion/setWalkArmsEnabled.h>
 
 #include <alproxies/almotionproxy.h>
 #include "definitions.h"
@@ -22,7 +24,9 @@ class Locomotion_Control{
 public:
  Locomotion_Control(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
  ~Locomotion_Control();
+ 
  // Locomotion Control API
+
  //void setWalkTargetVelocity(const float& x, const float& y, const float& theta, const float& frequency);
  //void setWalkTargetVelocity(const float& x, const float& y, const float& theta,
       //                         const float& frequency, vector<tuple<string, int> >& feetGaitConfig);
@@ -46,10 +50,10 @@ public:
  bool moveIsActive();
  bool stopMove(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
  bool getRobotPosition(motion::getRobotPosition::Request &req, motion::getRobotPosition::Response &res);
- bool getNextRobotPosition(std_srvs::Empty::Request &req, motion::getNextRobotPosition::Response &res);
- bool getRobotVelocity(std_srvs::Empty::Request &req, motion::getRobotVelocity::Response &res);
- //vector<bool> getWalkArmsEnabled();
- //void setWalkArmsEnabled(const bool& leftArmEnable, const bool& rightArmEnable);
+ bool getNextRobotPosition(motion::getNextRobotPosition::Request &req, motion::getNextRobotPosition::Response &res);
+ bool getRobotVelocity(motion::getRobotVelocity::Request &req, motion::getRobotVelocity::Response &res);
+ bool getWalkArmsEnabled(motion::getWalkArmsEnabled::Request &req, motion::getWalkArmsEnabled::Response &res);
+ bool setWalkArmsEnabled(motion::setWalkArmsEnabled::Request &req, motion::setWalkArmsEnabled::Response &res);
 
  // ROS publisher
  void spinTopics();
@@ -63,6 +67,8 @@ private:
  ros::ServiceServer srv_getRobotPosition;
  ros::ServiceServer srv_getNextRobotPosition;
  ros::ServiceServer srv_getRobotVelocity;
+ ros::ServiceServer srv_getWalkArmsEnabled;
+ ros::ServiceServer srv_setWalkArmsEnabled;
 
 
  // NAOqi

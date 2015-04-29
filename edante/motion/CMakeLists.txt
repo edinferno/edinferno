@@ -47,6 +47,8 @@ add_service_files(
   getRobotPosition.srv
   getNextRobotPosition.srv 
   getRobotVelocity.srv
+  getWalkArmsEnabled.srv
+  setWalkArmsEnabled.srv
   # Motion_Task
   getTaskList.srv
   areResourcesAvailable.srv
@@ -94,6 +96,7 @@ add_executable(motion
   src/motion.cpp
   src/stiffness_control.cpp
   src/joint_control.cpp
+  src/locomotion_control.cpp
   src/motion_task.cpp)
 
 add_executable(stiffness_control
