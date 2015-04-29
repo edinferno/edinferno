@@ -9,15 +9,16 @@
 #include <vector>
 //#include <tuple>
 
-#include <alproxies/almotionproxy.h>
+#include <motion/getRobotPosition.h>
 
+#include <alproxies/almotionproxy.h>
 #include "definitions.h"
 
-using namespace std;
+using std::vector;
 
 class Locomotion_Control{
 public:
- Locomotion_Control();
+ Locomotion_Control(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
  ~Locomotion_Control();
  // Locomotion Control API
  //void setWalkTargetVelocity(const float& x, const float& y, const float& theta, const float& frequency);
@@ -42,7 +43,7 @@ public:
  bool waitUntilMoveIsFinished(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
  bool moveIsActive();
  bool stopMove(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
- //vector<float> getRobotPosition(const bool& useSensors);
+ bool getRobotPosition(motion::getRobotPosition::Request &req, motion::getRobotPosition::Response &res);
  //vector<float> getNextRobotPosition();
  //vector<float> getRobotVelocity();
  //vector<bool> getWalkArmsEnabled();
@@ -57,6 +58,7 @@ private:
  ros::ServiceServer srv_moveInit_;
  ros::ServiceServer srv_waitMoveFinished_;
  ros::ServiceServer srv_stopMove_;
+ ros::ServiceServer srv_getRobotPosition;
 
  // NAOqi
  AL::ALMotionProxy* mProxy_;

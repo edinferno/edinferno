@@ -43,6 +43,8 @@ add_service_files(
   changeAngles.srv
   getAngles.srv
   useHand.srv
+  #Locomotion_control
+  getRobotPosition.srv
   # Motion_Task
   getTaskList.srv
   areResourcesAvailable.srv
