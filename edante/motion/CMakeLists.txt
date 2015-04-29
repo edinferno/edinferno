@@ -49,6 +49,9 @@ add_service_files(
   getRobotVelocity.srv
   getWalkArmsEnabled.srv
   setWalkArmsEnabled.srv
+  #Cartesian_Control
+  getPosition.srv
+  getTransform.srv
   # Motion_Task
   getTaskList.srv
   areResourcesAvailable.srv
@@ -112,6 +115,10 @@ add_executable(locomotion_control
  src/locomotion_control.cpp
 )
 
+add_executable(cartesian_control
+  src/cartesian_test.cpp
+  src/cartesian_control.cpp)
+
 add_executable(motion_task
   src/motion_task_test.cpp
   src/motion_task.cpp)
@@ -125,6 +132,7 @@ add_executable(srv_test
 add_dependencies(stiffness_control motion_generate_messages_cpp)
 add_dependencies(joint_control motion_generate_messages_cpp)
 add_dependencies(locomotion_control motion_generate_messages_cpp)
+add_dependencies(cartesian_control motion_generate_messages_cpp)
 add_dependencies(motion_task motion_generate_messages_cpp)
 add_dependencies(srv_test motion_generate_messages_cpp)
 
@@ -154,6 +162,14 @@ target_link_libraries(joint_control
 )
 
 target_link_libraries(locomotion_control
+  ${catkin_LIBRARIES}
+  alcommon
+  alerror
+  alproxies
+  alvalue
+)
+
+target_link_libraries(cartesian_control
   ${catkin_LIBRARIES}
   alcommon
   alerror
