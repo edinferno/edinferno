@@ -45,6 +45,8 @@ add_service_files(
   useHand.srv
   #Locomotion_control
   getRobotPosition.srv
+  getNextRobotPosition.srv 
+  getRobotVelocity.srv
   # Motion_Task
   getTaskList.srv
   areResourcesAvailable.srv

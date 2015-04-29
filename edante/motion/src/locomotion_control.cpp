@@ -11,6 +11,8 @@ Locomotion_Control::Locomotion_Control(ros::NodeHandle* nh, AL::ALMotionProxy* m
   srv_waitMoveFinished_ = nh_->advertiseService("motion/waitMoveFinish", &Locomotion_Control::waitUntilMoveIsFinished, this);
   srv_stopMove_ = nh_->advertiseService("motion/stopMove", &Locomotion_Control::stopMove, this);
   srv_getRobotPosition = nh_->advertiseService("motion/getRobotPosition", &Locomotion_Control::getRobotPosition, this);
+  srv_getNextRobotPosition = nh_->advertiseService("motion/getNextRobotPosition", &Locomotion_Control::getNextRobotPosition, this);
+  srv_getRobotVelocity = nh_->advertiseService("motion/getRobotVelocity", &Locomotion_Control::getRobotVelocity, this);
   moving_ = false; 
 }
 
@@ -52,11 +54,24 @@ bool Locomotion_Control::stopMove(std_srvs::Empty::Request &req,
 bool Locomotion_Control::getRobotPosition(motion::getRobotPosition::Request &req,
                                           motion::getRobotPosition::Response &res)
 {
+  
   bool useSensors = req.useSensors;
   res.positions = mProxy_->getRobotPosition(useSensors);
   return true;
 }
 
+bool Locomotion_Control::getNextRobotPosition(std_srvs::Empty::Request &req,
+                                              motion::getNextRobotPosition::Response &res)
+{
+  res.positions = mProxy_->getNextRobotPosition();
+  return true;
+}
+
+bool Locomotion_Control::getRobotVelocity(std_srvs::Empty::Request &req,
+                                  motion::getRobotVelocity::Response &res)
+{
+  res.velocity = mProxy_->getRobotVelocity();
+}
 void Locomotion_Control::spinTopics()
 {
   std_msgs::Bool msg;

@@ -10,6 +10,8 @@
 //#include <tuple>
 
 #include <motion/getRobotPosition.h>
+#include <motion/getNextRobotPosition.h>
+#include <motion/getRobotVelocity.h>
 
 #include <alproxies/almotionproxy.h>
 #include "definitions.h"
@@ -44,8 +46,8 @@ public:
  bool moveIsActive();
  bool stopMove(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
  bool getRobotPosition(motion::getRobotPosition::Request &req, motion::getRobotPosition::Response &res);
- //vector<float> getNextRobotPosition();
- //vector<float> getRobotVelocity();
+ bool getNextRobotPosition(std_srvs::Empty::Request &req, motion::getNextRobotPosition::Response &res);
+ bool getRobotVelocity(std_srvs::Empty::Request &req, motion::getRobotVelocity::Response &res);
  //vector<bool> getWalkArmsEnabled();
  //void setWalkArmsEnabled(const bool& leftArmEnable, const bool& rightArmEnable);
 
@@ -59,6 +61,8 @@ private:
  ros::ServiceServer srv_waitMoveFinished_;
  ros::ServiceServer srv_stopMove_;
  ros::ServiceServer srv_getRobotPosition;
+ ros::ServiceServer srv_getNextRobotPosition;
+ ros::ServiceServer srv_getRobotVelocity;
 
 
  // NAOqi
