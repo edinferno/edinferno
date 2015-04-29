@@ -16,6 +16,7 @@
 // #include <std_srvs/Trigger.h>
 #include <vector>
 
+#include "motion/stiffnessInterp.h"
 #include "motion/setStiffness.h"
 #include "motion/getStiffness.h"
 
@@ -28,13 +29,10 @@ using namespace std;
 
 class Stiffness_Control{
 public:
- Stiffness_Control();
+ Stiffness_Control(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
  ~Stiffness_Control();
 
  // Stiffness control API
- bool wakeUp(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
- bool rest(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
-
  bool setStiffnesses(string& name, float& stiffness);
  bool setStiffnesses(string& name, const vector<float>& stiffnesses);
  bool setStiffnesses(const vector<string>& names, float& stiffness);
@@ -47,18 +45,25 @@ public:
  void spinTopics();
 
  // ROS services
- bool recStiffness(motion::setStiffness::Request &req,
-  motion::setStiffness::Response &res);
+ bool wakeUp(std_srvs::Empty::Request &req, 
+             std_srvs::Empty::Response &res);
+ bool rest(std_srvs::Empty::Request &req,
+           std_srvs::Empty::Response &res);
+ bool stiffnessInterp(motion::stiffnessInterp::Request &req,
+                      motion::stiffnessInterp::Response &res);
+ bool secStiffness(motion::setStiffness::Request &req,
+                   motion::setStiffness::Response &res);
  bool getStiffness(motion::getStiffness::Request &req,
-  motion::getStiffness::Response &res);
+                   motion::getStiffness::Response &res);
 
 private:
  // ROS
  ros::NodeHandle* nh_;
  ros::Publisher wake_pub_;
+ ros::ServiceServer stiffness_interp_;
  ros::ServiceServer set_stiffness_;
  ros::ServiceServer get_stiffness_;
- ros::ServiceServer srv_awake_;
+ ros::ServiceServer srv_wake_up_;
  ros::ServiceServer srv_rest_;
 
  // NAOqi

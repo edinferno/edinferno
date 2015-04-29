@@ -23,16 +23,30 @@ find_package(catkin REQUIRED COMPONENTS
 #######################################
 
 # Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   std_msgs.msg
-# )
+add_message_files(
+  FILES
+  float32List.msg
+  task.msg
+)
 
 ## Generate services in the 'srv' folder
 add_service_files(
   FILES
+  # Stiffness_Control
+  stiffnessInterp.srv
   setStiffness.srv
   getStiffness.srv
+  # Joint_Control
+  angleInterp.srv
+  angleInterpSpeed.srv
+  setAngles.srv
+  changeAngles.srv
+  getAngles.srv
+  useHand.srv
+  # Motion_Task
+  getTaskList.srv
+  areResourcesAvailable.srv
+  taskResource.srv
 )
 
 ## Generate added messages and services with any dependencies listed here
@@ -72,26 +86,90 @@ include_directories(include
 # )
 
 ## Declare a cpp executable
- add_executable(locomotion_control
+add_executable(motion
+  src/motion.cpp
+  src/stiffness_control.cpp
+  src/joint_control.cpp
+  src/motion_task.cpp)
+
+add_executable(stiffness_control
+  src/stiffness_test.cpp
+  src/stiffness_control.cpp)
+
+add_executable(joint_control
+  src/joint_test.cpp
+  src/joint_control.cpp)
+
+add_executable(locomotion_control
  src/locomotion_test.cpp
  src/locomotion_control.cpp
 )
 
+add_executable(motion_task
+  src/motion_task_test.cpp
+  src/motion_task.cpp)
+
+add_executable(srv_test
+  src/srv_test.cpp)
+
+
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-
+add_dependencies(stiffness_control motion_generate_messages_cpp)
+add_dependencies(joint_control motion_generate_messages_cpp)
 add_dependencies(locomotion_control motion_generate_messages_cpp)
+add_dependencies(motion_task motion_generate_messages_cpp)
+add_dependencies(srv_test motion_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(locomotion_control
-
-
+target_link_libraries(motion
   ${catkin_LIBRARIES}
   alcommon
   alerror
   alproxies
   alvalue
 )
+
+target_link_libraries(stiffness_control
+  ${catkin_LIBRARIES}
+  alcommon
+  alerror
+  alproxies
+  alvalue
+)
+
+target_link_libraries(joint_control
+  ${catkin_LIBRARIES}
+  alcommon
+  alerror
+  alproxies
+  alvalue
+)
+
+target_link_libraries(locomotion_control
+  ${catkin_LIBRARIES}
+  alcommon
+  alerror
+  alproxies
+  alvalue
+)
+
+target_link_libraries(motion_task
+  ${catkin_LIBRARIES}
+  alcommon
+  alerror
+  alproxies
+  alvalue
+)
+
+target_link_libraries(srv_test
+  ${catkin_LIBRARIES}
+  alcommon
+  alerror
+  alproxies
+  alvalue
+)
+
 
 #############
 ## Install ##
