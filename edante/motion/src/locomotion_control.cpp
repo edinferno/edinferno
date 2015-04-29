@@ -45,6 +45,7 @@ bool Locomotion_Control::stopMove(std_srvs::Empty::Request &req,
                                   std_srvs::Empty::Response &res)
 {
   mProxy_->stopMove();
+  moving_ = moveIsActive();
   return true;
 }
 

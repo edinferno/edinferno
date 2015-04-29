@@ -60,6 +60,7 @@ private:
  ros::ServiceServer srv_stopMove_;
  ros::ServiceServer srv_getRobotPosition;
 
+
  // NAOqi
  AL::ALMotionProxy* mProxy_;
 
