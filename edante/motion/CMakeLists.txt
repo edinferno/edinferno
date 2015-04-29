@@ -44,6 +44,9 @@ add_service_files(
   changeAngles.srv
   getAngles.srv
   useHand.srv
+  #Cartesian_Control
+  getPosition.srv
+  getTransform.srv
   # Motion_Task
   getTaskList.srv
   areResourcesAvailable.srv
@@ -102,6 +105,10 @@ add_executable(joint_control
   src/joint_test.cpp
   src/joint_control.cpp)
 
+add_executable(cartesian_control
+  src/cartesian_test.cpp
+  src/cartesian_control.cpp)
+
 add_executable(motion_task
   src/motion_task_test.cpp
   src/motion_task.cpp)
@@ -113,6 +120,7 @@ add_executable(srv_test
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(stiffness_control motion_generate_messages_cpp)
 add_dependencies(joint_control motion_generate_messages_cpp)
+add_dependencies(cartesian_control motion_generate_messages_cpp)
 add_dependencies(motion_task motion_generate_messages_cpp)
 add_dependencies(srv_test motion_generate_messages_cpp)
 
@@ -134,6 +142,14 @@ target_link_libraries(stiffness_control
 )
 
 target_link_libraries(joint_control
+  ${catkin_LIBRARIES}
+  alcommon
+  alerror
+  alproxies
+  alvalue
+)
+
+target_link_libraries(cartesian_control
   ${catkin_LIBRARIES}
   alcommon
   alerror
