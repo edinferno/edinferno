@@ -74,8 +74,6 @@ private:
  // NAOqi
  AL::ALMotionProxy* mProxy_;
 
- bool moving_;
-
 };
 
 #endif /* LOCOMOTION_CONTROL_H_ */

@@ -15,7 +15,6 @@ Locomotion_Control::Locomotion_Control(ros::NodeHandle* nh, AL::ALMotionProxy* m
   srv_getRobotVelocity = nh_->advertiseService("getRobotVelocity", &Locomotion_Control::getRobotVelocity, this);
   srv_getWalkArmsEnabled = nh_->advertiseService("getWalkArmsEnabled", &Locomotion_Control::getWalkArmsEnabled, this);
   srv_setWalkArmsEnabled = nh_->advertiseService("setWalkArmsEnabled", &Locomotion_Control::setWalkArmsEnabled, this);
-moving_ = false; 
 }
 
 Locomotion_Control::~Locomotion_Control()
@@ -27,7 +26,6 @@ bool Locomotion_Control::moveInit(std_srvs::Empty::Request &req,
                                   std_srvs::Empty::Response &res)
 {
 	mProxy_->moveInit();
-	moving_ = moveIsActive();
   return true;
 }
 
@@ -49,7 +47,6 @@ bool Locomotion_Control::stopMove(std_srvs::Empty::Request &req,
                                   std_srvs::Empty::Response &res)
 {
   mProxy_->stopMove();
-  moving_ = moveIsActive();
   return true;
 }
 
@@ -98,6 +95,6 @@ bool Locomotion_Control::setWalkArmsEnabled(motion::setWalkArmsEnabled::Request 
 void Locomotion_Control::spinTopics()
 {
   std_msgs::Bool msg;
-  msg.data = moving_;
+  msg.data = moveIsActive();
   moving_pub_.publish(msg);
 }

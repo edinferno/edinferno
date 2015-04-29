@@ -23,6 +23,7 @@ int main(int argc, char *argv[])
   while (ros::ok())
   {
     StiffnessTest.spinTopics();
+    LocomotionTest.spinTopics();
     ros::spinOnce();
     r.sleep();
   }
