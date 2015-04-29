@@ -16,28 +16,25 @@ using namespace std;
 
 class Cartesian_Control{
 public:
- Cartesian_Control();
+ Cartesian_Control(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
  ~Cartesian_Control();
 
-// Cartesian control API
- vector<float> getPosition(string& name, int& space, bool& useSensorValues);
- vector<float> getTransform(string& name, int& space, bool& useSensorValues);
-
  // ROS services
- bool getPositionSrv(motion::getPosition::Request &req,
+ bool getPosition(motion::getPosition::Request &req,
   motion::getPosition::Response &res);
- bool getTransformSrv(motion::getTransform::Request &req,
+ bool getTransform(motion::getTransform::Request &req,
   motion::getTransform::Response &res);
 
 
 private:
  // ROS
  ros::NodeHandle* nh_;
- ros::ServiceServer get_position_;
- ros::ServiceServer get_transform_;
+ ros::ServiceServer srv_get_position_;
+ ros::ServiceServer srv_get_transform_;
 
  // NAOqi
  AL::ALMotionProxy* mProxy_;
+ 
 };
 
 #endif /* CARTESIAN_CONTROL_H_ */
