@@ -1,0 +1,7 @@
+string name
+int32 space
+float32[] path
+int32 axisMask
+float32[] duration
+bool isAbsolute
+---

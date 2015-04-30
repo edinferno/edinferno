@@ -1,0 +1,6 @@
+string name
+int32 space
+float32[] transform
+float32 speed
+int32 axisMask
+---
