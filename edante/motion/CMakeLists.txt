@@ -5,8 +5,7 @@ project(motion)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
- roscpp 
- std_msgs
+ roscpp
  message_generation)
 
 ## System dependencies are found with CMake's conventions
@@ -45,7 +44,7 @@ add_service_files(
   useHand.srv
   #Locomotion_control
   getRobotPosition.srv
-  getNextRobotPosition.srv 
+  getNextRobotPosition.srv
   getRobotVelocity.srv
   getWalkArmsEnabled.srv
   setWalkArmsEnabled.srv
@@ -69,7 +68,6 @@ add_service_files(
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES
-  std_msgs
 )
 
 ###################################
@@ -83,7 +81,7 @@ generate_messages(
 catkin_package(
    INCLUDE_DIRS include
 #  LIBRARIES motion
-  CATKIN_DEPENDS roscpp std_msgs
+  CATKIN_DEPENDS roscpp
 #  DEPENDS system_lib
 )
 
