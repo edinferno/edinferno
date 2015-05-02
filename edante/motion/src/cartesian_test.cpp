@@ -2,8 +2,7 @@
 #include "cartesian_control.h"
 #include "definitions.h"
 
-int main(int argc, char *argv[]){
-
+int main(int argc, char *argv[]) {
   using namespace std;
   ros::init(argc, argv, "cartesian_control");
   ros::NodeHandle nh("motion");
@@ -12,8 +11,7 @@ int main(int argc, char *argv[]){
 
   ros::Rate r(10);
 
-  while (ros::ok())
-  {
+  while (ros::ok()) {
     ros::spinOnce();
     r.sleep();
   }

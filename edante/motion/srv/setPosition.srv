@@ -1,0 +1,6 @@
+string chainName
+int32 space
+float32[] position
+float32 fractionMaxSpeed
+int32 axisMask
+---

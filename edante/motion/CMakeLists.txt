@@ -50,7 +50,15 @@ add_service_files(
   getWalkArmsEnabled.srv
   setWalkArmsEnabled.srv
   #Cartesian_Control
+  positionInterpolation.srv
+  positionInterpolations.srv
+  setPosition.srv
+  changePosition.srv
   getPosition.srv
+  transformInterpolation.srv
+  transformInterpolations.srv
+  setTransform.srv
+  changeTransform.srv
   getTransform.srv
   # Motion_Task
   getTaskList.srv
