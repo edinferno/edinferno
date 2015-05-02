@@ -3,6 +3,7 @@
 
 #include "stiffness_control.h"
 #include "joint_control.h"
+#include "locomotion_control.h"
 #include "motion_task.h"
 
 #include <alproxies/almotionproxy.h>
@@ -14,6 +15,7 @@ int main(int argc, char *argv[])
   AL::ALMotionProxy mProxy("127.0.0.1", 9559);
   Stiffness_Control StiffnessTest(&nh, &mProxy);
   Joint_Control JointTest(&nh, &mProxy);
+  Locomotion_Control LocomotionTest(&nh, &mProxy);
   Motion_Task MotionTest(&nh, &mProxy);
 
   ros::Rate r(10);
@@ -21,6 +23,7 @@ int main(int argc, char *argv[])
   while (ros::ok())
   {
     StiffnessTest.spinTopics();
+    LocomotionTest.spinTopics();
     ros::spinOnce();
     r.sleep();
   }

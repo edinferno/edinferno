@@ -5,9 +5,7 @@ project(motion)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
- roscpp 
- std_msgs
- std_srvs
+ roscpp
  message_generation)
 
 ## System dependencies are found with CMake's conventions
@@ -44,6 +42,12 @@ add_service_files(
   changeAngles.srv
   getAngles.srv
   useHand.srv
+  #Locomotion_control
+  getRobotPosition.srv
+  getNextRobotPosition.srv
+  getRobotVelocity.srv
+  getWalkArmsEnabled.srv
+  setWalkArmsEnabled.srv
   #Cartesian_Control
   positionInterpolation.srv
   positionInterpolations.srv
@@ -64,8 +68,6 @@ add_service_files(
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES
-  std_msgs
-  std_srvs
 )
 
 ###################################
@@ -79,7 +81,7 @@ generate_messages(
 catkin_package(
    INCLUDE_DIRS include
 #  LIBRARIES motion
-  CATKIN_DEPENDS roscpp std_msgs std_srvs
+  CATKIN_DEPENDS roscpp
 #  DEPENDS system_lib
 )
 
@@ -103,6 +105,7 @@ add_executable(motion
   src/motion.cpp
   src/stiffness_control.cpp
   src/joint_control.cpp
+  src/locomotion_control.cpp
   src/motion_task.cpp)
 
 add_executable(stiffness_control
@@ -112,6 +115,11 @@ add_executable(stiffness_control
 add_executable(joint_control
   src/joint_test.cpp
   src/joint_control.cpp)
+
+add_executable(locomotion_control
+ src/locomotion_test.cpp
+ src/locomotion_control.cpp
+)
 
 add_executable(cartesian_control
   src/cartesian_test.cpp
@@ -124,10 +132,12 @@ add_executable(motion_task
 add_executable(srv_test
   src/srv_test.cpp)
 
+
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(stiffness_control motion_generate_messages_cpp)
 add_dependencies(joint_control motion_generate_messages_cpp)
+add_dependencies(locomotion_control motion_generate_messages_cpp)
 add_dependencies(cartesian_control motion_generate_messages_cpp)
 add_dependencies(motion_task motion_generate_messages_cpp)
 add_dependencies(srv_test motion_generate_messages_cpp)
@@ -150,6 +160,14 @@ target_link_libraries(stiffness_control
 )
 
 target_link_libraries(joint_control
+  ${catkin_LIBRARIES}
+  alcommon
+  alerror
+  alproxies
+  alvalue
+)
+
+target_link_libraries(locomotion_control
   ${catkin_LIBRARIES}
   alcommon
   alerror
@@ -180,6 +198,7 @@ target_link_libraries(srv_test
   alproxies
   alvalue
 )
+
 
 #############
 ## Install ##
