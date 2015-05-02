@@ -7,6 +7,8 @@ Locomotion_Control::Locomotion_Control(ros::NodeHandle* nh,
   INFO("Setting up Nao locomotion publishers" << std::endl);
   moving_pub_ = nh_->advertise<std_msgs::Bool>("isMoving", 10);
   INFO("Setting up Nao motion publishers" << std::endl);
+  srv_move_to_ = nh_->advertiseService("moveTo",
+                                       &Locomotion_Control::moveTo, this);
   srv_moveInit_ = nh_->advertiseService("moveInit",
                                         &Locomotion_Control::moveInit, this);
   srv_waitMoveFinished_ = nh_->advertiseService("waitMoveFinish",
@@ -27,6 +29,52 @@ Locomotion_Control::Locomotion_Control(ros::NodeHandle* nh,
 
 Locomotion_Control::~Locomotion_Control() {
   ros::shutdown();
+}
+
+bool Locomotion_Control::moveTo(motion::moveTo::Request &req,
+                                motion::moveTo::Response &res) {
+  //  Check for multiple positions
+  int posNum = req.controlPoints.size();
+  AL::ALValue controlPoints;
+  if (posNum > 1) {
+    controlPoints.arraySetSize(posNum);
+    for (int i = 0; i < posNum; ++i) {
+      controlPoints[i] = AL::ALValue::array(req.controlPoints[i].x,
+                                            req.controlPoints[i].y,
+                                            req.controlPoints[i].theta);
+    }
+  }
+
+  // Check for size of moveConfiguration
+  int configSize = req.moveConfiguration.names.size();
+  AL::ALValue moveConfiguration;
+  if (configSize > 0) {
+    moveConfiguration.arraySetSize(configSize);
+    for (int i = 0; i < configSize; ++i) {
+      moveConfiguration[i] = AL::ALValue::array(
+                               req.moveConfiguration.names[i],
+                               req.moveConfiguration.values[i]);
+    }
+  }
+
+  res.res = true;
+  if (posNum == 1 && configSize == 0) {
+    mProxy_->post.moveTo(req.controlPoints[0].x,
+                         req.controlPoints[0].y,
+                         req.controlPoints[0].theta);
+  } else if (posNum > 1 && configSize == 0) {
+    mProxy_->post.moveTo(controlPoints);
+  } else if (posNum == 1 && configSize > 0) {
+    mProxy_->post.moveTo(req.controlPoints[0].x,
+                         req.controlPoints[0].y,
+                         req.controlPoints[0].theta,
+                         moveConfiguration);
+  } else if (posNum > 1 && configSize > 0) {
+    mProxy_->post.moveTo(controlPoints, moveConfiguration);
+  } else {
+    res.res = false;
+  }
+  return true;
 }
 
 bool Locomotion_Control::moveInit(std_srvs::Empty::Request &req,
