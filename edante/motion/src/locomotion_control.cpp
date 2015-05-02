@@ -7,6 +7,7 @@ Locomotion_Control::Locomotion_Control(ros::NodeHandle* nh,
   INFO("Setting up Nao locomotion publishers" << std::endl);
   moving_pub_ = nh_->advertise<std_msgs::Bool>("isMoving", 10);
   INFO("Setting up Nao motion publishers" << std::endl);
+  srv_move_ = nh_->advertiseService("move", &Locomotion_Control::move, this);
   srv_move_to_ = nh_->advertiseService("moveTo",
                                        &Locomotion_Control::moveTo, this);
   srv_moveInit_ = nh_->advertiseService("moveInit",
@@ -29,6 +30,36 @@ Locomotion_Control::Locomotion_Control(ros::NodeHandle* nh,
 
 Locomotion_Control::~Locomotion_Control() {
   ros::shutdown();
+}
+
+bool Locomotion_Control::move(motion::move::Request &req,
+                              motion::move::Response &res) {
+  // Check for size of moveConfiguration
+  int configSize = req.moveConfiguration.names.size();
+  AL::ALValue moveConfiguration;
+  if (configSize > 0) {
+    moveConfiguration.arraySetSize(configSize);
+    for (int i = 0; i < configSize; ++i) {
+      moveConfiguration[i] = AL::ALValue::array(
+                               req.moveConfiguration.names[i],
+                               req.moveConfiguration.values[i]);
+    }
+  }
+
+  res.res = true;
+  if (configSize == 0) {
+    mProxy_->move(req.targetVelocity.x,
+                  req.targetVelocity.y,
+                  req.targetVelocity.theta);
+  } else if (configSize > 0) {
+    mProxy_->move(req.targetVelocity.x,
+                  req.targetVelocity.y,
+                  req.targetVelocity.theta,
+                  moveConfiguration);
+  } else {
+    res.res = false;
+  }
+  return true;
 }
 
 bool Locomotion_Control::moveTo(motion::moveTo::Request &req,

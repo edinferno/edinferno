@@ -3,6 +3,7 @@
 #define LOCOMOTION_CONTROL_H_
 
 #include <ros/ros.h>
+#include <motion/move.h>
 #include <motion/moveTo.h>
 #include <motion/getRobotPosition.h>
 #include <motion/getNextRobotPosition.h>
@@ -41,6 +42,8 @@ class Locomotion_Control {
   // void move(const float& x, const float& y, const float& theta,
   //           vector<tuple<string, int> >& moveConfig);
 
+  bool move(motion::move::Request &req, motion::move::Response &res);
+
   bool moveTo(motion::moveTo::Request &req, motion::moveTo::Response &res);
   // void moveTo(const float& x, const float& y, const float& theta,
   //             const vector<tuple<string, int> >& moveConfig);
@@ -77,6 +80,7 @@ class Locomotion_Control {
 // ROS
   ros::NodeHandle* nh_;
   ros::Publisher moving_pub_;
+  ros::ServiceServer srv_move_;
   ros::ServiceServer srv_move_to_;
   ros::ServiceServer srv_moveInit_;
   ros::ServiceServer srv_waitMoveFinished_;

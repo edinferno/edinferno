@@ -26,6 +26,7 @@ add_message_files(
   FILES
   float32List.msg
   # Locomotion_Control
+  velocity.msg
   position.msg
   moveConfiguration.msg
   # Motion_Task
@@ -47,6 +48,7 @@ add_service_files(
   getAngles.srv
   useHand.srv
   #Locomotion_control
+  move.srv
   moveTo.srv
   getRobotPosition.srv
   getNextRobotPosition.srv
