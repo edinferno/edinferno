@@ -156,8 +156,7 @@ bool Locomotion_Control::waitUntilMoveIsFinished(
 }
 
 bool Locomotion_Control::moveIsActive() {
-  mProxy_->moveIsActive();
-  return true;
+  return mProxy_->moveIsActive();
 }
 
 bool Locomotion_Control::stopMove(std_srvs::Empty::Request &req,
