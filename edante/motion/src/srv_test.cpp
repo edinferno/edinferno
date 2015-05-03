@@ -9,7 +9,8 @@
 // #include "motion/setAngles.h"
 // #include "motion/getTaskList.h"
 // #include "motion/moveTo.h"
-#include "motion/move.h"
+// #include "motion/move.h"
+#include "motion/moveToward.h"
 
 int main(int argc, char *argv[]) {
 
@@ -113,14 +114,14 @@ int main(int argc, char *argv[]) {
 
   // ANGLE INTERPOLATION TEST
   ros::ServiceClient client1 =
-    n.serviceClient<motion::move>("/motion/move");
-  motion::move srv;
+    n.serviceClient<motion::moveToward>("/motion/moveToward");
+  motion::moveToward srv;
 
-  motion::move serv;
+  motion::moveToward serv;
   // serv.request.targetVelocity.resize(1);
-  serv.request.targetVelocity.x = 0.01f;
-  serv.request.targetVelocity.y = 0.0f;
-  serv.request.targetVelocity.theta = 0.0f;
+  serv.request.normVelocity.x = 0.2f;
+  serv.request.normVelocity.y = 0.0f;
+  serv.request.normVelocity.theta = 0.0f;
 
   // serv.request.moveConfiguration.names.resize(1);
   // serv.request.moveConfiguration.names[0] = "MaxStepX";
@@ -145,13 +146,13 @@ int main(int argc, char *argv[]) {
 
   // serv.request.moveConfiguration;
 
-  srv.request.targetVelocity = serv.request.targetVelocity;
+  srv.request.normVelocity = serv.request.normVelocity;
   // srv.request.moveConfiguration = serv.request.moveConfiguration;
 
   if (client1.call(srv)) {
-    DEBUG("move Worked!" << std::endl);
+    DEBUG("moveToward Worked!" << std::endl);
   } else {
-    ERR("Failed to call move service" << std::endl);
+    ERR("Failed to call moveToward service" << std::endl);
   }
 
   while (ros::ok()) {

@@ -50,6 +50,7 @@ add_service_files(
   #Locomotion_control
   move.srv
   moveTo.srv
+  moveToward.srv
   getRobotPosition.srv
   getNextRobotPosition.srv
   getRobotVelocity.srv

@@ -10,6 +10,8 @@ Locomotion_Control::Locomotion_Control(ros::NodeHandle* nh,
   srv_move_ = nh_->advertiseService("move", &Locomotion_Control::move, this);
   srv_move_to_ = nh_->advertiseService("moveTo",
                                        &Locomotion_Control::moveTo, this);
+  srv_move_toward_ = nh_->advertiseService("moveToward",
+                     &Locomotion_Control::moveToward, this);
   srv_moveInit_ = nh_->advertiseService("moveInit",
                                         &Locomotion_Control::moveInit, this);
   srv_waitMoveFinished_ = nh_->advertiseService("waitMoveFinish",
@@ -102,6 +104,36 @@ bool Locomotion_Control::moveTo(motion::moveTo::Request &req,
                          moveConfiguration);
   } else if (posNum > 1 && configSize > 0) {
     mProxy_->post.moveTo(controlPoints, moveConfiguration);
+  } else {
+    res.res = false;
+  }
+  return true;
+}
+
+bool Locomotion_Control::moveToward(motion::moveToward::Request &req,
+                                    motion::moveToward::Response &res) {
+  // Check for size of moveConfiguration
+  int configSize = req.moveConfiguration.names.size();
+  AL::ALValue moveConfiguration;
+  if (configSize > 0) {
+    moveConfiguration.arraySetSize(configSize);
+    for (int i = 0; i < configSize; ++i) {
+      moveConfiguration[i] = AL::ALValue::array(
+                               req.moveConfiguration.names[i],
+                               req.moveConfiguration.values[i]);
+    }
+  }
+
+  res.res = true;
+  if (configSize == 0) {
+    mProxy_->moveToward(req.normVelocity.x,
+                        req.normVelocity.y,
+                        req.normVelocity.theta);
+  } else if (configSize > 0) {
+    mProxy_->moveToward(req.normVelocity.x,
+                        req.normVelocity.y,
+                        req.normVelocity.theta,
+                        moveConfiguration);
   } else {
     res.res = false;
   }

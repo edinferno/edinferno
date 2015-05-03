@@ -5,6 +5,7 @@
 #include <ros/ros.h>
 #include <motion/move.h>
 #include <motion/moveTo.h>
+#include <motion/moveToward.h>
 #include <motion/getRobotPosition.h>
 #include <motion/getNextRobotPosition.h>
 #include <motion/getRobotVelocity.h>
@@ -38,22 +39,13 @@ class Locomotion_Control {
   //                            vector<tuple<string, int> >& leftFootGaitConfig,
   //                            vector<tuple<string, int> >& rightFootGaitConfig);
 
-  // void move(const float& x, const float& y, const float& theta);
-  // void move(const float& x, const float& y, const float& theta,
-  //           vector<tuple<string, int> >& moveConfig);
+  bool move(motion::move::Request &req,
+            motion::move::Response &res);
 
-  bool move(motion::move::Request &req, motion::move::Response &res);
-
-  bool moveTo(motion::moveTo::Request &req, motion::moveTo::Response &res);
-  // void moveTo(const float& x, const float& y, const float& theta,
-  //             const vector<tuple<string, int> >& moveConfig);
-  // void moveTo(const vector<tuple<float, float, float> >& controlPoints);
-  // void moveTo(const vector<tuple<float, float, float> >& controlPoints,
-  //             const vector<tuple<string, int> >& moveConfig);
-
-  // void moveToward(const float& x, const float& y, const float& theta);
-  // void moveToward(const float& x, const float& y, const float& theta,
-  //                 vector<tuple<string, int> >& moveConfig);
+  bool moveTo(motion::moveTo::Request &req,
+              motion::moveTo::Response &res);
+  bool moveToward(motion::moveToward::Request &req,
+                  motion::moveToward::Response &res);
 
   bool moveInit(std_srvs::Empty::Request &req,
                 std_srvs::Empty::Response &res);
@@ -82,6 +74,7 @@ class Locomotion_Control {
   ros::Publisher moving_pub_;
   ros::ServiceServer srv_move_;
   ros::ServiceServer srv_move_to_;
+  ros::ServiceServer srv_move_toward_;
   ros::ServiceServer srv_moveInit_;
   ros::ServiceServer srv_waitMoveFinished_;
   ros::ServiceServer srv_stopMove_;
