@@ -51,6 +51,7 @@ add_service_files(
   move.srv
   moveTo.srv
   moveToward.srv
+  getMoveConfig.srv
   getRobotPosition.srv
   getNextRobotPosition.srv
   getRobotVelocity.srv

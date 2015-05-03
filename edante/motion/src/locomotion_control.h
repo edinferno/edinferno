@@ -6,6 +6,7 @@
 #include <motion/move.h>
 #include <motion/moveTo.h>
 #include <motion/moveToward.h>
+#include <motion/getMoveConfig.h>
 #include <motion/getRobotPosition.h>
 #include <motion/getNextRobotPosition.h>
 #include <motion/getRobotVelocity.h>
@@ -54,6 +55,8 @@ class Locomotion_Control {
   bool moveIsActive();
   bool stopMove(std_srvs::Empty::Request &req,
                 std_srvs::Empty::Response &res);
+  bool getMoveConfig(motion::getMoveConfig::Request &req,
+                     motion::getMoveConfig::Response &res);
   bool getRobotPosition(motion::getRobotPosition::Request &req,
                         motion::getRobotPosition::Response &res);
   bool getNextRobotPosition(motion::getNextRobotPosition::Request &req,
@@ -75,14 +78,15 @@ class Locomotion_Control {
   ros::ServiceServer srv_move_;
   ros::ServiceServer srv_move_to_;
   ros::ServiceServer srv_move_toward_;
-  ros::ServiceServer srv_moveInit_;
-  ros::ServiceServer srv_waitMoveFinished_;
-  ros::ServiceServer srv_stopMove_;
-  ros::ServiceServer srv_getRobotPosition;
-  ros::ServiceServer srv_getNextRobotPosition;
-  ros::ServiceServer srv_getRobotVelocity;
-  ros::ServiceServer srv_getWalkArmsEnabled;
-  ros::ServiceServer srv_setWalkArmsEnabled;
+  ros::ServiceServer srv_move_init_;
+  ros::ServiceServer srv_wait_move_finished_;
+  ros::ServiceServer srv_stop_move_;
+  ros::ServiceServer srv_get_move_config_;
+  ros::ServiceServer srv_get_robot_position_;
+  ros::ServiceServer srv_get_next_robot_position_;
+  ros::ServiceServer srv_get_robot_velocity_;
+  ros::ServiceServer srv_get_walk_arms_enabled_;
+  ros::ServiceServer srv_set_walk_arms_enabled_;
 
 
 // NAOqi
