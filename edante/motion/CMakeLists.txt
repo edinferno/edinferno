@@ -25,6 +25,11 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   float32List.msg
+  # Locomotion_Control
+  velocity.msg
+  position.msg
+  moveConfiguration.msg
+  # Motion_Task
   task.msg
 )
 
@@ -43,6 +48,10 @@ add_service_files(
   getAngles.srv
   useHand.srv
   #Locomotion_control
+  move.srv
+  moveTo.srv
+  moveToward.srv
+  getMoveConfig.srv
   getRobotPosition.srv
   getNextRobotPosition.srv
   getRobotVelocity.srv
