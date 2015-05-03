@@ -1,0 +1,7 @@
+string chainName
+int32 space
+float32List[] path
+int32 axisMask
+float32[] durations
+bool isAbsolute
+---

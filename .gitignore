@@ -26,3 +26,15 @@
 *.exe
 *.out
 *.app
+
+# Mac Hidden temporary files
+*._*.cpp
+*._*.h
+*._*.srv
+*._*.msg
+*._*.txt
+_*.cpp
+_*.h
+_*.srv
+_*.msg
+_*.txt

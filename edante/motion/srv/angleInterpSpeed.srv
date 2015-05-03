@@ -1,0 +1,5 @@
+string[] names
+float32[] targetAngles
+float32 maxSpeedFraction
+---
+bool res
