@@ -35,17 +35,22 @@ bool Cartesian_Control::positionInterpolation(
 
   string chainName = req.chainName;
   int space = req.space;
-  int s = req.path.size();
-  AL::ALValue path;
-  path.arraySetSize(s);
-  for (unsigned i = 0; i < s; ++i) {
-    path.arrayPush(req.path[i]);
+
+  AL::ALValue trajPoints;
+  int l = req.path.trajPoints.size();
+  trajPoints.arraySetSize(l);
+  for (unsigned i = 0; i < l; ++i) {
+    int v = req.path.trajPoints[i].floatList.size();
+    for (int ii = 0; ii < v; ++ii) {
+      trajPoints[i].arrayPush(req.path.trajPoints[i].floatList[ii]);
+    }
   }
+
   int axisMask = req.axisMask;
   AL::ALValue durations = req.durations;
   bool isAbsolute = req.isAbsolute;
-  mProxy_->positionInterpolation(chainName, space, path, axisMask, durations,
-                                 isAbsolute);
+  mProxy_->positionInterpolation(chainName, space, trajPoints, axisMask,
+                                 durations, isAbsolute);
   return true;
 }
 
