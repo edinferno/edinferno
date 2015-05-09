@@ -37,11 +37,11 @@ bool Cartesian_Control::positionInterpolation(
   int space = req.space;
 
   AL::ALValue trajPoints;
-  int l = req.path.trajPoints.size();
+  size_t l = req.path.trajPoints.size();
   trajPoints.arraySetSize(l);
-  for (unsigned i = 0; i < l; ++i) {
-    int v = req.path.trajPoints[i].floatList.size();
-    for (int ii = 0; ii < v; ++ii) {
+  for (size_t i = 0; i < l; ++i) {
+    size_t v = req.path.trajPoints[i].floatList.size();
+    for (size_t ii = 0; ii < v; ++ii) {
       trajPoints[i].arrayPush(req.path.trajPoints[i].floatList[ii]);
     }
   }
@@ -61,15 +61,15 @@ bool Cartesian_Control::positionInterpolations(
   std::vector<string> effectorNames = req.effectorNames;
   int space = req.space;
 
-  int s = req.paths.size();
+  size_t s = req.paths.size();
   AL::ALValue paths;
   paths.arraySetSize(s);
-  for (unsigned i = 0; i < s; ++i) {
-    int l = req.paths[i].trajPoints.size();
+  for (size_t i = 0; i < s; ++i) {
+    size_t l = req.paths[i].trajPoints.size();
     paths[i].arraySetSize(l);
-    for (unsigned ii = 0; ii < l; ++ii) {
-      int v = req.paths[i].trajPoints[ii].floatList.size();
-      for (int iii = 0; iii < v; ++iii) {
+    for (size_t ii = 0; ii < l; ++ii) {
+      size_t v = req.paths[i].trajPoints[ii].floatList.size();
+      for (size_t iii = 0; iii < v; ++iii) {
         paths[i][ii].arrayPush(
           req.paths[i].trajPoints[ii].floatList[iii]);
       }
@@ -81,9 +81,9 @@ bool Cartesian_Control::positionInterpolations(
   s = req.durations.size();
   AL::ALValue durations;
   durations.arraySetSize(s);
-  for (unsigned i = 0; i < s; ++i) {
-    int l = req.durations[i].floatList.size();
-    for (unsigned ii = 0; ii < l; ++ii) {
+  for (size_t i = 0; i < s; ++i) {
+    size_t l = req.durations[i].floatList.size();
+    for (size_t ii = 0; ii < l; ++ii) {
       durations[i].arrayPush(req.durations[i].floatList[ii]);
     }
   }
@@ -154,11 +154,11 @@ bool Cartesian_Control::transformInterpolations(
 
   std::vector<string> names = req.names;
   int space = req.space;
-  int s = req.paths.size();
+  size_t s = req.paths.size();
   AL::ALValue paths;
   AL::ALValue times;
   paths.arraySetSize(s);
-  for (unsigned i = 0; i < s; ++i) {
+  for (size_t i = 0; i < s; ++i) {
     paths[i] = req.paths[i].floatList;
     times[i] = req.times[i].floatList;
   }
