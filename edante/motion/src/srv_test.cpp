@@ -3,6 +3,8 @@
 #include "definitions.h"
 #include <std_srvs/Empty.h>
 
+#include <ctime>
+
 // #include "motion/setStiffness.h"
 // #include "motion/stiffnessInterp.h"
 // #include "motion/angleInterp.h"
@@ -10,7 +12,8 @@
 // #include "motion/getTaskList.h"
 // #include "motion/moveTo.h"
 // #include "motion/move.h"
-#include "motion/moveToward.h"
+// #include "motion/moveToward.h"
+#include "motion/getAngles.h"
 
 int main(int argc, char *argv[]) {
 
@@ -114,14 +117,14 @@ int main(int argc, char *argv[]) {
 
   // ANGLE INTERPOLATION TEST
   ros::ServiceClient client1 =
-    n.serviceClient<motion::moveToward>("/motion/moveToward");
-  motion::moveToward srv;
+    n.serviceClient<motion::getAngles>("/motion/getAngles", true);
+  motion::getAngles srv;
 
-  motion::moveToward serv;
+  // motion::getAngles serv;
   // serv.request.targetVelocity.resize(1);
-  serv.request.normVelocity.x = 0.2f;
-  serv.request.normVelocity.y = 0.0f;
-  serv.request.normVelocity.theta = 0.0f;
+  // serv.request.normVelocity.x = 0.2f;
+  // serv.request.normVelocity.y = 0.0f;
+  // serv.request.normVelocity.theta = 0.0f;
 
   // serv.request.moveConfiguration.names.resize(1);
   // serv.request.moveConfiguration.names[0] = "MaxStepX";
@@ -146,17 +149,38 @@ int main(int argc, char *argv[]) {
 
   // serv.request.moveConfiguration;
 
-  srv.request.normVelocity = serv.request.normVelocity;
+  // srv.request.normVelocity = serv.request.normVelocity;
   // srv.request.moveConfiguration = serv.request.moveConfiguration;
 
-  if (client1.call(srv)) {
-    DEBUG("moveToward Worked!" << std::endl);
-  } else {
-    ERR("Failed to call moveToward service" << std::endl);
+  srv.request.names.resize(1);
+  srv.request.names[0] = "RArm";
+  srv.request.useSensors = true;
+  int nSucc;
+
+
+  clock_t begin = clock();
+
+  for (int i = 0; i < 100; ++i) {
+    if (client1.call(srv)) {
+      // DEBUG("moveToward Worked!" << std::endl);
+      nSucc++;
+    } else {
+      // ERR("Failed to call moveToward service" << std::endl);
+    }
   }
 
-  while (ros::ok()) {
-    ros::spinOnce();
-    r.sleep();
-  }
+  clock_t end = clock();
+  double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+
+  cout
+      << "Succ: " << nSucc
+      << " Dur: " << elapsed_secs
+      << " Clock: " << CLOCKS_PER_SEC
+      << std::endl;
+
+  // while (ros::ok()) {
+  //   ros::spinOnce();
+  //   r.sleep();
+  // }
+  return 0;
 }
