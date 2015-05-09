@@ -29,6 +29,8 @@ add_message_files(
   velocity.msg
   position.msg
   moveConfiguration.msg
+  # Cartesian_Control
+  path.msg
   # Motion_Task
   task.msg
 )

@@ -39,7 +39,7 @@ bool Cartesian_Control::positionInterpolation(
   AL::ALValue path;
   path.arraySetSize(s);
   for (unsigned i = 0; i < s; ++i) {
-    path[i] = req.path[i];
+    path.arrayPush(req.path[i]);
   }
   int axisMask = req.axisMask;
   AL::ALValue durations = req.durations;
@@ -52,19 +52,38 @@ bool Cartesian_Control::positionInterpolation(
 bool Cartesian_Control::positionInterpolations(
   motion::positionInterpolations::Request &req,
   motion::positionInterpolations::Response &res) {
-  DEBUG("Service: positionInterpolations" << std::endl);
 
   std::vector<string> effectorNames = req.effectorNames;
   int space = req.space;
+
   int s = req.paths.size();
   AL::ALValue paths;
   paths.arraySetSize(s);
   for (unsigned i = 0; i < s; ++i) {
-    paths[i] = req.paths[i].floatList;
+    int l = req.paths[i].trajPoints.size();
+    paths[i].arraySetSize(l);
+    for (unsigned ii = 0; ii < l; ++ii) {
+      int v = req.paths[i].trajPoints[ii].floatList.size();
+      for (int iii = 0; iii < v; ++iii) {
+        paths[i][ii].arrayPush(
+          req.paths[i].trajPoints[ii].floatList[iii]);
+      }
+    }
   }
+
   AL::ALValue axisMasks = req.axisMasks;
-  AL::ALValue durations = req.durations;
+
+  s = req.durations.size();
+  AL::ALValue durations;
+  durations.arraySetSize(s);
+  for (unsigned i = 0; i < s; ++i) {
+    int l = req.durations[i].floatList.size();
+    for (unsigned ii = 0; ii < l; ++ii) {
+      durations[i].arrayPush(req.durations[i].floatList[ii]);
+    }
+  }
   bool isAbsolute = req.isAbsolute;
+
   mProxy_->positionInterpolations(effectorNames, space, paths, axisMasks,
                                   durations, isAbsolute);
   return true;
