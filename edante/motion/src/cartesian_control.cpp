@@ -96,7 +96,6 @@ bool Cartesian_Control::positionInterpolations(
 
 bool Cartesian_Control::setPosition(motion::setPosition::Request &req,
                                     motion::setPosition::Response &res) {
-  DEBUG("Service: setPosition" << std::endl);
 
   string chainName = req.chainName;
   int space = req.space;
