@@ -1,6 +1,6 @@
 string chainName
 int32 space
-float32List[] path
+float32[] path
 int32 axisMask
 float32[] durations
 bool isAbsolute

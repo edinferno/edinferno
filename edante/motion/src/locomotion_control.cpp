@@ -4,9 +4,9 @@ Locomotion_Control::Locomotion_Control(ros::NodeHandle* nh,
                                        AL::ALMotionProxy* mProxy) {
   nh_ = nh;
   mProxy_ = mProxy;
-  INFO("Setting up Nao locomotion publishers" << std::endl);
+  INFO("Setting up Locomotion Control publishers" << std::endl);
   moving_pub_ = nh_->advertise<std_msgs::Bool>("isMoving", 10);
-  INFO("Setting up Nao motion publishers" << std::endl);
+  INFO("Setting up Locomotion Control services" << std::endl);
   srv_move_ = nh_->advertiseService("move", &Locomotion_Control::move, this);
   srv_move_to_ = nh_->advertiseService("moveTo",
                                        &Locomotion_Control::moveTo, this);

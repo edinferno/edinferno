@@ -115,6 +115,7 @@ add_executable(motion
   src/stiffness_control.cpp
   src/joint_control.cpp
   src/locomotion_control.cpp
+  src/cartesian_control.cpp
   src/motion_task.cpp)
 
 add_executable(stiffness_control
@@ -127,8 +128,7 @@ add_executable(joint_control
 
 add_executable(locomotion_control
  src/locomotion_test.cpp
- src/locomotion_control.cpp
-)
+ src/locomotion_control.cpp)
 
 add_executable(cartesian_control
   src/cartesian_test.cpp

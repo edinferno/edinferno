@@ -4,7 +4,7 @@ Cartesian_Control::Cartesian_Control(ros::NodeHandle* nh,
                                      AL::ALMotionProxy* mProxy) {
   nh_ = nh;
   mProxy_ = mProxy;
-  INFO("Setting up Nao motion services" << std::endl);
+  INFO("Setting up Cartesian Control services" << std::endl);
   srv_position_interpolation_ = nh_->advertiseService("positionInterpolation",
                                 &Cartesian_Control::positionInterpolation, this);
   srv_position_interpolations_ = nh_->advertiseService("positionInterpolations",
@@ -32,7 +32,6 @@ Cartesian_Control::~Cartesian_Control() {
 bool Cartesian_Control::positionInterpolation(
   motion::positionInterpolation::Request &req,
   motion::positionInterpolation::Response &res) {
-  DEBUG("Service: positionInterpolation" << std::endl);
 
   string chainName = req.chainName;
   int space = req.space;
@@ -40,7 +39,7 @@ bool Cartesian_Control::positionInterpolation(
   AL::ALValue path;
   path.arraySetSize(s);
   for (unsigned i = 0; i < s; ++i) {
-    path[i] = req.path[i].floatList;
+    path[i] = req.path[i];
   }
   int axisMask = req.axisMask;
   AL::ALValue durations = req.durations;

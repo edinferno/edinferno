@@ -13,7 +13,8 @@
 // #include "motion/moveTo.h"
 // #include "motion/move.h"
 // #include "motion/moveToward.h"
-#include "motion/getAngles.h"
+// #include "motion/getAngles.h"
+#include "motion/positionInterpolation.h"
 
 int main(int argc, char *argv[]) {
 
@@ -117,10 +118,15 @@ int main(int argc, char *argv[]) {
 
   // ANGLE INTERPOLATION TEST
   ros::ServiceClient client1 =
-    n.serviceClient<motion::getAngles>("/motion/getAngles", true);
-  motion::getAngles srv;
+    n.serviceClient<motion::positionInterpolation>("/motion/positionInterpolation",
+        true);
+  motion::positionInterpolation srv1;
+  ros::ServiceClient client2 =
+    n.serviceClient<motion::positionInterpolation>("/motion/positionInterpolation",
+        true);
+  motion::positionInterpolation srv2;
 
-  // motion::getAngles serv;
+  // motion::positionInterpolation serv;
   // serv.request.targetVelocity.resize(1);
   // serv.request.normVelocity.x = 0.2f;
   // serv.request.normVelocity.y = 0.0f;
@@ -152,31 +158,71 @@ int main(int argc, char *argv[]) {
   // srv.request.normVelocity = serv.request.normVelocity;
   // srv.request.moveConfiguration = serv.request.moveConfiguration;
 
-  srv.request.names.resize(1);
-  srv.request.names[0] = "RArm";
-  srv.request.useSensors = true;
-  int nSucc;
+  srv1.request.chainName = "Torso";
+  srv1.request.space = 2;
+  srv1.request.path.resize(6);
+  srv1.request.path[0] = 0.0f;
+  srv1.request.path[1] = -0.07f;
+  srv1.request.path[2] = -0.03f;
+  srv1.request.path[3] = 0.0f;
+  srv1.request.path[4] = 0.0f;
+  srv1.request.path[5] = 0.0f;
+  srv1.request.axisMask = 63;
+  srv1.request.durations.resize(1);
+  srv1.request.durations[0] = 2.0f;
+  srv1.request.isAbsolute = false;
 
-
-  clock_t begin = clock();
-
-  for (int i = 0; i < 100; ++i) {
-    if (client1.call(srv)) {
-      // DEBUG("moveToward Worked!" << std::endl);
-      nSucc++;
-    } else {
-      // ERR("Failed to call moveToward service" << std::endl);
-    }
+  if (client1.call(srv1)) {
+    DEBUG("positionInterp1 Worked!" << std::endl);
+  } else {
+    ERR("Failed to call positionInterp1 service" << std::endl);
   }
 
-  clock_t end = clock();
-  double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+  srv2.request.chainName = "LLeg";
+  srv2.request.space = 2;
+  srv2.request.path.resize(6);
+  srv2.request.path[0] = 0.0f;
+  srv2.request.path[1] = 0.06f;
+  srv2.request.path[2] = 0.00f;
+  srv2.request.path[3] = 0.0f;
+  srv2.request.path[4] = 0.0f;
+  srv2.request.path[5] = 0.8f;
+  srv2.request.axisMask = 63;
+  srv2.request.durations.resize(1);
+  srv2.request.durations[0] = 2.0f;
+  srv2.request.isAbsolute = false;
 
-  cout
-      << "Succ: " << nSucc
-      << " Dur: " << elapsed_secs
-      << " Clock: " << CLOCKS_PER_SEC
-      << std::endl;
+  if (client2.call(srv2)) {
+    DEBUG("positionInterp2 Worked!" << std::endl);
+  } else {
+    ERR("Failed to call positionInterp2 service" << std::endl);
+  }
+
+  // srv.request.names.resize(1);
+  // srv.request.names[0] = "RArm";
+  // srv.request.useSensors = true;
+  // int nSucc;
+
+
+  // clock_t begin = clock();
+
+  // for (int i = 0; i < 100; ++i) {
+  //   if (client1.call(srv)) {
+  //     // DEBUG("moveToward Worked!" << std::endl);
+  //     nSucc++;
+  //   } else {
+  //     // ERR("Failed to call moveToward service" << std::endl);
+  //   }
+  // }
+
+  // clock_t end = clock();
+  // double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+
+  // cout
+  //     << "Succ: " << nSucc
+  //     << " Dur: " << elapsed_secs
+  //     << " Clock: " << CLOCKS_PER_SEC
+  //     << std::endl;
 
   // while (ros::ok()) {
   //   ros::spinOnce();
