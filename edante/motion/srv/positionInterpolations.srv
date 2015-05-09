@@ -1,7 +1,7 @@
 string[] effectorNames
 int32 space
-float32List[] paths
+path[] paths
 int32[] axisMasks
-float32[] durations
+float32List[] durations
 bool isAbsolute
 ---

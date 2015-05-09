@@ -4,28 +4,28 @@
 #include "stiffness_control.h"
 #include "joint_control.h"
 #include "locomotion_control.h"
+#include "cartesian_control.h"
 #include "motion_task.h"
 
 #include <alproxies/almotionproxy.h>
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
   ros::init(argc, argv, "motion");
   ros::NodeHandle nh("motion");
   AL::ALMotionProxy mProxy("127.0.0.1", 9559);
   Stiffness_Control StiffnessTest(&nh, &mProxy);
   Joint_Control JointTest(&nh, &mProxy);
   Locomotion_Control LocomotionTest(&nh, &mProxy);
+  Cartesian_Control CartesianTest(&nh, &mProxy);
   Motion_Task MotionTest(&nh, &mProxy);
 
   ros::Rate r(10);
 
-  while (ros::ok())
-  {
+  while (ros::ok()) {
     StiffnessTest.spinTopics();
     LocomotionTest.spinTopics();
     ros::spinOnce();
     r.sleep();
   }
-  
+
 }

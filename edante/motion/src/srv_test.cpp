@@ -1,7 +1,10 @@
 #include <ros/ros.h>
 // #include "joint_control.h"
 #include "definitions.h"
+#include "motion_values.h"
 #include <std_srvs/Empty.h>
+
+#include <ctime>
 
 // #include "motion/setStiffness.h"
 // #include "motion/stiffnessInterp.h"
@@ -10,7 +13,9 @@
 // #include "motion/getTaskList.h"
 // #include "motion/moveTo.h"
 // #include "motion/move.h"
-#include "motion/moveToward.h"
+// #include "motion/moveToward.h"
+// #include "motion/getAngles.h"
+#include "motion/positionInterpolation.h"
 
 int main(int argc, char *argv[]) {
 
@@ -114,14 +119,19 @@ int main(int argc, char *argv[]) {
 
   // ANGLE INTERPOLATION TEST
   ros::ServiceClient client1 =
-    n.serviceClient<motion::moveToward>("/motion/moveToward");
-  motion::moveToward srv;
+    n.serviceClient<motion::positionInterpolation>("/motion/positionInterpolation",
+        true);
+  motion::positionInterpolation srv1;
+  ros::ServiceClient client2 =
+    n.serviceClient<motion::positionInterpolation>("/motion/positionInterpolation",
+        true);
+  motion::positionInterpolation srv2;
 
-  motion::moveToward serv;
+  // motion::positionInterpolation serv;
   // serv.request.targetVelocity.resize(1);
-  serv.request.normVelocity.x = 0.2f;
-  serv.request.normVelocity.y = 0.0f;
-  serv.request.normVelocity.theta = 0.0f;
+  // serv.request.normVelocity.x = 0.2f;
+  // serv.request.normVelocity.y = 0.0f;
+  // serv.request.normVelocity.theta = 0.0f;
 
   // serv.request.moveConfiguration.names.resize(1);
   // serv.request.moveConfiguration.names[0] = "MaxStepX";
@@ -146,17 +156,158 @@ int main(int argc, char *argv[]) {
 
   // serv.request.moveConfiguration;
 
-  srv.request.normVelocity = serv.request.normVelocity;
+  // srv.request.normVelocity = serv.request.normVelocity;
   // srv.request.moveConfiguration = serv.request.moveConfiguration;
 
-  if (client1.call(srv)) {
-    DEBUG("moveToward Worked!" << std::endl);
+  srv1.request.chainName = "Torso";
+  srv1.request.space = 2;
+  srv1.request.path.trajPoints.resize(1);
+  srv1.request.path.trajPoints[0].floatList.push_back(0.0f);
+  srv1.request.path.trajPoints[0].floatList.push_back(-0.07f);
+  srv1.request.path.trajPoints[0].floatList.push_back(-0.03f);
+  srv1.request.path.trajPoints[0].floatList.push_back(0.0f);
+  srv1.request.path.trajPoints[0].floatList.push_back(0.0f);
+  srv1.request.path.trajPoints[0].floatList.push_back(0.0f);
+  srv1.request.axisMask = 63;
+  srv1.request.durations.resize(1);
+  srv1.request.durations[0] = 2.0f;
+  srv1.request.isAbsolute = false;
+
+  if (client1.call(srv1)) {
+    DEBUG("positionInterp1 Worked!" << std::endl);
   } else {
-    ERR("Failed to call moveToward service" << std::endl);
+    ERR("Failed to call positionInterp1 service" << std::endl);
   }
 
-  while (ros::ok()) {
-    ros::spinOnce();
-    r.sleep();
-  }
+  // srv1.request.effectorNames.resize(2);
+  // srv1.request.effectorNames[0] = "LArm";
+  // srv1.request.effectorNames[1] = "RArm";
+  // srv1.request.space = FRAME_ROBOT;
+
+  // srv1.request.paths.resize(2);
+  // srv1.request.paths[0].trajPoints.resize(1);
+  // srv1.request.paths[1].trajPoints.resize(1);
+  // srv1.request.paths[0].trajPoints[0].floatList.push_back(0.0f);
+  // srv1.request.paths[0].trajPoints[0].floatList.push_back(-0.04f);
+  // srv1.request.paths[0].trajPoints[0].floatList.push_back(0.0f);
+  // srv1.request.paths[0].trajPoints[0].floatList.push_back(0.0f);
+  // srv1.request.paths[0].trajPoints[0].floatList.push_back(0.0f);
+  // srv1.request.paths[0].trajPoints[0].floatList.push_back(0.0f);
+  // srv1.request.paths[1].trajPoints[0].floatList.push_back(0.0f);
+  // srv1.request.paths[1].trajPoints[0].floatList.push_back(0.04f);
+  // srv1.request.paths[1].trajPoints[0].floatList.push_back(0.0f);
+  // srv1.request.paths[1].trajPoints[0].floatList.push_back(0.0f);
+  // srv1.request.paths[1].trajPoints[0].floatList.push_back(0.0f);
+  // srv1.request.paths[1].trajPoints[0].floatList.push_back(0.0f);
+  // srv1.request.axisMasks.resize(2);
+  // srv1.request.axisMasks[0] = AXIS_MASK_VEL;
+  // srv1.request.axisMasks[1] = AXIS_MASK_VEL;
+  // srv1.request.durations.resize(2);
+  // srv1.request.durations[0].floatList.push_back(1.0f);
+  // srv1.request.durations[1].floatList.push_back(1.0f);
+  // srv1.request.isAbsolute = false;
+
+  // if (client1.call(srv1)) {
+  //   DEBUG("positionsInterp1 Worked!" << std::endl);
+  // } else {
+  //   ERR("Failed to call positionInterp1 service" << std::endl);
+  // }
+
+  // float dx = 0.03;
+  // float dy = 0.04;
+  // srv2.request.effectorNames.resize(3);
+  // srv2.request.effectorNames[0] = "LArm";
+  // srv2.request.effectorNames[1] = "RArm";
+  // srv2.request.effectorNames[2] = "Torso";
+  // srv2.request.space = FRAME_ROBOT;
+  // srv2.request.paths.resize(3);
+  // srv2.request.paths[0].trajPoints.resize(1);
+  // srv2.request.paths[1].trajPoints.resize(1);
+  // srv2.request.paths[2].trajPoints.resize(4);
+  // srv2.request.paths[0].trajPoints[0].floatList.push_back(0.0f);
+  // srv2.request.paths[0].trajPoints[0].floatList.push_back(-0.04f);
+  // srv2.request.paths[0].trajPoints[0].floatList.push_back(0.0f);
+  // srv2.request.paths[0].trajPoints[0].floatList.push_back(0.0f);
+  // srv2.request.paths[0].trajPoints[0].floatList.push_back(0.0f);
+  // srv2.request.paths[0].trajPoints[0].floatList.push_back(0.0f);
+  // srv2.request.paths[1].trajPoints[0].floatList.push_back(0.0f);
+  // srv2.request.paths[1].trajPoints[0].floatList.push_back(0.04f);
+  // srv2.request.paths[1].trajPoints[0].floatList.push_back(0.0f);
+  // srv2.request.paths[1].trajPoints[0].floatList.push_back(0.0f);
+  // srv2.request.paths[1].trajPoints[0].floatList.push_back(0.0f);
+  // srv2.request.paths[1].trajPoints[0].floatList.push_back(0.0f);
+  // srv2.request.paths[2].trajPoints[0].floatList.push_back(0.0f);
+  // srv2.request.paths[2].trajPoints[0].floatList.push_back(dy);
+  // srv2.request.paths[2].trajPoints[0].floatList.push_back(0.0f);
+  // srv2.request.paths[2].trajPoints[0].floatList.push_back(0.0f);
+  // srv2.request.paths[2].trajPoints[0].floatList.push_back(0.0f);
+  // srv2.request.paths[2].trajPoints[0].floatList.push_back(0.0f);
+  // srv2.request.paths[2].trajPoints[1].floatList.push_back(-dx);
+  // srv2.request.paths[2].trajPoints[1].floatList.push_back(0.0f);
+  // srv2.request.paths[2].trajPoints[1].floatList.push_back(0.0f);
+  // srv2.request.paths[2].trajPoints[1].floatList.push_back(0.0f);
+  // srv2.request.paths[2].trajPoints[1].floatList.push_back(0.0f);
+  // srv2.request.paths[2].trajPoints[1].floatList.push_back(0.0f);
+  // srv2.request.paths[2].trajPoints[2].floatList.push_back(0.0f);
+  // srv2.request.paths[2].trajPoints[2].floatList.push_back(-dy);
+  // srv2.request.paths[2].trajPoints[2].floatList.push_back(0.0f);
+  // srv2.request.paths[2].trajPoints[2].floatList.push_back(0.0f);
+  // srv2.request.paths[2].trajPoints[2].floatList.push_back(0.0f);
+  // srv2.request.paths[2].trajPoints[2].floatList.push_back(0.0f);
+  // srv2.request.paths[2].trajPoints[3].floatList.push_back(0.0f);
+  // srv2.request.paths[2].trajPoints[3].floatList.push_back(0.0f);
+  // srv2.request.paths[2].trajPoints[3].floatList.push_back(0.0f);
+  // srv2.request.paths[2].trajPoints[3].floatList.push_back(0.0f);
+  // srv2.request.paths[2].trajPoints[3].floatList.push_back(0.0f);
+  // srv2.request.paths[2].trajPoints[3].floatList.push_back(0.0f);
+  // srv2.request.axisMasks.resize(3);
+  // srv2.request.axisMasks[0] = AXIS_MASK_VEL;
+  // srv2.request.axisMasks[1] = AXIS_MASK_VEL;
+  // srv2.request.axisMasks[2] = AXIS_MASK_ALL;
+  // srv2.request.durations.resize(3);
+  // srv2.request.durations[0].floatList.push_back(1.0f);
+  // srv2.request.durations[1].floatList.push_back(1.0f);
+  // srv2.request.durations[2].floatList.push_back(1.0f);
+  // srv2.request.durations[2].floatList.push_back(2.0f);
+  // srv2.request.durations[2].floatList.push_back(3.0f);
+  // srv2.request.durations[2].floatList.push_back(4.0f);
+  // srv2.request.isAbsolute = false;
+
+  // if (client2.call(srv2)) {
+  //   DEBUG("positionsInterp2 Worked!" << std::endl);
+  // } else {
+  //   ERR("Failed to call positionInterp2 service" << std::endl);
+  // }
+
+  // srv.request.names.resize(1);
+  // srv.request.names[0] = "RArm";
+  // srv.request.useSensors = true;
+  // int nSucc;
+
+
+  // clock_t begin = clock();
+
+  // for (int i = 0; i < 100; ++i) {
+  //   if (client1.call(srv)) {
+  //     // DEBUG("moveToward Worked!" << std::endl);
+  //     nSucc++;
+  //   } else {
+  //     // ERR("Failed to call moveToward service" << std::endl);
+  //   }
+  // }
+
+  // clock_t end = clock();
+  // double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+
+  // cout
+  //     << "Succ: " << nSucc
+  //     << " Dur: " << elapsed_secs
+  //     << " Clock: " << CLOCKS_PER_SEC
+  //     << std::endl;
+
+  // while (ros::ok()) {
+  //   ros::spinOnce();
+  //   r.sleep();
+  // }
+  return 0;
 }
