@@ -15,12 +15,12 @@ Cartesian_Control::Cartesian_Control(ros::NodeHandle* nh,
                          &Cartesian_Control::changePosition, this);
   srv_get_position_ = nh_->advertiseService("getPosition",
                       &Cartesian_Control::getPosition, this);
-  srv_transform_interpolation_ = nh_->advertiseService("transformInterpolation",
-                                 &Cartesian_Control::transformInterpolation, this);
-  srv_set_transform_ = nh_->advertiseService("setTransform",
-                       &Cartesian_Control::setTransform, this);
-  srv_change_transform_ = nh_->advertiseService("changeTransform",
-                          &Cartesian_Control::changeTransform, this);
+  // srv_transform_interpolation_ = nh_->advertiseService("transformInterpolation",
+  //                                &Cartesian_Control::transformInterpolation, this);
+  // srv_set_transform_ = nh_->advertiseService("setTransform",
+  //                      &Cartesian_Control::setTransform, this);
+  // srv_change_transform_ = nh_->advertiseService("changeTransform",
+  //                         &Cartesian_Control::changeTransform, this);
   srv_get_transform_ = nh_->advertiseService("getTransform",
                        &Cartesian_Control::getTransform, this);
 }
@@ -96,7 +96,6 @@ bool Cartesian_Control::positionInterpolations(
 
 bool Cartesian_Control::setPosition(motion::setPosition::Request &req,
                                     motion::setPosition::Response &res) {
-  DEBUG("Service: setPosition" << std::endl);
 
   string chainName = req.chainName;
   int space = req.space;
@@ -109,95 +108,93 @@ bool Cartesian_Control::setPosition(motion::setPosition::Request &req,
 
 bool Cartesian_Control::changePosition(motion::changePosition::Request &req,
                                        motion::changePosition::Response &res) {
-  DEBUG("Service: changePosition" << std::endl);
 
-  string name = req.name;
+  string effectorName = req.effectorName;
   int space = req.space;
-  std::vector<float> position = req.position;
+  std::vector<float> positionChange = req.positionChange;
   float fractionMaxSpeed = req.fractionMaxSpeed;
   int axisMask = req.axisMask;
-  mProxy_->changePosition(name, space, position, fractionMaxSpeed, axisMask);
+  mProxy_->changePosition(effectorName, space, positionChange,
+                          fractionMaxSpeed, axisMask);
   return true;
 }
 
 bool Cartesian_Control::getPosition(motion::getPosition::Request &req,
                                     motion::getPosition::Response &res) {
-  DEBUG("Service: getPosition" << std::endl);
 
-  string nameJoint = req.name;
+  string name = req.name;
   int space = req.space;
   bool useSensorValues = req.useSensorValues;
-  res.position = mProxy_->getPosition(nameJoint, space, useSensorValues);
+  res.position = mProxy_->getPosition(name, space, useSensorValues);
   return true;
 }
 
-bool Cartesian_Control::transformInterpolation(
-  motion::transformInterpolation::Request &req,
-  motion::transformInterpolation::Response &res) {
-  DEBUG("Service: transformInterpolation" << std::endl);
+// bool Cartesian_Control::transformInterpolation(
+//   motion::transformInterpolation::Request &req,
+//   motion::transformInterpolation::Response &res) {
+//   DEBUG("Service: transformInterpolation" << std::endl);
 
-  string name = req.name;
-  int space = req.space;
-  AL::ALValue path = req.path;
-  int axisMask = req.axisMask;
-  AL::ALValue duration = req.duration;
-  bool isAbsolute = req.isAbsolute;
-  mProxy_->transformInterpolation(name, space, path, axisMask, duration,
-                                  isAbsolute);
-  return true;
-}
+//   string name = req.name;
+//   int space = req.space;
+//   AL::ALValue path = req.path;
+//   int axisMask = req.axisMask;
+//   AL::ALValue duration = req.duration;
+//   bool isAbsolute = req.isAbsolute;
+//   mProxy_->transformInterpolation(name, space, path, axisMask, duration,
+//                                   isAbsolute);
+//   return true;
+// }
 
-bool Cartesian_Control::transformInterpolations(
-  motion::transformInterpolations::Request &req,
-  motion::transformInterpolations::Response &res) {
-  DEBUG("Service: transformInterpolations" << std::endl);
+// bool Cartesian_Control::transformInterpolations(
+//   motion::transformInterpolations::Request &req,
+//   motion::transformInterpolations::Response &res) {
+//   DEBUG("Service: transformInterpolations" << std::endl);
 
-  std::vector<string> names = req.names;
-  int space = req.space;
-  size_t s = req.paths.size();
-  AL::ALValue paths;
-  AL::ALValue times;
-  paths.arraySetSize(s);
-  for (size_t i = 0; i < s; ++i) {
-    paths[i] = req.paths[i].floatList;
-    times[i] = req.times[i].floatList;
-  }
-  AL::ALValue axisMasks = req.axisMasks;
-  bool isAbsolute = req.isAbsolute;
-  mProxy_->transformInterpolations(names, space, paths, axisMasks, times,
-                                   isAbsolute);
-  return true;
-}
+//   std::vector<string> names = req.names;
+//   int space = req.space;
+//   size_t s = req.paths.size();
+//   AL::ALValue paths;
+//   AL::ALValue times;
+//   paths.arraySetSize(s);
+//   for (size_t i = 0; i < s; ++i) {
+//     paths[i] = req.paths[i].floatList;
+//     times[i] = req.times[i].floatList;
+//   }
+//   AL::ALValue axisMasks = req.axisMasks;
+//   bool isAbsolute = req.isAbsolute;
+//   mProxy_->transformInterpolations(names, space, paths, axisMasks, times,
+//                                    isAbsolute);
+//   return true;
+// }
 
-bool Cartesian_Control::setTransform(motion::setTransform::Request &req,
-                                     motion::setTransform::Response &res) {
-  DEBUG("Service: setTransform" << std::endl);
+// bool Cartesian_Control::setTransform(motion::setTransform::Request &req,
+//                                      motion::setTransform::Response &res) {
+//   DEBUG("Service: setTransform" << std::endl);
 
-  string name = req.name;
-  int space = req.space;
-  std::vector<float> transform = req.transform;
-  float speed = req.speed;
-  int axisMask = req.axisMask;
-  mProxy_->setTransform(name, space, transform, speed, axisMask);
-  return true;
-}
+//   string name = req.name;
+//   int space = req.space;
+//   std::vector<float> transform = req.transform;
+//   float speed = req.speed;
+//   int axisMask = req.axisMask;
+//   mProxy_->setTransform(name, space, transform, speed, axisMask);
+//   return true;
+// }
 
-bool Cartesian_Control::changeTransform(motion::changeTransform::Request &req,
-                                        motion::changeTransform::Response &res) {
-  DEBUG("Service: changeTransform" << std::endl);
+// bool Cartesian_Control::changeTransform(motion::changeTransform::Request &req,
+//                                         motion::changeTransform::Response &res) {
+//   DEBUG("Service: changeTransform" << std::endl);
 
-  string name = req.name;
-  int space = req.space;
-  std::vector<float> transform = req.transform;
-  float speed = req.speed;
-  int axisMask = req.axisMask;
-  mProxy_->changeTransform(name, space, transform, speed, axisMask);
-  return true;
-}
+//   string name = req.name;
+//   int space = req.space;
+//   std::vector<float> transform = req.transform;
+//   float speed = req.speed;
+//   int axisMask = req.axisMask;
+//   mProxy_->changeTransform(name, space, transform, speed, axisMask);
+//   return true;
+// }
 
 bool Cartesian_Control::getTransform(motion::getTransform::Request &req,
                                      motion::getTransform::Response &res) {
-  DEBUG("Service: getTransform" << std::endl);
 
   string nameJoint = req.name;
   int space = req.space;

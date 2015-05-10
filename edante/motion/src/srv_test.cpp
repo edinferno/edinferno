@@ -2,9 +2,9 @@
 // #include "joint_control.h"
 #include "definitions.h"
 #include "motion_values.h"
-#include <std_srvs/Empty.h>
+// #include <std_srvs/Empty.h>
 
-#include <ctime>
+// #include <ctime>
 
 // #include "motion/setStiffness.h"
 // #include "motion/stiffnessInterp.h"
@@ -15,7 +15,10 @@
 // #include "motion/move.h"
 // #include "motion/moveToward.h"
 // #include "motion/getAngles.h"
-#include "motion/positionInterpolation.h"
+// #include "motion/positionInterpolation.h"
+// #include "motion/setPosition.h"
+// #include "motion/getPosition.h"
+#include "motion/getTransform.h"
 
 int main(int argc, char *argv[]) {
 
@@ -119,13 +122,13 @@ int main(int argc, char *argv[]) {
 
   // ANGLE INTERPOLATION TEST
   ros::ServiceClient client1 =
-    n.serviceClient<motion::positionInterpolation>("/motion/positionInterpolation",
-        true);
-  motion::positionInterpolation srv1;
-  ros::ServiceClient client2 =
-    n.serviceClient<motion::positionInterpolation>("/motion/positionInterpolation",
-        true);
-  motion::positionInterpolation srv2;
+    n.serviceClient<motion::getTransform>("/motion/getTransform",
+                                          true);
+  motion::getTransform srv1;
+  // ros::ServiceClient client2 =
+  //   n.serviceClient<motion::positionInterpolation>("/motion/positionInterpolation",
+  //       true);
+  // motion::positionInterpolation srv2;
 
   // motion::positionInterpolation serv;
   // serv.request.targetVelocity.resize(1);
@@ -159,25 +162,55 @@ int main(int argc, char *argv[]) {
   // srv.request.normVelocity = serv.request.normVelocity;
   // srv.request.moveConfiguration = serv.request.moveConfiguration;
 
-  srv1.request.chainName = "Torso";
-  srv1.request.space = 2;
-  srv1.request.path.trajPoints.resize(1);
-  srv1.request.path.trajPoints[0].floatList.push_back(0.0f);
-  srv1.request.path.trajPoints[0].floatList.push_back(-0.07f);
-  srv1.request.path.trajPoints[0].floatList.push_back(-0.03f);
-  srv1.request.path.trajPoints[0].floatList.push_back(0.0f);
-  srv1.request.path.trajPoints[0].floatList.push_back(0.0f);
-  srv1.request.path.trajPoints[0].floatList.push_back(0.0f);
-  srv1.request.axisMask = 63;
-  srv1.request.durations.resize(1);
-  srv1.request.durations[0] = 2.0f;
-  srv1.request.isAbsolute = false;
+  // srv1.request.chainName = "Torso";
+  // srv1.request.space = FRAME_ROBOT;
+  // srv1.request.path.trajPoints.resize(1);
+  // srv1.request.path.trajPoints[0].floatList.push_back(0.0f);
+  // srv1.request.path.trajPoints[0].floatList.push_back(-0.07f);
+  // srv1.request.path.trajPoints[0].floatList.push_back(-0.03f);
+  // srv1.request.path.trajPoints[0].floatList.push_back(0.0f);
+  // srv1.request.path.trajPoints[0].floatList.push_back(0.0f);
+  // srv1.request.path.trajPoints[0].floatList.push_back(0.0f);
+  // srv1.request.axisMask = 63;
+  // srv1.request.durations.resize(1);
+  // srv1.request.durations[0] = 2.0f;
+  // srv1.request.isAbsolute = false;
+
+  // if (client1.call(srv1)) {
+  //   DEBUG("positionInterp1 Worked!" << std::endl);
+  // } else {
+  //   ERR("Failed to call positionInterp1 service" << std::endl);
+  // }
+
+  // srv1.request.chainName = "Torso";
+  // srv1.request.space = FRAME_ROBOT;
+  // std::vector<float> position(6, 0.0f); // Absolute Position
+  // position[2] = 0.25f;
+  // srv1.request.position = position;
+  // srv1.request.fractionMaxSpeed = 0.2f;
+  // srv1.request.axisMask = 63;
+
+  // if (client1.call(srv1)) {
+  //   DEBUG("setPosition Worked!" << std::endl);
+  // } else {
+  //   ERR("Failed to call setPosition service" << std::endl);
+  // }
+
+  srv1.request.name = "RArm";
+  srv1.request.space = FRAME_TORSO;
+  srv1.request.useSensorValues = false;
 
   if (client1.call(srv1)) {
-    DEBUG("positionInterp1 Worked!" << std::endl);
+    DEBUG("getTransform Worked!" << std::endl);
   } else {
-    ERR("Failed to call positionInterp1 service" << std::endl);
+    ERR("Failed to call getTransform service" << std::endl);
   }
+
+  DEBUG("Transform: ")
+  for (size_t i = 0; i < 16; ++i) {
+    DEBUG(srv1.response.transform[i] << ", ")
+  }
+  DEBUG(std::endl);
 
   // srv1.request.effectorNames.resize(2);
   // srv1.request.effectorNames[0] = "LArm";
