@@ -38,14 +38,14 @@ class Cartesian_Control {
                       motion::changePosition::Response &res);
   bool getPosition(motion::getPosition::Request &req,
                    motion::getPosition::Response &res);
-  bool transformInterpolation(motion::transformInterpolation::Request &req,
-                              motion::transformInterpolation::Response &res);
-  bool transformInterpolations(motion::transformInterpolations::Request &req,
-                               motion::transformInterpolations::Response &res);
-  bool setTransform(motion::setTransform::Request &req,
-                    motion::setTransform::Response &res);
-  bool changeTransform(motion::changeTransform::Request &req,
-                       motion::changeTransform::Response &res);
+  // bool transformInterpolation(motion::transformInterpolation::Request &req,
+  //                             motion::transformInterpolation::Response &res);
+  // bool transformInterpolations(motion::transformInterpolations::Request &req,
+  //                              motion::transformInterpolations::Response &res);
+  // bool setTransform(motion::setTransform::Request &req,
+  //                   motion::setTransform::Response &res);
+  // bool changeTransform(motion::changeTransform::Request &req,
+  //                      motion::changeTransform::Response &res);
   bool getTransform(motion::getTransform::Request &req,
                     motion::getTransform::Response &res);
 

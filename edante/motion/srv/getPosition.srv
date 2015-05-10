@@ -2,4 +2,4 @@ string name
 int32 space
 bool useSensorValues
 ---
-float32[6] position
+float32[] position
