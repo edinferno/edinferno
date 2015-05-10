@@ -17,7 +17,7 @@
 // #include "motion/getAngles.h"
 // #include "motion/positionInterpolation.h"
 // #include "motion/setPosition.h"
-#include "motion/changePosition.h"
+#include "motion/getPosition.h"
 
 int main(int argc, char *argv[]) {
 
@@ -121,9 +121,9 @@ int main(int argc, char *argv[]) {
 
   // ANGLE INTERPOLATION TEST
   ros::ServiceClient client1 =
-    n.serviceClient<motion::changePosition>("/motion/changePosition",
-        true);
-  motion::changePosition srv1;
+    n.serviceClient<motion::getPosition>("/motion/getPosition",
+                                         true);
+  motion::getPosition srv1;
   // ros::ServiceClient client2 =
   //   n.serviceClient<motion::positionInterpolation>("/motion/positionInterpolation",
   //       true);
@@ -195,20 +195,21 @@ int main(int argc, char *argv[]) {
   //   ERR("Failed to call setPosition service" << std::endl);
   // }
 
-
-  srv1.request.effectorName = "LArm";
-  srv1.request.space = FRAME_ROBOT;
-  std::vector<float> positionChange(6, 0.0f); // Absolute Position
-  positionChange[0] = 0.03f;
-  srv1.request.positionChange = positionChange;
-  srv1.request.fractionMaxSpeed = 0.3f;
-  srv1.request.axisMask = 7;
+  srv1.request.name = "CameraTop";
+  srv1.request.space = FRAME_TORSO;
+  srv1.request.useSensorValues = false;
 
   if (client1.call(srv1)) {
-    DEBUG("changePosition Worked!" << std::endl);
+    DEBUG("getPosition Worked!" << std::endl);
   } else {
-    ERR("Failed to call changePosition service" << std::endl);
+    ERR("Failed to call getPosition service" << std::endl);
   }
+
+  DEBUG("Position: ")
+  for (size_t i = 0; i < 6; ++i) {
+    DEBUG(srv1.response.position[i] << ", ")
+  }
+  DEBUG(std::endl);
 
   // srv1.request.effectorNames.resize(2);
   // srv1.request.effectorNames[0] = "LArm";

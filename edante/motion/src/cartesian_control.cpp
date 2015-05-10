@@ -123,10 +123,10 @@ bool Cartesian_Control::getPosition(motion::getPosition::Request &req,
                                     motion::getPosition::Response &res) {
   DEBUG("Service: getPosition" << std::endl);
 
-  string nameJoint = req.name;
+  string name = req.name;
   int space = req.space;
   bool useSensorValues = req.useSensorValues;
-  res.position = mProxy_->getPosition(nameJoint, space, useSensorValues);
+  res.position = mProxy_->getPosition(name, space, useSensorValues);
   return true;
 }
 
