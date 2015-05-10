@@ -23,11 +23,6 @@ find_package(catkin REQUIRED COMPONENTS
 # find_package(Boost REQUIRED COMPONENTS system)
 
 
-## Uncomment this if the package has a setup.py. This macro ensures
-## modules and global scripts declared therein get installed
-## See http://ros.org/doc/groovy/api/catkin/html/user_guide/setup_dot_py.html
-# catkin_python_setup()
-
 #######################################
 ## Declare ROS messages and services ##
 #######################################
@@ -129,26 +124,7 @@ add_executable(motion
   src/joint_control.cpp
   src/locomotion_control.cpp
   src/cartesian_control.cpp
-  src/motion_task.cpp)
-
-add_executable(stiffness_control
-  src/stiffness_test.cpp
-  src/stiffness_control.cpp)
-
-add_executable(joint_control
-  src/joint_test.cpp
-  src/joint_control.cpp)
-
-add_executable(locomotion_control
- src/locomotion_test.cpp
- src/locomotion_control.cpp)
-
-add_executable(cartesian_control
-  src/cartesian_test.cpp
-  src/cartesian_control.cpp)
-
-add_executable(motion_task
-  src/motion_task_test.cpp
+  src/body_balancer.cpp
   src/motion_task.cpp)
 
 add_executable(srv_test
@@ -157,55 +133,10 @@ add_executable(srv_test
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(stiffness_control motion_generate_messages_cpp)
-add_dependencies(joint_control motion_generate_messages_cpp)
-add_dependencies(locomotion_control motion_generate_messages_cpp)
-add_dependencies(cartesian_control motion_generate_messages_cpp)
-add_dependencies(motion_task motion_generate_messages_cpp)
-add_dependencies(srv_test motion_generate_messages_cpp)
+add_dependencies(motion motion_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(motion
-  ${catkin_LIBRARIES}
-  alcommon
-  alerror
-  alproxies
-  alvalue
-)
-
-target_link_libraries(stiffness_control
-  ${catkin_LIBRARIES}
-  alcommon
-  alerror
-  alproxies
-  alvalue
-)
-
-target_link_libraries(joint_control
-  ${catkin_LIBRARIES}
-  alcommon
-  alerror
-  alproxies
-  alvalue
-)
-
-target_link_libraries(locomotion_control
-  ${catkin_LIBRARIES}
-  alcommon
-  alerror
-  alproxies
-  alvalue
-)
-
-target_link_libraries(cartesian_control
-  ${catkin_LIBRARIES}
-  alcommon
-  alerror
-  alproxies
-  alvalue
-)
-
-target_link_libraries(motion_task
   ${catkin_LIBRARIES}
   alcommon
   alerror
