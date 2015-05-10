@@ -27,50 +27,50 @@
 
 using namespace std;
 
-class Stiffness_Control{
-public:
- Stiffness_Control(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
- ~Stiffness_Control();
+class Stiffness_Control {
+ public:
+  Stiffness_Control(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
+  ~Stiffness_Control();
 
- // Stiffness control API
- bool setStiffnesses(string& name, float& stiffness);
- bool setStiffnesses(string& name, const vector<float>& stiffnesses);
- bool setStiffnesses(const vector<string>& names, float& stiffness);
- bool setStiffnesses(const vector<string>& names,
-  const vector<float>& stiffnesses);
+// ROS publisher
+  void spinTopics();
 
- vector<float> getStiffnesses(const vector<string>&);
+// ROS services
+  bool wakeUp(std_srvs::Empty::Request &req,
+              std_srvs::Empty::Response &res);
+  bool rest(std_srvs::Empty::Request &req,
+            std_srvs::Empty::Response &res);
+  bool stiffnessInterp(motion::stiffnessInterp::Request &req,
+                       motion::stiffnessInterp::Response &res);
+  bool setStiffness(motion::setStiffness::Request &req,
+                    motion::setStiffness::Response &res);
+  bool getStiffness(motion::getStiffness::Request &req,
+                    motion::getStiffness::Response &res);
 
- // ROS publisher
- void spinTopics();
+  // Stiffness control API
+  bool setStiffnesses(string& name, float& stiffness);
+  bool setStiffnesses(string& name, const vector<float>& stiffnesses);
+  bool setStiffnesses(const vector<string>& names, float& stiffness);
+  bool setStiffnesses(const vector<string>& names,
+                      const vector<float>& stiffnesses);
 
- // ROS services
- bool wakeUp(std_srvs::Empty::Request &req, 
-             std_srvs::Empty::Response &res);
- bool rest(std_srvs::Empty::Request &req,
-           std_srvs::Empty::Response &res);
- bool stiffnessInterp(motion::stiffnessInterp::Request &req,
-                      motion::stiffnessInterp::Response &res);
- bool secStiffness(motion::setStiffness::Request &req,
-                   motion::setStiffness::Response &res);
- bool getStiffness(motion::getStiffness::Request &req,
-                   motion::getStiffness::Response &res);
+  vector<float> getStiffnesses(const vector<string>&);
 
-private:
- // ROS
- ros::NodeHandle* nh_;
- ros::Publisher wake_pub_;
- ros::ServiceServer stiffness_interp_;
- ros::ServiceServer set_stiffness_;
- ros::ServiceServer get_stiffness_;
- ros::ServiceServer srv_wake_up_;
- ros::ServiceServer srv_rest_;
+ private:
+// ROS
+  ros::NodeHandle* nh_;
+  ros::Publisher wake_pub_;
+  ros::ServiceServer stiffness_interp_;
+  ros::ServiceServer set_stiffness_;
+  ros::ServiceServer get_stiffness_;
+  ros::ServiceServer srv_wake_up_;
+  ros::ServiceServer srv_rest_;
 
- // NAOqi
- AL::ALMotionProxy* mProxy_;
+// NAOqi
+  AL::ALMotionProxy* mProxy_;
 
- // Internal
- bool awake_;
+// Internal
+  bool awake_;
 };
 
 #endif /* STIFFNESS_CONTROL_H_ */
