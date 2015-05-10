@@ -17,7 +17,8 @@
 // #include "motion/getAngles.h"
 // #include "motion/positionInterpolation.h"
 // #include "motion/setPosition.h"
-#include "motion/getPosition.h"
+// #include "motion/getPosition.h"
+#include "motion/getTransform.h"
 
 int main(int argc, char *argv[]) {
 
@@ -121,9 +122,9 @@ int main(int argc, char *argv[]) {
 
   // ANGLE INTERPOLATION TEST
   ros::ServiceClient client1 =
-    n.serviceClient<motion::getPosition>("/motion/getPosition",
-                                         true);
-  motion::getPosition srv1;
+    n.serviceClient<motion::getTransform>("/motion/getTransform",
+                                          true);
+  motion::getTransform srv1;
   // ros::ServiceClient client2 =
   //   n.serviceClient<motion::positionInterpolation>("/motion/positionInterpolation",
   //       true);
@@ -195,19 +196,19 @@ int main(int argc, char *argv[]) {
   //   ERR("Failed to call setPosition service" << std::endl);
   // }
 
-  srv1.request.name = "CameraTop";
+  srv1.request.name = "RArm";
   srv1.request.space = FRAME_TORSO;
   srv1.request.useSensorValues = false;
 
   if (client1.call(srv1)) {
-    DEBUG("getPosition Worked!" << std::endl);
+    DEBUG("getTransform Worked!" << std::endl);
   } else {
-    ERR("Failed to call getPosition service" << std::endl);
+    ERR("Failed to call getTransform service" << std::endl);
   }
 
-  DEBUG("Position: ")
-  for (size_t i = 0; i < 6; ++i) {
-    DEBUG(srv1.response.position[i] << ", ")
+  DEBUG("Transform: ")
+  for (size_t i = 0; i < 16; ++i) {
+    DEBUG(srv1.response.transform[i] << ", ")
   }
   DEBUG(std::endl);
 

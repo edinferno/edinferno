@@ -121,7 +121,6 @@ bool Cartesian_Control::changePosition(motion::changePosition::Request &req,
 
 bool Cartesian_Control::getPosition(motion::getPosition::Request &req,
                                     motion::getPosition::Response &res) {
-  DEBUG("Service: getPosition" << std::endl);
 
   string name = req.name;
   int space = req.space;
@@ -196,7 +195,6 @@ bool Cartesian_Control::getPosition(motion::getPosition::Request &req,
 
 bool Cartesian_Control::getTransform(motion::getTransform::Request &req,
                                      motion::getTransform::Response &res) {
-  DEBUG("Service: getTransform" << std::endl);
 
   string nameJoint = req.name;
   int space = req.space;
