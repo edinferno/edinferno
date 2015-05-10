@@ -108,14 +108,14 @@ bool Cartesian_Control::setPosition(motion::setPosition::Request &req,
 
 bool Cartesian_Control::changePosition(motion::changePosition::Request &req,
                                        motion::changePosition::Response &res) {
-  DEBUG("Service: changePosition" << std::endl);
 
-  string name = req.name;
+  string effectorName = req.effectorName;
   int space = req.space;
-  std::vector<float> position = req.position;
+  std::vector<float> positionChange = req.positionChange;
   float fractionMaxSpeed = req.fractionMaxSpeed;
   int axisMask = req.axisMask;
-  mProxy_->changePosition(name, space, position, fractionMaxSpeed, axisMask);
+  mProxy_->changePosition(effectorName, space, positionChange,
+                          fractionMaxSpeed, axisMask);
   return true;
 }
 

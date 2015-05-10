@@ -2,9 +2,9 @@
 // #include "joint_control.h"
 #include "definitions.h"
 #include "motion_values.h"
-#include <std_srvs/Empty.h>
+// #include <std_srvs/Empty.h>
 
-#include <ctime>
+// #include <ctime>
 
 // #include "motion/setStiffness.h"
 // #include "motion/stiffnessInterp.h"
@@ -16,7 +16,8 @@
 // #include "motion/moveToward.h"
 // #include "motion/getAngles.h"
 // #include "motion/positionInterpolation.h"
-#include "motion/setPosition.h"
+// #include "motion/setPosition.h"
+#include "motion/changePosition.h"
 
 int main(int argc, char *argv[]) {
 
@@ -120,9 +121,9 @@ int main(int argc, char *argv[]) {
 
   // ANGLE INTERPOLATION TEST
   ros::ServiceClient client1 =
-    n.serviceClient<motion::setPosition>("/motion/setPosition",
-                                         true);
-  motion::setPosition srv1;
+    n.serviceClient<motion::changePosition>("/motion/changePosition",
+        true);
+  motion::changePosition srv1;
   // ros::ServiceClient client2 =
   //   n.serviceClient<motion::positionInterpolation>("/motion/positionInterpolation",
   //       true);
@@ -180,18 +181,33 @@ int main(int argc, char *argv[]) {
   //   ERR("Failed to call positionInterp1 service" << std::endl);
   // }
 
-  srv1.request.chainName = "Torso";
+  // srv1.request.chainName = "Torso";
+  // srv1.request.space = FRAME_ROBOT;
+  // std::vector<float> position(6, 0.0f); // Absolute Position
+  // position[2] = 0.25f;
+  // srv1.request.position = position;
+  // srv1.request.fractionMaxSpeed = 0.2f;
+  // srv1.request.axisMask = 63;
+
+  // if (client1.call(srv1)) {
+  //   DEBUG("setPosition Worked!" << std::endl);
+  // } else {
+  //   ERR("Failed to call setPosition service" << std::endl);
+  // }
+
+
+  srv1.request.effectorName = "LArm";
   srv1.request.space = FRAME_ROBOT;
-  std::vector<float> position(6, 0.0f); // Absolute Position
-  position[2] = 0.25f;
-  srv1.request.position = position;
-  srv1.request.fractionMaxSpeed = 0.2f;
-  srv1.request.axisMask = 63;
+  std::vector<float> positionChange(6, 0.0f); // Absolute Position
+  positionChange[0] = 0.03f;
+  srv1.request.positionChange = positionChange;
+  srv1.request.fractionMaxSpeed = 0.3f;
+  srv1.request.axisMask = 7;
 
   if (client1.call(srv1)) {
-    DEBUG("setPosition Worked!" << std::endl);
+    DEBUG("changePosition Worked!" << std::endl);
   } else {
-    ERR("Failed to call setPosition service" << std::endl);
+    ERR("Failed to call changePosition service" << std::endl);
   }
 
   // srv1.request.effectorNames.resize(2);
