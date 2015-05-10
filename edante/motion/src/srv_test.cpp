@@ -202,15 +202,14 @@ int main(int argc, char *argv[]) {
 
   if (client1.call(srv1)) {
     DEBUG("getTransform Worked!" << std::endl);
+    DEBUG("Transform: ")
+    for (size_t i = 0; i < 16; ++i) {
+      DEBUG(srv1.response.transform[i] << ", ")
+    }
+    DEBUG(std::endl);
   } else {
     ERR("Failed to call getTransform service" << std::endl);
   }
-
-  DEBUG("Transform: ")
-  for (size_t i = 0; i < 16; ++i) {
-    DEBUG(srv1.response.transform[i] << ", ")
-  }
-  DEBUG(std::endl);
 
   // srv1.request.effectorNames.resize(2);
   // srv1.request.effectorNames[0] = "LArm";

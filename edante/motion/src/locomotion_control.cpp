@@ -172,7 +172,7 @@ bool Locomotion_Control::getMoveConfig(motion::getMoveConfig::Request &req,
   std::size_t CSize = moveConfiguration.getSize();
   res.moveConfiguration.names.resize(CSize);
   res.moveConfiguration.values.resize(CSize);
-  for (int i = 0; i < CSize; ++i) {
+  for (size_t i = 0; i < CSize; ++i) {
     res.moveConfiguration.names[i] = moveConfiguration[i][0].toString();
     res.moveConfiguration.values[i] = moveConfiguration[i][1];
   }
