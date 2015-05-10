@@ -55,7 +55,7 @@ add_service_files(
   changeAngles.srv
   getAngles.srv
   useHand.srv
-  #Locomotion_control
+  # Locomotion_control
   move.srv
   moveTo.srv
   moveToward.srv
@@ -65,7 +65,7 @@ add_service_files(
   getRobotVelocity.srv
   getWalkArmsEnabled.srv
   setWalkArmsEnabled.srv
-  #Cartesian_Control
+  # Cartesian_Control
   positionInterpolation.srv
   positionInterpolations.srv
   setPosition.srv
@@ -76,6 +76,13 @@ add_service_files(
   setTransform.srv
   changeTransform.srv
   getTransform.srv
+  # Body_Balancer
+  enable.srv
+  footState.srv
+  enableBalanceConstraint.srv
+  goToBalance.srv
+  enableEffector.srv
+  setEffectorControl.srv
   # Motion_Task
   getTaskList.srv
   areResourcesAvailable.srv
@@ -130,7 +137,6 @@ add_executable(motion
 add_executable(srv_test
   src/srv_test.cpp)
 
-
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(motion motion_generate_messages_cpp)
@@ -151,7 +157,6 @@ target_link_libraries(srv_test
   alproxies
   alvalue
 )
-
 
 #############
 ## Install ##
