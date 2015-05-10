@@ -9,6 +9,7 @@
 #define BODY_BALANCER_H_
 
 #include <ros/ros.h>
+#include <std_msgs/Bool.h>
 
 #include <alproxies/almotionproxy.h>
 
@@ -29,6 +30,9 @@ class Body_Balancer {
   Body_Balancer(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
   ~Body_Balancer();
 
+  // ROS publisher
+  void spinTopics();
+
   // ROS services
   bool enableBalance(motion::enable::Request &req,
                      motion::enable::Response &res);
@@ -46,8 +50,12 @@ class Body_Balancer {
                                   motion::enableEffector::Response &res);
 
  private:
+// Flags
+  bool isBalancing_;
+
 // ROS
   ros::NodeHandle* nh_;
+  ros::Publisher balance_pub_;
   ros::ServiceServer srv_enable_balance_;
   ros::ServiceServer srv_foot_state_;
   ros::ServiceServer srv_enable_balance_constraint_;
