@@ -8,7 +8,7 @@
 
 // #include "motion/setStiffness.h"
 // #include "motion/stiffnessInterp.h"
-// #include "motion/angleInterp.h"
+#include "motion/angleInterp.h"
 // #include "motion/setAngles.h"
 // #include "motion/getTaskList.h"
 // #include "motion/moveTo.h"
@@ -19,7 +19,8 @@
 // #include "motion/setPosition.h"
 // #include "motion/getPosition.h"
 // #include "motion/getTransform.h"
-#include "motion/goToBalance.h"
+// #include "motion/goToBalance.h"
+// #include "motion/setEffectorControl.h"
 
 int main(int argc, char *argv[]) {
 
@@ -122,10 +123,10 @@ int main(int argc, char *argv[]) {
   // }
 
   // ANGLE INTERPOLATION TEST
-  ros::ServiceClient client1 =
-    n.serviceClient<motion::goToBalance>("/motion/goToBalance",
-                                         true);
-  motion::goToBalance srv1;
+  // ros::ServiceClient client1 =
+  //   n.serviceClient<motion::setEffectorControl>("/motion/setEffectorControl",
+  //       true);
+  // motion::setEffectorControl srv1;
   // ros::ServiceClient client2 =
   //   n.serviceClient<motion::positionInterpolation>("/motion/positionInterpolation",
   //       true);
@@ -197,13 +198,39 @@ int main(int argc, char *argv[]) {
   //   ERR("Failed to call setPosition service" << std::endl);
   // }
 
-  srv1.request.supportLeg = "LLeg";
-  srv1.request.duration = 2.0f;
 
-  if (client1.call(srv1)) {
-    DEBUG("goToBalance Worked!" << std::endl);
+  // REQUIRES BALANCING!!
+
+  //   # Activate Whole Body Balancer.
+  // isEnabled  = True
+  // proxy.wbEnable(isEnabled)
+
+  // # Legs are constrained in a plane
+  // stateName  = "Plane"
+  // supportLeg = "Legs"
+  // proxy.wbFootState(stateName, supportLeg)
+
+  // ANGLE INTERPOLATION TEST
+  ros::ServiceClient client1 =
+    n.serviceClient<motion::angleInterp>("/motion/angleInterp");
+  motion::angleInterp srv;
+
+  srv.request.angleLists.resize(1);
+  srv.request.timeLists.resize(1);
+  srv.request.names.push_back("LHipYawPitch");
+  srv.request.angleLists[0].floatList.push_back((-45.0f * PI) / 180);
+  srv.request.timeLists[0].floatList.push_back(3.0f);
+  srv.request.angleLists[0].floatList.push_back((10.0f * PI) / 180);
+  srv.request.timeLists[0].floatList.push_back(6.0f);
+  srv.request.angleLists[0].floatList.push_back((0.0f * PI) / 180);
+  srv.request.timeLists[0].floatList.push_back(9.0f);
+
+  srv.request.isAbsolute = true;
+
+  if (client1.call(srv)) {
+    DEBUG("angleInterpolation Worked!" << std::endl);
   } else {
-    ERR("Failed to call goToBalance service" << std::endl);
+    ERR("Failed to call angleInterpolation service" << std::endl);
   }
 
 // srv1.request.name = "RArm";

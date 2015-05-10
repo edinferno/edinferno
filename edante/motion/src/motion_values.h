@@ -5,6 +5,8 @@
 * @Desc:      Add file description...
 */
 
+const float PI = 3.1415927;
+
 #define FRAME_TORSO 0
 #define FRAME_WORLD 1
 #define FRAME_ROBOT 2
