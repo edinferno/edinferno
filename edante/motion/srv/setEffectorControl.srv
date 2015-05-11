@@ -1,0 +1,3 @@
+string effectorName
+float32[] targetCoordinate
+---

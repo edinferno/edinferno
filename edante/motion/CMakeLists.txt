@@ -23,11 +23,6 @@ find_package(catkin REQUIRED COMPONENTS
 # find_package(Boost REQUIRED COMPONENTS system)
 
 
-## Uncomment this if the package has a setup.py. This macro ensures
-## modules and global scripts declared therein get installed
-## See http://ros.org/doc/groovy/api/catkin/html/user_guide/setup_dot_py.html
-# catkin_python_setup()
-
 #######################################
 ## Declare ROS messages and services ##
 #######################################
@@ -60,7 +55,7 @@ add_service_files(
   changeAngles.srv
   getAngles.srv
   useHand.srv
-  #Locomotion_control
+  # Locomotion_control
   move.srv
   moveTo.srv
   moveToward.srv
@@ -70,7 +65,7 @@ add_service_files(
   getRobotVelocity.srv
   getWalkArmsEnabled.srv
   setWalkArmsEnabled.srv
-  #Cartesian_Control
+  # Cartesian_Control
   positionInterpolation.srv
   positionInterpolations.srv
   setPosition.srv
@@ -81,10 +76,22 @@ add_service_files(
   setTransform.srv
   changeTransform.srv
   getTransform.srv
+  # Body_Balancer
+  enable.srv
+  footState.srv
+  enableBalanceConstraint.srv
+  goToBalance.srv
+  enableEffector.srv
+  setEffectorControl.srv
   # Motion_Task
   getTaskList.srv
   areResourcesAvailable.srv
   taskResource.srv
+  # Robot_Posture
+  getPostureList.srv
+  setPosture.srv
+  getPostureFamily.srv
+  setMaxTryNumber.srv
 )
 
 ## Generate added messages and services with any dependencies listed here
@@ -129,83 +136,19 @@ add_executable(motion
   src/joint_control.cpp
   src/locomotion_control.cpp
   src/cartesian_control.cpp
-  src/motion_task.cpp)
-
-add_executable(stiffness_control
-  src/stiffness_test.cpp
-  src/stiffness_control.cpp)
-
-add_executable(joint_control
-  src/joint_test.cpp
-  src/joint_control.cpp)
-
-add_executable(locomotion_control
- src/locomotion_test.cpp
- src/locomotion_control.cpp)
-
-add_executable(cartesian_control
-  src/cartesian_test.cpp
-  src/cartesian_control.cpp)
-
-add_executable(motion_task
-  src/motion_task_test.cpp
-  src/motion_task.cpp)
+  src/body_balancer.cpp
+  src/motion_task.cpp
+  src/robot_posture.cpp)
 
 add_executable(srv_test
   src/srv_test.cpp)
 
-
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(stiffness_control motion_generate_messages_cpp)
-add_dependencies(joint_control motion_generate_messages_cpp)
-add_dependencies(locomotion_control motion_generate_messages_cpp)
-add_dependencies(cartesian_control motion_generate_messages_cpp)
-add_dependencies(motion_task motion_generate_messages_cpp)
-add_dependencies(srv_test motion_generate_messages_cpp)
+add_dependencies(motion motion_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(motion
-  ${catkin_LIBRARIES}
-  alcommon
-  alerror
-  alproxies
-  alvalue
-)
-
-target_link_libraries(stiffness_control
-  ${catkin_LIBRARIES}
-  alcommon
-  alerror
-  alproxies
-  alvalue
-)
-
-target_link_libraries(joint_control
-  ${catkin_LIBRARIES}
-  alcommon
-  alerror
-  alproxies
-  alvalue
-)
-
-target_link_libraries(locomotion_control
-  ${catkin_LIBRARIES}
-  alcommon
-  alerror
-  alproxies
-  alvalue
-)
-
-target_link_libraries(cartesian_control
-  ${catkin_LIBRARIES}
-  alcommon
-  alerror
-  alproxies
-  alvalue
-)
-
-target_link_libraries(motion_task
   ${catkin_LIBRARIES}
   alcommon
   alerror
@@ -220,7 +163,6 @@ target_link_libraries(srv_test
   alproxies
   alvalue
 )
-
 
 #############
 ## Install ##
