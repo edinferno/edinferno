@@ -1,10 +1,25 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(sensing)
 
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
+if(COMPILER_SUPPORTS_CXX11)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
+elseif(COMPILER_SUPPORTS_CXX0X)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall")
+else()
+        message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+endif()
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS roscpp std_msgs std_srvs)
+find_package(catkin REQUIRED COMPONENTS
+ roscpp
+ # std_msgs
+ # std_srvs
+ )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -36,7 +51,6 @@ find_package(catkin REQUIRED COMPONENTS roscpp std_msgs std_srvs)
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   std_msgs
 # )
 
 ###################################
@@ -50,7 +64,8 @@ find_package(catkin REQUIRED COMPONENTS roscpp std_msgs std_srvs)
 catkin_package(
    INCLUDE_DIRS include
 #  LIBRARIES sensing
-#  CATKIN_DEPENDS roscpp std_msgs std_srvs
+ CATKIN_DEPENDS roscpp
+ # std_msgs std_srvs
 #  DEPENDS system_lib
 )
 
@@ -70,16 +85,22 @@ include_directories(include
 # )
 
 ## Declare a cpp executable
-# add_executable(sensing_node src/sensing_node.cpp)
+add_executable(sensing
+ src/sensing_test.cpp
+ src/sensing.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(sensing_node sensing_generate_messages_cpp)
+add_dependencies(sensing sensing_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(sensing_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(sensing
+  ${catkin_LIBRARIES}
+  alcommon
+  alerror
+  alproxies
+  alvalue
+)
 
 #############
 ## Install ##

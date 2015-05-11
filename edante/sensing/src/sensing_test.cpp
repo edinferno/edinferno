@@ -11,15 +11,14 @@
 #include <alcommon/albrokermanager.h>
 #include <alcommon/altoolsmain.h>
 
-#include "fall_manager.h"
-
+#include "sensing.h"
 
 extern "C"
 {
   int _createModule(boost::shared_ptr<AL::ALBroker> pBroker) {
     AL::ALBrokerManager::setInstance(pBroker->fBrokerManager.lock());
     AL::ALBrokerManager::getInstance()->addBroker(pBroker);
-    AL::ALModule::createModule<Fall_Manager>( pBroker, "Fall_Manager" );
+    AL::ALModule::createModule<Sensing>( pBroker, "Sensing" );
     return 0;
   }
   int _closeModule() {
@@ -32,5 +31,5 @@ int main(int argc, char *argv[]) {
   TMainType sig;
   sig = &_createModule;
   // call main
-  ALTools::mainFunction("Fall_Manager", argc, argv, sig);
+  ALTools::mainFunction("Sensing", argc, argv, sig);
 }
