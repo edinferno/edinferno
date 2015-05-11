@@ -87,6 +87,11 @@ add_service_files(
   getTaskList.srv
   areResourcesAvailable.srv
   taskResource.srv
+  # Robot_Posture
+  getPostureList.srv
+  setPosture.srv
+  getPostureFamily.srv
+  setMaxTryNumber.srv
 )
 
 ## Generate added messages and services with any dependencies listed here
@@ -132,7 +137,8 @@ add_executable(motion
   src/locomotion_control.cpp
   src/cartesian_control.cpp
   src/body_balancer.cpp
-  src/motion_task.cpp)
+  src/motion_task.cpp
+  src/robot_posture.cpp)
 
 add_executable(srv_test
   src/srv_test.cpp)
