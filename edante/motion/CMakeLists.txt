@@ -44,6 +44,9 @@ add_message_files(
 ## Generate services in the 'srv' folder
 add_service_files(
   FILES
+  # General
+  enable.srv
+  isEnabled.srv
   # Stiffness_Control
   stiffnessInterp.srv
   setStiffness.srv
@@ -77,7 +80,6 @@ add_service_files(
   changeTransform.srv
   getTransform.srv
   # Body_Balancer
-  enable.srv
   footState.srv
   enableBalanceConstraint.srv
   goToBalance.srv
@@ -137,6 +139,7 @@ add_executable(motion
   src/locomotion_control.cpp
   src/cartesian_control.cpp
   src/body_balancer.cpp
+  src/fall_manager.cpp
   src/motion_task.cpp
   src/robot_posture.cpp)
 

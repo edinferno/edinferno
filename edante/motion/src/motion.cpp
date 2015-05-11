@@ -6,6 +6,7 @@
 #include "locomotion_control.h"
 #include "cartesian_control.h"
 #include "body_balancer.h"
+#include "fall_manager.h"
 #include "motion_task.h"
 #include "robot_posture.h"
 
@@ -22,6 +23,7 @@ int main(int argc, char *argv[]) {
   Locomotion_Control LocomotionTest(&nh, &mProxy);
   Cartesian_Control CartesianTest(&nh, &mProxy);
   Body_Balancer BalancerTest(&nh, &mProxy);
+  Fall_Manager FallManagerTest(&nh, &mProxy);
   Motion_Task MotionTest(&nh, &mProxy);
   Robot_Posture PostureTest(&nh, &pProxy);
 
