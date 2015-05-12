@@ -11,7 +11,7 @@
 #include <alcommon/albrokermanager.h>
 #include <alcommon/altoolsmain.h>
 
-#include "sensing.h"
+#include "sensing_test.h"
 
 extern "C"
 {
