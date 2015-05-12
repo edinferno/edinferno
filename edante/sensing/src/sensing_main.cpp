@@ -18,7 +18,7 @@ extern "C"
   int _createModule(boost::shared_ptr<AL::ALBroker> pBroker) {
     AL::ALBrokerManager::setInstance(pBroker->fBrokerManager.lock());
     AL::ALBrokerManager::getInstance()->addBroker(pBroker);
-    AL::ALModule::createModule<Sensing>( pBroker, "Sensing" );
+    AL::ALModule::createModule<Sensing_Test>( pBroker, "Sensing_Test");
     return 0;
   }
   int _closeModule() {
@@ -31,5 +31,5 @@ int main(int argc, char *argv[]) {
   TMainType sig;
   sig = &_createModule;
   // call main
-  ALTools::mainFunction("Sensing", argc, argv, sig);
+  ALTools::mainFunction("Sensing_Test", argc, argv, sig);
 }

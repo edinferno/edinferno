@@ -5,8 +5,8 @@
 * @Desc:      ROS wrapper for NaoQI Fall Manager API
 */
 
-#ifndef SENSING_H
-#define SENSING_H
+#ifndef SENSING_TEST_H
+#define SENSING_TEST_H
 
 #include <ros/ros.h>
 #include <std_msgs/Bool.h>
@@ -31,12 +31,12 @@ class ALBroker;
 
 using namespace std;
 
-class Sensing : public AL::ALModule {
+class Sensing_Test : public AL::ALModule {
 
  public:
 
-  Sensing(boost::shared_ptr<AL::ALBroker> broker, const std::string& name);
-  virtual ~Sensing();
+  Sensing_Test(boost::shared_ptr<AL::ALBroker> broker, const std::string& name);
+  virtual ~Sensing_Test();
 
   /** Overloading ALModule::init().
   * This is called right after the module has been loaded
@@ -65,4 +65,4 @@ class Sensing : public AL::ALModule {
   AL::ALMemoryProxy* memProxy_;
 };
 
-#endif /* SENSING_H_ */
+#endif /* SENSING_TEST_H_ */
