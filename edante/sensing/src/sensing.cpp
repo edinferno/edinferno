@@ -5,58 +5,34 @@
 * @Desc:      ROS Wrapper for NaoQI sensor events
 */
 
-#include "sensing.h"
+#include <ros/ros.h>
+#include "definitions.h"
 
-#include <alvalue/alvalue.h>
-#include <alcommon/alproxy.h>
-#include <alcommon/albroker.h>
-#include <althread/alcriticalsection.h>
+#include "touch.h"
+#include "power.h"
+#include "sonar.h"
+#include "fsr.h"
 
-Sensing::Sensing(
-  boost::shared_ptr<AL::ALBroker> broker,
-  const std::string& name): AL::ALModule(broker, name),
-  fCallbackMutex(AL::ALMutex::createALMutex()) {
-  setModuleDescription("This module presents how to subscribe to a simple event (here RightBumperPressed) and use a callback method.");
+#include <alproxies/almemoryproxy.h>
 
-  functionName("onRightBumperPressed", getName(),
-               "Method called when the right bumper is pressed. Makes a LED animation.");
-  BIND_METHOD(Sensing::onRightBumperPressed)
-}
+int main(int argc, char *argv[]) {
+  ros::init(argc, argv, "sensing");
+  ros::NodeHandle nh("sensing");
+  AL::ALMemoryProxy memProxy("127.0.0.1", 9559);
+  Touch TouchTest(&nh, &memProxy);
+  // Power PowerTest(&nh, &memProxy);
+  // Sonar SonarTest(&nh, &memProxy);
+  // Fsr FsrTest(&nh, &memProxy);
 
-Sensing::~Sensing() {
-  fMemoryProxy.unsubscribeToEvent("RightBumperPressed", "Sensing");
-}
+  ros::Rate r(10);
 
-void Sensing::init() {
-  try {
-    fMemoryProxy = AL::ALMemoryProxy(getParentBroker());
-
-    fState = fMemoryProxy.getData("RightBumperPressed");
-
-    fMemoryProxy.subscribeToEvent("RightBumperPressed", "Sensing",
-                                  "onRightBumperPressed");
-  } catch (const AL::ALError& e) {
-    DEBUG(e.what() << std::endl);
+  while (ros::ok()) {
+    TouchTest.spinTopics();
+    // PowerTest.spinTopics();
+    // SonarTest.spinTopics();
+    // FsrTest.spinTopics();
+    ros::spinOnce();
+    r.sleep();
   }
-}
 
-void Sensing::onRightBumperPressed() {
-  DEBUG("Executing callback method on right bumper event" << std::endl);
-  /**
-  * As long as this is defined, the code is thread-safe.
-  */
-  AL::ALCriticalSection section(fCallbackMutex);
-
-  /**
-  * Check that the bumper is pressed.
-  */
-  fState =  fMemoryProxy.getData("RightBumperPressed");
-  if (fState  > 0.5f) {
-    return;
-  }
-  try {
-    DEBUG("PRESSED!");
-  } catch (const AL::ALError& e) {
-    DEBUG(e.what() << std::endl);
-  }
 }

@@ -17,7 +17,8 @@ endif()
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
  roscpp
- # std_msgs
+ std_msgs
+ message_generation
  # std_srvs
  )
 
@@ -35,11 +36,13 @@ find_package(catkin REQUIRED COMPONENTS
 #######################################
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+add_message_files(
+  FILES
+  # Touch
+  bumpers.msg
+  head.msg
+  hand.msg
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -49,9 +52,9 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-# )
+generate_messages(
+  DEPENDENCIES
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -64,8 +67,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
    INCLUDE_DIRS include
 #  LIBRARIES sensing
- CATKIN_DEPENDS roscpp
- # std_msgs std_srvs
+ CATKIN_DEPENDS roscpp std_msgs message_runtime
 #  DEPENDS system_lib
 )
 
@@ -86,15 +88,32 @@ include_directories(include
 
 ## Declare a cpp executable
 add_executable(sensing
- src/sensing_test.cpp
- src/sensing.cpp)
+ src/sensing.cpp
+ src/touch.cpp
+ src/power.cpp
+ src/sonar.cpp
+ src/fsr.cpp
+ )
+
+add_executable(sensing_main
+ src/sensing_main.cpp
+ src/sensing_test.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(sensing sensing_generate_messages_cpp)
 
+
 ## Specify libraries to link a library or executable target against
 target_link_libraries(sensing
+  ${catkin_LIBRARIES}
+  alcommon
+  alerror
+  alproxies
+  alvalue
+)
+
+target_link_libraries(sensing_main
   ${catkin_LIBRARIES}
   alcommon
   alerror
