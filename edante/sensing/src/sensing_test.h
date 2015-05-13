@@ -10,6 +10,9 @@
 
 #include <ros/ros.h>
 #include <std_msgs/Bool.h>
+#include "sensing/bumpers.h"
+#include "sensing/hand.h"
+#include "sensing/head.h"
 
 #include <alcommon/almodule.h>
 #include <alproxies/almotionproxy.h>
@@ -43,14 +46,20 @@ class Sensing_Test : public AL::ALModule {
   */
   virtual void init();
 
-  /**
-  * This method will be called every time the event RightBumperPressed is raised.
-  */
-  void onRightBumperPressed();
+  void rightBumperPressed();
+  void leftBumperPressed();
+  void chestButtonPressed();
+  void frontHeadPressed();
+  void middleHeadPressed();
+  void rearHeadPressed();
+  void handRightBackPressed();
+  void handRightLeftPressed();
+  void handRightRightPressed();
+  void handLeftBackPressed();
+  void handLeftLeftPressed();
+  void handLeftRightPressed();
 
  private:
-  // Flags
-  // bool hasFallen_;
   AL::ALMemoryProxy fMemoryProxy;
 
   boost::shared_ptr<AL::ALMutex> fCallbackMutex;
@@ -59,7 +68,15 @@ class Sensing_Test : public AL::ALModule {
 
   // ROS
   ros::NodeHandle* nh_;
-  ros::Publisher robot_fallen_pub_;
+  ros::Publisher bumpers_pub_;
+  ros::Publisher chest_pub_;
+  ros::Publisher head_pub_;
+  ros::Publisher right_hand_pub_;
+  ros::Publisher left_hand_pub_;
+  sensing::bumpers bumperMsg_;
+  sensing::head headMsg_;
+  sensing::hand rightHandMsg_;
+  sensing::hand leftHandMsg_;
 
   // NaoQI
   AL::ALMemoryProxy* memProxy_;
