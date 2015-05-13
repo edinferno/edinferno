@@ -12,10 +12,10 @@
 #include "motion/setPosition.h"
 #include "motion/changePosition.h"
 #include "motion/getPosition.h"
-#include "motion/transformInterpolation.h"
-#include "motion/transformInterpolations.h"
-#include "motion/setTransform.h"
-#include "motion/changeTransform.h"
+// #include "motion/transformInterpolation.h"
+// #include "motion/transformInterpolations.h"
+// #include "motion/setTransform.h"
+// #include "motion/changeTransform.h"
 #include "motion/getTransform.h"
 
 #include "definitions.h"
@@ -27,7 +27,7 @@ class Cartesian_Control {
   Cartesian_Control(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
   ~Cartesian_Control();
 
-// ROS services
+  // ROS services
   bool positionInterpolation(motion::positionInterpolation::Request &req,
                              motion::positionInterpolation::Response &res);
   bool positionInterpolations(motion::positionInterpolations::Request &req,
@@ -38,20 +38,12 @@ class Cartesian_Control {
                       motion::changePosition::Response &res);
   bool getPosition(motion::getPosition::Request &req,
                    motion::getPosition::Response &res);
-  // bool transformInterpolation(motion::transformInterpolation::Request &req,
-  //                             motion::transformInterpolation::Response &res);
-  // bool transformInterpolations(motion::transformInterpolations::Request &req,
-  //                              motion::transformInterpolations::Response &res);
-  // bool setTransform(motion::setTransform::Request &req,
-  //                   motion::setTransform::Response &res);
-  // bool changeTransform(motion::changeTransform::Request &req,
-  //                      motion::changeTransform::Response &res);
   bool getTransform(motion::getTransform::Request &req,
                     motion::getTransform::Response &res);
 
 
  private:
-// ROS
+  // ROS
   ros::NodeHandle* nh_;
   ros::ServiceServer srv_position_interpolation_;
   ros::ServiceServer srv_position_interpolations_;
@@ -64,7 +56,7 @@ class Cartesian_Control {
   ros::ServiceServer srv_change_transform_;
   ros::ServiceServer srv_get_transform_;
 
-// NAOqi
+  // NAOqi
   AL::ALMotionProxy* mProxy_;
 };
 

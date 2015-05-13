@@ -28,46 +28,40 @@
 
 using namespace std;
 
-class Joint_Control{
-public:
- Joint_Control(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
- ~Joint_Control();
+class Joint_Control {
+ public:
+  Joint_Control(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
+  ~Joint_Control();
 
- // Joint control API
-
- // ROS publishers
-
- // ROS services
- bool angleInterp(motion::angleInterp::Request &req,
-                  motion::angleInterp::Response &res);
- bool angleInterpSpeed(motion::angleInterpSpeed::Request &req,
-                       motion::angleInterpSpeed::Response &res);
- bool setAngles(motion::setAngles::Request &req,
-                motion::setAngles::Response &res);
- bool changeAngles(motion::changeAngles::Request &req,
-                   motion::changeAngles::Response &res);
- bool getAngles(motion::getAngles::Request &req,
-                motion::getAngles::Response &res);
- bool closeHand(motion::useHand::Request &req,
+  // ROS services
+  bool angleInterp(motion::angleInterp::Request &req,
+                   motion::angleInterp::Response &res);
+  bool angleInterpSpeed(motion::angleInterpSpeed::Request &req,
+                        motion::angleInterpSpeed::Response &res);
+  bool setAngles(motion::setAngles::Request &req,
+                 motion::setAngles::Response &res);
+  bool changeAngles(motion::changeAngles::Request &req,
+                    motion::changeAngles::Response &res);
+  bool getAngles(motion::getAngles::Request &req,
+                 motion::getAngles::Response &res);
+  bool closeHand(motion::useHand::Request &req,
+                 motion::useHand::Response &res);
+  bool openHand(motion::useHand::Request &req,
                 motion::useHand::Response &res);
- bool openHand(motion::useHand::Request &req,
-               motion::useHand::Response &res);
 
-private:
- // ROS
- ros::NodeHandle* nh_;
- ros::ServiceServer srv_angle_interp_;
- ros::ServiceServer srv_angle_interp_speed_;
- ros::ServiceServer srv_set_angles_;
- ros::ServiceServer srv_change_angles_;
- ros::ServiceServer srv_get_angles_;
- ros::ServiceServer srv_close_hand_;
- ros::ServiceServer srv_open_hand_;
+ private:
+  // ROS
+  ros::NodeHandle* nh_;
+  ros::ServiceServer srv_angle_interp_;
+  ros::ServiceServer srv_angle_interp_speed_;
+  ros::ServiceServer srv_set_angles_;
+  ros::ServiceServer srv_change_angles_;
+  ros::ServiceServer srv_get_angles_;
+  ros::ServiceServer srv_close_hand_;
+  ros::ServiceServer srv_open_hand_;
 
- // NAOqi
- AL::ALMotionProxy* mProxy_;
-
- // Internal
+  // NAOqi
+  AL::ALMotionProxy* mProxy_;
 
 };
 #endif /* JOINT_CONTROL_H_ */

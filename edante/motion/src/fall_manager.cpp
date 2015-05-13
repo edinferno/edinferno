@@ -7,21 +7,35 @@
 
 #include "fall_manager.h"
 
-Fall_Manager::Fall_Manager(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy) {
+Fall_Manager::Fall_Manager(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy,
+                           AL::ALMemoryProxy* memProxy) {
   nh_ = nh;
   mProxy_ = mProxy;
+  memProxy_ = memProxy;
+  INFO("Setting up Fall Manager publishers" << std::endl);
+  has_fallen_pub_ = nh_->advertise<std_msgs::Bool>("hasFallen", 10);
   INFO("Setting up Fall Manager services" << std::endl);
-
   srv_set_fall_manager_ = nh_->advertiseService("setFallManagerEnabled",
                           &Fall_Manager::setFallManagerEnabled, this);
   srv_get_fall_manager_ = nh_->advertiseService("getFallManagerEnabled",
                           &Fall_Manager::getFallManagerEnabled, this);
+
 }
 
 Fall_Manager::~Fall_Manager() {
   ros::shutdown();
 }
 
+void Fall_Manager::spinTopics() {
+  // For some reason always true!
+  std_msgs::Bool msg;
+  if (bool(memProxy_->getData("robotHasFallen")) == true) {
+    msg.data = true;
+  } else {
+    msg.data = false;
+  }
+  has_fallen_pub_.publish(msg);
+}
 
 // ROS services
 bool Fall_Manager::setFallManagerEnabled(motion::enable::Request &req,
