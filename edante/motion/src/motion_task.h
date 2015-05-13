@@ -19,32 +19,32 @@
 
 using namespace std;
 
-class Motion_Task{
-public:
- Motion_Task(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
- ~Motion_Task();
+class Motion_Task {
+ public:
+  Motion_Task(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
+  ~Motion_Task();
 
- //Motion task API
- bool getTaskList(motion::getTaskList::Request &req,
-                  motion::getTaskList::Response &res);
- bool areResourcesAvailable(motion::areResourcesAvailable::Request &req,
-                            motion::areResourcesAvailable::Response &res);
- bool killTasksResources(motion::taskResource::Request &req,
-                         motion::taskResource::Response &res);
- bool killMove(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
- bool killAll(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
+  // ROS services
+  bool getTaskList(motion::getTaskList::Request &req,
+                   motion::getTaskList::Response &res);
+  bool areResourcesAvailable(motion::areResourcesAvailable::Request &req,
+                             motion::areResourcesAvailable::Response &res);
+  bool killTasksResources(motion::taskResource::Request &req,
+                          motion::taskResource::Response &res);
+  bool killMove(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
+  bool killAll(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
 
-private:
- //ROS
- ros::NodeHandle *nh_;
- ros::ServiceServer srv_get_task_list_;
- ros::ServiceServer srv_are_res_avail_;
- ros::ServiceServer srv_kill_tasks_res_;
- ros::ServiceServer srv_kill_move_;
- ros::ServiceServer srv_kill_all_;
+ private:
+  //ROS
+  ros::NodeHandle *nh_;
+  ros::ServiceServer srv_get_task_list_;
+  ros::ServiceServer srv_are_res_avail_;
+  ros::ServiceServer srv_kill_tasks_res_;
+  ros::ServiceServer srv_kill_move_;
+  ros::ServiceServer srv_kill_all_;
 
- // NAOqi
- AL::ALMotionProxy* mProxy_;
+  // NAOqi
+  AL::ALMotionProxy* mProxy_;
 
 };
 
