@@ -27,8 +27,8 @@ bool Motion_Task::getTaskList(motion::getTaskList::Request &req,
   res.taskList.resize(s);
   if (s > 0) {
     for (size_t i = 0; i < s; ++i) {
-      res.taskList[0].taskName = string(taskList[0][0]);
-      res.taskList[0].motionID = int(taskList[0][1]);
+      res.taskList[i].taskName = string(taskList[i][0]);
+      res.taskList[i].motionID = int(taskList[i][1]);
     }
   }
   return true;
