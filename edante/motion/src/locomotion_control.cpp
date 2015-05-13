@@ -182,8 +182,7 @@ bool Locomotion_Control::getMoveConfig(motion::getMoveConfig::Request &req,
 bool Locomotion_Control::getRobotPosition(
   motion::getRobotPosition::Request &req,
   motion::getRobotPosition::Response &res) {
-  bool useSensors = req.useSensors;
-  res.positions = mProxy_->getRobotPosition(useSensors);
+  res.positions = mProxy_->getRobotPosition(req.useSensors);
   return true;
 }
 
@@ -214,9 +213,7 @@ bool Locomotion_Control::getWalkArmsEnabled(
 bool Locomotion_Control::setWalkArmsEnabled(
   motion::setWalkArmsEnabled::Request &req,
   motion::setWalkArmsEnabled::Response &res) {
-  bool left = req.leftArmEnable;
-  bool right = req.rightArmEnable;
-  mProxy_->setWalkArmsEnabled(left, right);
+  mProxy_->setWalkArmsEnabled(req.leftArmEnable, req.rightArmEnable);
   return true;
 }
 
