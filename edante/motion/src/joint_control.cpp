@@ -11,10 +11,6 @@ Joint_Control::Joint_Control(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy) {
   nh_ = nh;
   mProxy_ = mProxy;
 
-  // INFO("Setting up Joint Control publishers" << std::endl);
-
-  // INFO("Setting up Joint Control subscribers" << std::endl);
-
   INFO("Setting up Joint Control services" << std::endl);
 
   srv_angle_interp_ = nh_->advertiseService("angleInterp",
@@ -35,13 +31,11 @@ Joint_Control::Joint_Control(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy) {
 
 Joint_Control::~Joint_Control() {
   ros::shutdown();
-  // delete nh_;
 }
 
 bool Joint_Control::angleInterp(motion::angleInterp::Request &req,
                                 motion::angleInterp::Response &res) {
   size_t s = req.names.size();
-  AL::ALValue names = req.names;
 
   AL::ALValue angleLists;
   angleLists.arraySetSize(s);
@@ -54,7 +48,7 @@ bool Joint_Control::angleInterp(motion::angleInterp::Request &req,
   }
 
   try {
-    mProxy_->post.angleInterpolation(names, angleLists,
+    mProxy_->post.angleInterpolation(req.names, angleLists,
                                      timeLists, req.isAbsolute);
     res.res = true;
   } catch (const std::exception& e) {
