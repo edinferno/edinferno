@@ -58,15 +58,6 @@ Touch::Touch(
   functionName("tripleChestClick", getName(),
                "Triple chest button click event.");
   BIND_METHOD(Touch::tripleChestClick)
-  int argc = 0;
-  char *argv[] = {NULL};
-  ros::init(argc, argv, "touch");
-  nh_ = new ros::NodeHandle("touch");
-  bumpers_pub_ = nh_->advertise<sensing::bumpers>("bumpers", 10);
-  chest_pub_ = nh_->advertise<std_msgs::String>("chest", 10);
-  head_pub_ = nh_->advertise<sensing::head>("head", 10);
-  right_hand_pub_ = nh_->advertise<sensing::hand>("rightHand", 10);
-  left_hand_pub_ = nh_->advertise<sensing::hand>("leftHand", 10);
 }
 
 Touch::~Touch() {
@@ -124,6 +115,14 @@ void Touch::init() {
   }
 }
 
+void Touch::rosSetup(ros::NodeHandle* nh) {
+  nh_ = nh;
+  bumpers_pub_ = nh_->advertise<sensing::bumpers>("bumpers", 10);
+  chest_pub_ = nh_->advertise<std_msgs::String>("chest", 10);
+  head_pub_ = nh_->advertise<sensing::head>("head", 10);
+  right_hand_pub_ = nh_->advertise<sensing::hand>("rightHand", 10);
+  left_hand_pub_ = nh_->advertise<sensing::hand>("leftHand", 10);
+}
 
 void Touch::rightBumperPressed() {
   AL::ALCriticalSection section(fCallbackMutex);

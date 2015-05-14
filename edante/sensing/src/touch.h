@@ -9,25 +9,19 @@
 #define TOUCH_H
 
 #include <ros/ros.h>
+#include <string>
 #include <std_msgs/Bool.h>
 #include <std_msgs/String.h>
 #include "sensing/bumpers.h"
 #include "sensing/hand.h"
 #include "sensing/head.h"
 
-#include <alcommon/almodule.h>
-#include <alproxies/almotionproxy.h>
-#include <alproxies/almemoryproxy.h>
-
-#include "definitions.h"
-
 #include <boost/shared_ptr.hpp>
 #include <alcommon/almodule.h>
-#include <string>
-
 #include <alproxies/almemoryproxy.h>
-#include <alproxies/altexttospeechproxy.h>
 #include <althread/almutex.h>
+
+#include "definitions.h"
 
 namespace AL {
 class ALBroker;
@@ -40,12 +34,11 @@ class Touch : public AL::ALModule {
  public:
 
   Touch(boost::shared_ptr<AL::ALBroker> broker, const std::string& name);
-  virtual ~Touch();
+  ~Touch();
 
-  /** Overloading ALModule::init().
-  * This is called right after the module has been loaded
-  */
-  virtual void init();
+  void init();
+
+  void rosSetup(ros::NodeHandle* nh);
 
   void rightBumperPressed();
   void leftBumperPressed();
