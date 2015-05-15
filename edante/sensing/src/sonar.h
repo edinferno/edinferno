@@ -13,6 +13,7 @@
 #include <std_msgs/Bool.h>
 #include <std_msgs/String.h>
 #include "sensing/sonars.h"
+#include "sensing/enable.h"
 
 #include <boost/shared_ptr.hpp>
 #include <alcommon/almodule.h>
@@ -38,7 +39,7 @@ class Sonar : public AL::ALModule {
   void init();
 
   void rosSetup(ros::NodeHandle* nh, bool pubSonars);
-  void rosSetup(ros::NodeHandle* nh) {this->rosSetup(nh, true);}
+  void rosSetup(ros::NodeHandle* nh) {this->rosSetup(nh, false);}
 
   void spin();
 
@@ -48,6 +49,9 @@ class Sonar : public AL::ALModule {
   void sonarRightNothingDetected();
 
   void pubSonars();
+
+  bool enableSonarPub(sensing::enable::Request &req,
+                      sensing::enable::Response &res);
 
  private:
   // Private
@@ -60,6 +64,7 @@ class Sonar : public AL::ALModule {
   ros::NodeHandle* nh_;
   ros::Publisher sonar_event_pub_;
   ros::Publisher sonar_data_pub_;
+  ros::ServiceServer srv_enab_sonar_;
 
   // NaoQI
   AL::ALSonarProxy* sonarProxy_;

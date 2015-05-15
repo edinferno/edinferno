@@ -64,6 +64,8 @@ void Sonar::rosSetup(ros::NodeHandle* nh, bool pubSonars) {
   pubSonars_ = pubSonars;
   sonar_event_pub_ = nh_->advertise<std_msgs::String>("sonarEvent", 10);
   sonar_data_pub_ = nh_->advertise<sensing::sonars>("sonarData", 10);
+  srv_enab_sonar_ = nh_->advertiseService("enableSonarPub",
+                                          &Sonar::enableSonarPub, this);
 }
 
 void Sonar::spin() {
@@ -106,4 +108,10 @@ void Sonar::pubSonars() {
   data.left = fMemoryProxy.getData("Device/SubDeviceList/US/Left/Sensor/Value");
   data.right = fMemoryProxy.getData("Device/SubDeviceList/US/Right/Sensor/Value");
   sonar_data_pub_.publish(data);
+}
+
+bool Sonar::enableSonarPub(sensing::enable::Request &req,
+                           sensing::enable::Response &res) {
+  pubSonars_ = req.isEnabled;
+  return true;
 }
