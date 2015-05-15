@@ -40,7 +40,7 @@ Sonar::~Sonar() {
   fMemoryProxy.unsubscribeToEvent("SonarRightDetected", "Sonar");
   fMemoryProxy.unsubscribeToEvent("SonarLeftNothingDetected", "Sonar");
   fMemoryProxy.unsubscribeToEvent("SonarRightNothingDetected", "Sonar");
-  ros::shutdown();
+  // ros::shutdown();
 }
 
 void Sonar::init() {

@@ -75,8 +75,8 @@ Touch::~Touch() {
   fMemoryProxy.unsubscribeToEvent("ALSentinel/SimpleClickOccured", "Touch");
   fMemoryProxy.unsubscribeToEvent("ALSentinel/DoubleClickOccured", "Touch");
   fMemoryProxy.unsubscribeToEvent("ALSentinel/TripleClickOccured", "Touch");
-  ros::shutdown();
-  delete nh_;
+  // ros::shutdown();
+  // delete nh_;
 }
 
 void Touch::init() {
