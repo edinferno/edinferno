@@ -22,6 +22,8 @@ find_package(catkin REQUIRED COMPONENTS
  # std_srvs
  )
 
+find_package(Boost REQUIRED)
+
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -38,6 +40,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
+  # Sonar
+  sonars.msg
   # Touch
   bumpers.msg
   head.msg
@@ -45,11 +49,10 @@ add_message_files(
 )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+add_service_files(
+  FILES
+  enable.srv
+)
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
