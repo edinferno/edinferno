@@ -149,6 +149,7 @@ add_executable(srv_test
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(motion motion_generate_messages_cpp)
+add_dependencies(srv_test motion_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(motion
