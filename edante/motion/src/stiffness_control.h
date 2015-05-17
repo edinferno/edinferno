@@ -54,8 +54,6 @@ class Stiffness_Control {
   bool setStiffnesses(const vector<string>& names,
                       const vector<float>& stiffnesses);
 
-  vector<float> getStiffnesses(const vector<string>&);
-
  private:
 // ROS
   ros::NodeHandle* nh_;

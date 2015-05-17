@@ -32,7 +32,6 @@ Stiffness_Control::Stiffness_Control(ros::NodeHandle* nh,
 
 Stiffness_Control::~Stiffness_Control() {
   ros::shutdown();
-  // delete nh_;
 }
 
 void Stiffness_Control::spinTopics() {
@@ -58,7 +57,6 @@ bool Stiffness_Control::rest(std_srvs::Empty::Request &req,
 bool Stiffness_Control::stiffnessInterp(motion::stiffnessInterp::Request &req,
                                         motion::stiffnessInterp::Response &res) {
   size_t s = req.names.size();
-  AL::ALValue names = req.names;
 
   AL::ALValue stiffnessLists;
   stiffnessLists.arraySetSize(s);
@@ -71,7 +69,7 @@ bool Stiffness_Control::stiffnessInterp(motion::stiffnessInterp::Request &req,
   }
 
   try {
-    mProxy_->post.stiffnessInterpolation(names, stiffnessLists, timeLists);
+    mProxy_->post.stiffnessInterpolation(req.names, stiffnessLists, timeLists);
     res.res = true;
   } catch (const std::exception& e) {
     res.res = false;
@@ -123,8 +121,7 @@ bool Stiffness_Control::setStiffness(motion::setStiffness::Request &req,
 
 bool Stiffness_Control::getStiffness(motion::getStiffness::Request &req,
                                      motion::getStiffness::Response &res) {
-  vector<string> jointNameVect = req.names;
-  res.stiffnesses = this->getStiffnesses(jointNameVect);
+  res.stiffnesses = mProxy_->getStiffnesses(req.names);
   return true;
 }
 
@@ -165,8 +162,4 @@ bool Stiffness_Control::setStiffnesses(const vector<string>& names,
     return false;
   }
   return true;
-}
-
-vector<float> Stiffness_Control::getStiffnesses(const vector<string>& names) {
-  return mProxy_->getStiffnesses(names);
 }

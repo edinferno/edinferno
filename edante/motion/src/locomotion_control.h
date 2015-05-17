@@ -28,18 +28,7 @@ class Locomotion_Control {
   Locomotion_Control(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
   ~Locomotion_Control();
 
-// Locomotion Control API
-
-  // void setWalkTargetVelocity(const float& x, const float& y, const float& theta,
-  //                            const float& frequency);
-  // void setWalkTargetVelocity(const float& x, const float& y, const float& theta,
-  //                            const float& frequency,
-  //                            vector<tuple<string, int> >& feetGaitConfig);
-  // void setWalkTargetVelocity(const float& x, const float& y, const float& theta,
-  //                            const float& frequency,
-  //                            vector<tuple<string, int> >& leftFootGaitConfig,
-  //                            vector<tuple<string, int> >& rightFootGaitConfig);
-
+  // ROS services
   bool move(motion::move::Request &req,
             motion::move::Response &res);
 
@@ -68,11 +57,11 @@ class Locomotion_Control {
   bool setWalkArmsEnabled(motion::setWalkArmsEnabled::Request &req,
                           motion::setWalkArmsEnabled::Response &res);
 
-// ROS publisher
+  // ROS publisher
   void spinTopics();
 
  private:
-// ROS
+  // ROS
   ros::NodeHandle* nh_;
   ros::Publisher moving_pub_;
   ros::ServiceServer srv_move_;
@@ -89,7 +78,7 @@ class Locomotion_Control {
   ros::ServiceServer srv_set_walk_arms_enabled_;
 
 
-// NAOqi
+  // NAOqi
   AL::ALMotionProxy* mProxy_;
 };
 

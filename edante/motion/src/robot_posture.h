@@ -26,7 +26,7 @@ class Robot_Posture {
   Robot_Posture(ros::NodeHandle* nh, AL::ALRobotPostureProxy* pProxy);
   ~Robot_Posture();
 
-// ROS services
+  // ROS services
   bool getPostureList(motion::getPostureList::Request &req,
                       motion::getPostureList::Response &res);
   bool goToPosture(motion::setPosture::Request &req,
@@ -43,7 +43,7 @@ class Robot_Posture {
                        motion::setMaxTryNumber::Response &res);
 
  private:
-// ROS
+  // ROS
   ros::NodeHandle* nh_;
   ros::ServiceServer srv_get_posture_list_;
   ros::ServiceServer srv_go_to_posture_;
@@ -53,7 +53,7 @@ class Robot_Posture {
   ros::ServiceServer srv_get_posture_family_list_;
   ros::ServiceServer srv_set_max_try_number_;
 
-// NaoQI
+  // NaoQI
   AL::ALRobotPostureProxy* pProxy_;
 
 };
