@@ -65,6 +65,7 @@ add_message_files(
 add_service_files(
   FILES
   earLedsSetAngle.srv
+  rotateEyes.srv
   setIntensity.srv
 )
 

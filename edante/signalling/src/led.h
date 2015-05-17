@@ -8,6 +8,7 @@
 #include <ros/ros.h>
 
 #include "signalling/earLedsSetAngle.h"
+#include "signalling/rotateEyes.h"
 #include "signalling/setIntensity.h"
 
 #include <alproxies/alledsproxy.h>
@@ -24,6 +25,8 @@ class Led {
 
   bool earLedsSetAngle(signalling::earLedsSetAngle::Request &req,
                        signalling::earLedsSetAngle::Response &res);
+  bool rotateEyes(signalling::rotateEyes::Request &req,
+                  signalling::rotateEyes::Response &res);
   bool setIntensity(signalling::setIntensity::Request &req,
                     signalling::setIntensity::Response &res);
 
@@ -31,6 +34,7 @@ class Led {
   // ROS
   ros::NodeHandle* nh_;
   ros::ServiceServer srv_led_angle_;
+  ros::ServiceServer srv_rotate_eyes_;
   ros::ServiceServer srv_set_intensity_;
 
   // NaoQI
