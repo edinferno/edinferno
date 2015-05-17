@@ -17,6 +17,7 @@ endif()
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
  roscpp
+ # sensor_msgs
  message_generation)
 
 ## System dependencies are found with CMake's conventions
@@ -99,6 +100,7 @@ add_service_files(
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES
+  # sensor_msgs
 )
 
 ###################################
@@ -146,10 +148,14 @@ add_executable(motion
 add_executable(srv_test
   src/srv_test.cpp)
 
+add_executable(joyRemote
+ src/joyRemote.cpp)
+
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(motion motion_generate_messages_cpp)
 add_dependencies(srv_test motion_generate_messages_cpp)
+add_dependencies(joyRemote motion_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(motion
@@ -161,6 +167,14 @@ target_link_libraries(motion
 )
 
 target_link_libraries(srv_test
+  ${catkin_LIBRARIES}
+  alcommon
+  alerror
+  alproxies
+  alvalue
+)
+
+target_link_libraries(joyRemote
   ${catkin_LIBRARIES}
   alcommon
   alerror
