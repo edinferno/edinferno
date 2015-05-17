@@ -13,6 +13,7 @@
 #include "sonar.h"
 #include "touch.h"
 #include "power.h"
+#include "fsr.h"
 
 boost::shared_ptr<AL::ALBroker> naoqiBroker(std::string brokerName, int pt) {
   const std::string parentBrokerIP = "127.0.0.1";
@@ -57,10 +58,16 @@ int main(int argc, char *argv[]) {
     AL::ALModule::createModule<Power>(PowerBroker, "Power");
   PowerTest->rosSetup(&nh);
 
+  boost::shared_ptr<AL::ALBroker> FsrBroker = naoqiBroker("Fsr", 54800);
+  boost::shared_ptr<Fsr> FsrTest =
+    AL::ALModule::createModule<Fsr>(FsrBroker, "Fsr");
+  FsrTest->rosSetup(&nh);
+
   ros::Rate r(10);
 
   while (ros::ok()) {
     SonarTest->spin();
+    FsrTest->spin();
     ros::spinOnce();
     r.sleep();
   }
