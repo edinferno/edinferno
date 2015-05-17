@@ -42,20 +42,19 @@ int main(int argc, char *argv[]) {
 
   setlocale(LC_NUMERIC, "C");
 
-  boost::shared_ptr<AL::ALBroker> SonarBroker = naoqiBroker("Sonar", 54100);
+  boost::shared_ptr<AL::ALBroker> SonarBroker = naoqiBroker("Sonar", 54200);
   boost::shared_ptr<Sonar> SonarTest =
     AL::ALModule::createModule<Sonar>(SonarBroker, "Sonar");
+  SonarTest->rosSetup(&nh);
 
-  boost::shared_ptr<AL::ALBroker> TouchBroker = naoqiBroker("Touch", 54200);
+  boost::shared_ptr<AL::ALBroker> TouchBroker = naoqiBroker("Touch", 54400);
   boost::shared_ptr<Touch> TouchTest =
     AL::ALModule::createModule<Touch>(TouchBroker, "Touch");
+  TouchTest->rosSetup(&nh);
 
-  boost::shared_ptr<AL::ALBroker> PowerBroker = naoqiBroker("Power", 54300);
+  boost::shared_ptr<AL::ALBroker> PowerBroker = naoqiBroker("Power", 54600);
   boost::shared_ptr<Power> PowerTest =
     AL::ALModule::createModule<Power>(PowerBroker, "Power");
-
-  SonarTest->rosSetup(&nh);
-  TouchTest->rosSetup(&nh);
   PowerTest->rosSetup(&nh);
 
   ros::Rate r(10);
