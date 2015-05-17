@@ -64,6 +64,7 @@ add_message_files(
 ## Generate services in the 'srv' folder
 add_service_files(
   FILES
+  earLedsSetAngle.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -112,12 +113,12 @@ include_directories(
 
 ## Declare a cpp executable
 add_executable(signalling
- src/signalling.cpp)
+ src/signalling.cpp
+ src/led.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(signalling
- signalling_generate_messages_cpp)
+add_dependencies(signalling signalling_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(signalling
