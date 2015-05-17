@@ -64,8 +64,10 @@ add_message_files(
 ## Generate services in the 'srv' folder
 add_service_files(
   FILES
+  createLedGroup.srv
   earLedsSetAngle.srv
   fade.srv
+  getNames.srv
   rotateEyes.srv
   setIntensity.srv
 )
