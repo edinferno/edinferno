@@ -15,6 +15,8 @@ Led::Led(ros::NodeHandle* nh) {
   INFO("Setting up LED signalling services" << std::endl);
   srv_led_angle_ = nh_->advertiseService("earLedsSetAngle",
                                          &Led::earLedsSetAngle, this);
+  srv_set_intensity_ = nh_->advertiseService("setIntensity",
+                       &Led::setIntensity, this);
 }
 
 Led::~Led() {
@@ -23,5 +25,11 @@ Led::~Led() {
 bool Led::earLedsSetAngle(signalling::earLedsSetAngle::Request &req,
                           signalling::earLedsSetAngle::Response &res) {
   leds->earLedsSetAngle(req.degrees, req.duration, req.leaveOnAtEnd);
+  return true;
+}
+
+bool Led::setIntensity(signalling::setIntensity::Request &req,
+                       signalling::setIntensity::Response &res) {
+  leds->setIntensity(req.name, req.intensity);
   return true;
 }
