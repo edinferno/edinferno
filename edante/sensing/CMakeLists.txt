@@ -46,6 +46,8 @@ add_message_files(
   bumpers.msg
   head.msg
   hand.msg
+  # Fsr
+  fsr.msg
 )
 
 ## Generate services in the 'srv' folder
