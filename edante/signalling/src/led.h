@@ -8,6 +8,7 @@
 #include <ros/ros.h>
 
 #include "signalling/earLedsSetAngle.h"
+#include "signalling/fade.h"
 #include "signalling/rotateEyes.h"
 #include "signalling/setIntensity.h"
 
@@ -25,6 +26,8 @@ class Led {
 
   bool earLedsSetAngle(signalling::earLedsSetAngle::Request &req,
                        signalling::earLedsSetAngle::Response &res);
+  bool fade(signalling::fade::Request &req,
+            signalling::fade::Response &res);
   bool rotateEyes(signalling::rotateEyes::Request &req,
                   signalling::rotateEyes::Response &res);
   bool setIntensity(signalling::setIntensity::Request &req,
@@ -34,6 +37,7 @@ class Led {
   // ROS
   ros::NodeHandle* nh_;
   ros::ServiceServer srv_led_angle_;
+  ros::ServiceServer srv_fade_;
   ros::ServiceServer srv_rotate_eyes_;
   ros::ServiceServer srv_set_intensity_;
 
