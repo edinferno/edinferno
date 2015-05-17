@@ -13,6 +13,7 @@
 #include <alcommon/albrokermanager.h>
 
 #include "led.h"
+#include "audio.h"
 
 #include "definitions.h"
 
@@ -21,6 +22,7 @@ int main(int argc, char *argv[]) {
   ros::NodeHandle nh("signalling");
 
   Led LedTest(&nh);
+  Audio AudioTest(&nh);
 
   ros::Rate r(10);
 

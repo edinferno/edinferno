@@ -64,12 +64,15 @@ add_message_files(
 ## Generate services in the 'srv' folder
 add_service_files(
   FILES
+  # LED
   createLedGroup.srv
   earLedsSetAngle.srv
   fade.srv
   getNames.srv
   rotateEyes.srv
   setIntensity.srv
+  # Audio
+  playSine.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -119,7 +122,8 @@ include_directories(
 ## Declare a cpp executable
 add_executable(signalling
  src/signalling.cpp
- src/led.cpp)
+ src/led.cpp
+ src/audio.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
