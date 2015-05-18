@@ -1,3 +1,10 @@
+/*
+* @Copyright: Copyright[2015]<Alejandro Bordallo>
+* @Date:      2015-05-18
+* @Email:     alex.bordallo@ed.ac.uk
+* @Desc:      ROS wrapper for NaoQI locomotion control methods
+*/
+
 #include "locomotion_control.h"
 
 Locomotion_Control::Locomotion_Control(ros::NodeHandle* nh,
@@ -7,29 +14,42 @@ Locomotion_Control::Locomotion_Control(ros::NodeHandle* nh,
   INFO("Setting up Locomotion Control publishers" << std::endl);
   moving_pub_ = nh_->advertise<std_msgs::Bool>("isMoving", 10);
   INFO("Setting up Locomotion Control services" << std::endl);
-  srv_move_ = nh_->advertiseService("move", &Locomotion_Control::move, this);
-  srv_move_to_ = nh_->advertiseService("moveTo",
-                                       &Locomotion_Control::moveTo, this);
-  srv_move_toward_ = nh_->advertiseService("moveToward",
-                     &Locomotion_Control::moveToward, this);
-  srv_move_init_ = nh_->advertiseService("moveInit",
-                                         &Locomotion_Control::moveInit, this);
-  srv_wait_move_finished_ = nh_->advertiseService("waitMoveFinish",
-                            &Locomotion_Control::waitUntilMoveIsFinished, this);
-  srv_stop_move_ = nh_->advertiseService("stopMove",
-                                         &Locomotion_Control::stopMove, this);
-  srv_get_move_config_ = nh_->advertiseService("getMoveConfig",
-                         &Locomotion_Control::getMoveConfig, this);
-  srv_get_robot_position_ = nh_->advertiseService("getRobotPosition",
-                            &Locomotion_Control::getRobotPosition, this);
-  srv_get_next_robot_position_ = nh_->advertiseService("getNextRobotPosition",
-                                 &Locomotion_Control::getNextRobotPosition, this);
-  srv_get_robot_velocity_ = nh_->advertiseService("getRobotVelocity",
-                            &Locomotion_Control::getRobotVelocity, this);
-  srv_get_walk_arms_enabled_ = nh_->advertiseService("getWalkArmsEnabled",
-                               &Locomotion_Control::getWalkArmsEnabled, this);
-  srv_set_walk_arms_enabled_ = nh_->advertiseService("setWalkArmsEnabled",
-                               &Locomotion_Control::setWalkArmsEnabled, this);
+  srv_move_ =
+    nh_->advertiseService("move",
+                          &Locomotion_Control::move, this);
+  srv_move_to_ =
+    nh_->advertiseService("moveTo",
+                          &Locomotion_Control::moveTo, this);
+  srv_move_toward_ =
+    nh_->advertiseService("moveToward",
+                          &Locomotion_Control::moveToward, this);
+  srv_move_init_ =
+    nh_->advertiseService("moveInit",
+                          &Locomotion_Control::moveInit, this);
+  srv_wait_move_finished_ =
+    nh_->advertiseService("waitMoveFinish",
+                          &Locomotion_Control::waitUntilMoveIsFinished, this);
+  srv_stop_move_ =
+    nh_->advertiseService("stopMove",
+                          &Locomotion_Control::stopMove, this);
+  srv_get_move_config_ =
+    nh_->advertiseService("getMoveConfig",
+                          &Locomotion_Control::getMoveConfig, this);
+  srv_get_robot_position_ =
+    nh_->advertiseService("getRobotPosition",
+                          &Locomotion_Control::getRobotPosition, this);
+  srv_get_next_robot_position_ =
+    nh_->advertiseService("getNextRobotPosition",
+                          &Locomotion_Control::getNextRobotPosition, this);
+  srv_get_robot_velocity_ =
+    nh_->advertiseService("getRobotVelocity",
+                          &Locomotion_Control::getRobotVelocity, this);
+  srv_get_walk_arms_enabled_ =
+    nh_->advertiseService("getWalkArmsEnabled",
+                          &Locomotion_Control::getWalkArmsEnabled, this);
+  srv_set_walk_arms_enabled_ =
+    nh_->advertiseService("setWalkArmsEnabled",
+                          &Locomotion_Control::setWalkArmsEnabled, this);
 }
 
 Locomotion_Control::~Locomotion_Control() {

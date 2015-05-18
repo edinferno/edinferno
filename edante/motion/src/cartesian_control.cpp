@@ -1,3 +1,10 @@
+/*
+* @Copyright: Copyright[2015]<Alejandro Bordallo>
+* @Date:      2015-05-18
+* @Email:     alex.bordallo@ed.ac.uk
+* @Desc:      ROS wrapper for NaoQI cartesian control methods
+*/
+
 #include "cartesian_control.h"
 
 Cartesian_Control::Cartesian_Control(ros::NodeHandle* nh,
@@ -5,18 +12,24 @@ Cartesian_Control::Cartesian_Control(ros::NodeHandle* nh,
   nh_ = nh;
   mProxy_ = mProxy;
   INFO("Setting up Cartesian Control services" << std::endl);
-  srv_position_interpolation_ = nh_->advertiseService("positionInterpolation",
-                                &Cartesian_Control::positionInterpolation, this);
-  srv_position_interpolations_ = nh_->advertiseService("positionInterpolations",
-                                 &Cartesian_Control::positionInterpolations, this);
-  srv_set_position_ = nh_->advertiseService("setPosition",
-                      &Cartesian_Control::setPosition, this);
-  srv_change_position_ = nh_->advertiseService("changePosition",
-                         &Cartesian_Control::changePosition, this);
-  srv_get_position_ = nh_->advertiseService("getPosition",
-                      &Cartesian_Control::getPosition, this);
-  srv_get_transform_ = nh_->advertiseService("getTransform",
-                       &Cartesian_Control::getTransform, this);
+  srv_position_interpolation_ =
+    nh_->advertiseService("positionInterpolation",
+                          &Cartesian_Control::positionInterpolation, this);
+  srv_position_interpolations_ =
+    nh_->advertiseService("positionInterpolations",
+                          &Cartesian_Control::positionInterpolations, this);
+  srv_set_position_ =
+    nh_->advertiseService("setPosition",
+                          &Cartesian_Control::setPosition, this);
+  srv_change_position_ =
+    nh_->advertiseService("changePosition",
+                          &Cartesian_Control::changePosition, this);
+  srv_get_position_ =
+    nh_->advertiseService("getPosition",
+                          &Cartesian_Control::getPosition, this);
+  srv_get_transform_ =
+    nh_->advertiseService("getTransform",
+                          &Cartesian_Control::getTransform, this);
 }
 
 Cartesian_Control::~Cartesian_Control() {
@@ -43,7 +56,6 @@ bool Cartesian_Control::positionInterpolation(
 bool Cartesian_Control::positionInterpolations(
   motion::positionInterpolations::Request &req,
   motion::positionInterpolations::Response &res) {
-
   size_t s = req.paths.size();
   AL::ALValue paths;
   paths.arraySetSize(s);

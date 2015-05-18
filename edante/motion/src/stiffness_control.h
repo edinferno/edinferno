@@ -1,10 +1,8 @@
 /*
-* @File: motion.h
-* @Author: Alejandro Bordallo
-* @Date:   2015-04-04 20:47:59
-* @Last Modified by:   Alejandro Bordallo
-* @Last Modified time: 2015-04-04 20:47:59
-* @Desc: Defines the Stiffness Control Wrapper functions
+* @Copyright: Copyright[2015]<Alejandro Bordallo>
+* @Date:      2015-05-18
+* @Email:     alex.bordallo@ed.ac.uk
+* @Desc:      ROS wrapper for NaoQI Stiffness control API
 */
 
 #ifndef STIFFNESS_CONTROL_H_
@@ -13,19 +11,18 @@
 #include <ros/ros.h>
 #include <std_msgs/Bool.h>
 #include <std_srvs/Empty.h>
-// #include <std_srvs/Trigger.h>
-#include <vector>
-
-#include "motion/stiffnessInterp.h"
-#include "motion/setStiffness.h"
-#include "motion/getStiffness.h"
 
 #include <alproxies/almotionproxy.h>
 #include <alerror/alerror.h>
 
+#include <vector>
+#include "motion/stiffnessInterp.h"
+#include "motion/setStiffness.h"
+#include "motion/getStiffness.h"
 #include "definitions.h"
 
-using namespace std;
+using std::string;
+using std::vector;
 
 class Stiffness_Control {
  public:
@@ -48,9 +45,9 @@ class Stiffness_Control {
                     motion::getStiffness::Response &res);
 
   // Stiffness control API
-  bool setStiffnesses(string& name, float& stiffness);
-  bool setStiffnesses(string& name, const vector<float>& stiffnesses);
-  bool setStiffnesses(const vector<string>& names, float& stiffness);
+  bool setStiffnesses(const string& name, const float& stiffness);
+  bool setStiffnesses(const string& name, const vector<float>& stiffnesses);
+  bool setStiffnesses(const vector<string>& names, const float& stiffness);
   bool setStiffnesses(const vector<string>& names,
                       const vector<float>& stiffnesses);
 

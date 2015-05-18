@@ -1,26 +1,26 @@
+/*
+* @Copyright: Copyright[2015]<Alejandro Bordallo>
+* @Date:      2015-05-18
+* @Email:     alex.bordallo@ed.ac.uk
+* @Desc:      ROS wrapper for NaoQI cartesian control methods
+*/
+
 #ifndef CARTESIAN_CONTROL_H_
 #define CARTESIAN_CONTROL_H_
 
 #include <ros/ros.h>
 #include <std_msgs/Bool.h>
-#include <vector>
 
 #include <alproxies/almotionproxy.h>
 
+#include <vector>
 #include "motion/positionInterpolation.h"
 #include "motion/positionInterpolations.h"
 #include "motion/setPosition.h"
 #include "motion/changePosition.h"
 #include "motion/getPosition.h"
-// #include "motion/transformInterpolation.h"
-// #include "motion/transformInterpolations.h"
-// #include "motion/setTransform.h"
-// #include "motion/changeTransform.h"
 #include "motion/getTransform.h"
-
 #include "definitions.h"
-
-using namespace std;
 
 class Cartesian_Control {
  public:

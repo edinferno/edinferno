@@ -4,6 +4,7 @@
 * @Email:     alex.bordallo@ed.ac.uk
 * @Desc:      ROS wrapper for NaoQI ALRobotPosture
 */
+
 #include "robot_posture.h"
 
 Robot_Posture::Robot_Posture(ros::NodeHandle* nh,
@@ -25,7 +26,6 @@ Robot_Posture::Robot_Posture(ros::NodeHandle* nh,
                                  &Robot_Posture::getPostureFamilyList, this);
   srv_set_max_try_number_ = nh_->advertiseService("setMaxTryNumber",
                             &Robot_Posture::setMaxTryNumber, this);
-
 }
 
 Robot_Posture::~Robot_Posture() {

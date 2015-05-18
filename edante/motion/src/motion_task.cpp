@@ -1,3 +1,10 @@
+/*
+* @Copyright: Copyright[2015]<Alejandro Bordallo>
+* @Date:      2015-05-18
+* @Email:     alex.bordallo@ed.ac.uk
+* @Desc:      ROS wrapper for NaoQI motion task methods
+*/
+
 #include "motion_task.h"
 
 Motion_Task::Motion_Task(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy) {
@@ -27,16 +34,16 @@ bool Motion_Task::getTaskList(motion::getTaskList::Request &req,
   res.taskList.resize(s);
   if (s > 0) {
     for (size_t i = 0; i < s; ++i) {
-      res.taskList[i].taskName = string(taskList[i][0]);
-      res.taskList[i].motionID = int(taskList[i][1]);
+      res.taskList[i].taskName = static_cast<std::string>(taskList[i][0]);
+      res.taskList[i].motionID = static_cast<int>(taskList[i][1]);
     }
   }
   return true;
 }
 
-bool Motion_Task::areResourcesAvailable(motion::areResourcesAvailable::Request
-                                        &req,
-                                        motion::areResourcesAvailable::Response &res) {
+bool Motion_Task::areResourcesAvailable(
+  motion::areResourcesAvailable::Request &req,
+  motion::areResourcesAvailable::Response &res) {
   res.available = mProxy_->areResourcesAvailable(req.resourceNames);
   return true;
 }

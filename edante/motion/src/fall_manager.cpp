@@ -19,7 +19,6 @@ Fall_Manager::Fall_Manager(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy,
                           &Fall_Manager::setFallManagerEnabled, this);
   srv_get_fall_manager_ = nh_->advertiseService("getFallManagerEnabled",
                           &Fall_Manager::getFallManagerEnabled, this);
-
 }
 
 Fall_Manager::~Fall_Manager() {
@@ -29,7 +28,7 @@ Fall_Manager::~Fall_Manager() {
 void Fall_Manager::spinTopics() {
   // For some reason always true!
   std_msgs::Bool msg;
-  if (bool(memProxy_->getData("robotHasFallen")) == true) {
+  if (static_cast<bool>(memProxy_->getData("robotHasFallen")) == true) {
     msg.data = true;
   } else {
     msg.data = false;

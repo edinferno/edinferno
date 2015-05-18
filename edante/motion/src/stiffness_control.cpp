@@ -1,10 +1,8 @@
 /*
-* @File: motion.cpp
-* @Author: Alejandro Bordallo
-* @Date:   2015-04-04 20:47:59
-* @Last Modified by:   Alejandro Bordallo
-* @Last Modified time: 2015-04-22 16:15:00
-* @Desc: Declares the Stiffness Control Wrapper functions
+* @Copyright: Copyright[2015]<Alejandro Bordallo>
+* @Date:      2015-05-17
+* @Email:     alex.bordallo@ed.ac.uk
+* @Desc:      ROS wrapper for NaoQI Stiffness control API
 */
 
 #include "stiffness_control.h"
@@ -24,10 +22,12 @@ Stiffness_Control::Stiffness_Control(ros::NodeHandle* nh,
                                     &Stiffness_Control::rest, this);
   stiffness_interp_ = nh_->advertiseService("stiffnessInterpolation",
                       &Stiffness_Control::stiffnessInterp, this);
-  set_stiffness_ = nh_->advertiseService("setStiffness",
-                                         &Stiffness_Control::setStiffness, this);
-  get_stiffness_ = nh_->advertiseService("getStiffness",
-                                         &Stiffness_Control::getStiffness, this);
+  set_stiffness_ =
+    nh_->advertiseService("setStiffness",
+                          &Stiffness_Control::setStiffness, this);
+  get_stiffness_ =
+    nh_->advertiseService("getStiffness",
+                          &Stiffness_Control::getStiffness, this);
 }
 
 Stiffness_Control::~Stiffness_Control() {
@@ -54,8 +54,9 @@ bool Stiffness_Control::rest(std_srvs::Empty::Request &req,
   return true;
 }
 
-bool Stiffness_Control::stiffnessInterp(motion::stiffnessInterp::Request &req,
-                                        motion::stiffnessInterp::Response &res) {
+bool Stiffness_Control::stiffnessInterp(
+  motion::stiffnessInterp::Request &req,
+  motion::stiffnessInterp::Response &res) {
   size_t s = req.names.size();
 
   AL::ALValue stiffnessLists;
@@ -125,7 +126,8 @@ bool Stiffness_Control::getStiffness(motion::getStiffness::Request &req,
   return true;
 }
 
-bool Stiffness_Control::setStiffnesses(string& name, float& stiffness) {
+bool Stiffness_Control::setStiffnesses(const string& name,
+                                       const float& stiffness) {
   try {
     mProxy_->setStiffnesses(name, stiffness);
   } catch (const std::exception& e) {
@@ -134,7 +136,7 @@ bool Stiffness_Control::setStiffnesses(string& name, float& stiffness) {
   return true;
 }
 
-bool Stiffness_Control::setStiffnesses(string& name,
+bool Stiffness_Control::setStiffnesses(const string& name,
                                        const vector<float>& stiffnesses) {
   try {
     mProxy_->setStiffnesses(name, stiffnesses);
@@ -145,7 +147,7 @@ bool Stiffness_Control::setStiffnesses(string& name,
 }
 
 bool Stiffness_Control::setStiffnesses(const vector<string>& names,
-                                       float& stiffness) {
+                                       const float& stiffness) {
   try {
     mProxy_->setStiffnesses(names, stiffness);
   } catch (const std::exception& e) {

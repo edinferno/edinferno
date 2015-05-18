@@ -22,10 +22,7 @@
 
 #include "definitions.h"
 
-using namespace std;
-
 class Body_Balancer {
-
  public:
   Body_Balancer(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
   ~Body_Balancer();

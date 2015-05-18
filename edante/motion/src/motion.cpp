@@ -1,5 +1,15 @@
+/*
+* @Copyright: Copyright[2015]<Alejandro Bordallo>
+* @Date:      2015-05-18
+* @Email:     alex.bordallo@ed.ac.uk
+* @Desc:      Main motion node
+*/
+
 #include <ros/ros.h>
-#include "definitions.h"
+
+#include <alproxies/almotionproxy.h>
+#include <alproxies/alrobotpostureproxy.h>
+#include <alproxies/almemoryproxy.h>
 
 #include "stiffness_control.h"
 #include "joint_control.h"
@@ -9,10 +19,7 @@
 #include "fall_manager.h"
 #include "motion_task.h"
 #include "robot_posture.h"
-
-#include <alproxies/almotionproxy.h>
-#include <alproxies/alrobotpostureproxy.h>
-#include <alproxies/almemoryproxy.h>
+#include "definitions.h"
 
 int main(int argc, char *argv[]) {
   ros::init(argc, argv, "motion");
@@ -39,5 +46,4 @@ int main(int argc, char *argv[]) {
     ros::spinOnce();
     r.sleep();
   }
-
 }

@@ -1,8 +1,8 @@
 /*
-* @Author: Alejandro Bordallo
-* @Date:   2015-04-22 18:12:31
-* @Last Modified by:   Alejandro Bordallo
-* @Last Modified time: 2015-04-22 17:29:47
+* @Copyright: Copyright[2015]<Alejandro Bordallo>
+* @Date:      2015-05-18
+* @Email:     alex.bordallo@ed.ac.uk
+* @Desc:      Defines the Joint Control Wrapper functions
 */
 
 #include "joint_control.h"

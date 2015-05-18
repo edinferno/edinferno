@@ -10,14 +10,18 @@
 joyRemote::joyRemote(ros::NodeHandle* nh) {
   nh_ = nh;
   joy_sub_ = nh_->subscribe("joy", 1000, &joyRemote::joyCallback, this);
-  moveTowardClient = nh_->serviceClient<motion::moveToward>("/motion/moveToward",
-                     true);
-  wakeUpClient = nh_->serviceClient<std_srvs::Empty>("/motion/wakeUp", true);
-  moveInitClient = nh_->serviceClient<std_srvs::Empty>("/motion/moveInit", true);
-  standClient = nh_->serviceClient<motion::setPosture>("/motion/goToPosture",
-                true);
-  restClient = nh_->serviceClient<std_srvs::Empty>("/motion/rest", true);
-  stopMoveClient = nh_->serviceClient<std_srvs::Empty>("/motion/stopMove", true);
+  moveTowardClient = nh_->serviceClient<motion::moveToward>(
+                       "/motion/moveToward", true);
+  wakeUpClient = nh_->serviceClient<std_srvs::Empty>(
+                   "/motion/wakeUp", true);
+  moveInitClient = nh_->serviceClient<std_srvs::Empty>(
+                     "/motion/moveInit", true);
+  standClient = nh_->serviceClient<motion::setPosture>(
+                  "/motion/goToPosture", true);
+  restClient = nh_->serviceClient<std_srvs::Empty>(
+                 "/motion/rest", true);
+  stopMoveClient = nh_->serviceClient<std_srvs::Empty>(
+                     "/motion/stopMove", true);
   INFO("Joystick remote node initialised" << std::endl);
   wakeUpFlag = false;
   moveInitFlag = false;
@@ -31,11 +35,15 @@ joyRemote::~joyRemote() {
 }
 
 void joyRemote::joyCallback(const sensor_msgs::Joy::ConstPtr& msg) {
-  if (msg->buttons[1]) {wakeUpFlag = true;}
-  else if (msg->buttons[2]) {moveInitFlag = true;}
-  else if (msg->buttons[3]) {standFlag = true;}
-  else if (msg->buttons[0]) {restFlag = true;}
-  else {
+  if (msg->buttons[1]) {
+    wakeUpFlag = true;
+  } else if (msg->buttons[2]) {
+    moveInitFlag = true;
+  } else if (msg->buttons[3]) {
+    standFlag = true;
+  } else if (msg->buttons[0]) {
+    restFlag = true;
+  } else {
     float x = msg->axes[1];
     float y = msg->axes[0];
     float theta = msg->axes[3];
@@ -46,11 +54,15 @@ void joyRemote::joyCallback(const sensor_msgs::Joy::ConstPtr& msg) {
 }
 
 void joyRemote::sendCmd() {
-  if (wakeUpFlag) {this->wakeUp();}
-  else if (moveInitFlag) {this->moveInit();}
-  else if (standFlag) {this->stand();}
-  else if (restFlag) {this->rest();}
-  else {moveTowardClient.call(moveSrv);}
+  if (wakeUpFlag) {
+    this->wakeUp();
+  } else if (moveInitFlag) {
+    this->moveInit();
+  } else if (standFlag) {
+    this->stand();
+  } else if (restFlag) {
+    this->rest();
+  } else {moveTowardClient.call(moveSrv);}
 }
 
 void joyRemote::wakeUp() {
@@ -81,7 +93,6 @@ void joyRemote::rest() {
 }
 
 int main(int argc, char *argv[]) {
-  using namespace std;
   ros::init(argc, argv, "joyRemote");
   ros::NodeHandle nh;
 
