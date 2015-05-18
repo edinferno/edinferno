@@ -10,8 +10,19 @@
 joyRemote::joyRemote(ros::NodeHandle* nh) {
   nh_ = nh;
   joy_sub_ = nh_->subscribe("joy", 1000, &joyRemote::joyCallback, this);
-  moveClient = nh_->serviceClient<motion::moveToward>("/motion/moveToward", true);
+  moveTowardClient = nh_->serviceClient<motion::moveToward>("/motion/moveToward",
+                     true);
+  wakeUpClient = nh_->serviceClient<std_srvs::Empty>("/motion/wakeUp", true);
+  moveInitClient = nh_->serviceClient<std_srvs::Empty>("/motion/moveInit", true);
+  standClient = nh_->serviceClient<motion::setPosture>("/motion/goToPosture",
+                true);
+  restClient = nh_->serviceClient<std_srvs::Empty>("/motion/rest", true);
   INFO("Joystick remote node initialised" << std::endl);
+  wakeUpFlag = false;
+  moveInitFlag = false;
+  standFlag = false;
+  restFlag = false;
+  standSrv.request.speed = 1.0f;
 }
 
 joyRemote::~joyRemote() {
@@ -19,16 +30,50 @@ joyRemote::~joyRemote() {
 }
 
 void joyRemote::joyCallback(const sensor_msgs::Joy::ConstPtr& msg) {
-  float x = msg->axes[1];
-  float y = msg->axes[0];
-  float theta = msg->axes[3];
-  moveSrv.request.normVelocity.x = x;
-  moveSrv.request.normVelocity.y = y;
-  moveSrv.request.normVelocity.theta = theta;
+  if (msg->buttons[1]) {wakeUpFlag = true;}
+  else if (msg->buttons[2]) {moveInitFlag = true;}
+  else if (msg->buttons[3]) {standFlag = true;}
+  else if (msg->buttons[0]) {restFlag = true;}
+  else {
+    float x = msg->axes[1];
+    float y = msg->axes[0];
+    float theta = msg->axes[3];
+    moveSrv.request.normVelocity.x = x;
+    moveSrv.request.normVelocity.y = y;
+    moveSrv.request.normVelocity.theta = theta;
+  }
 }
 
 void joyRemote::sendCmd() {
-  moveClient.call(moveSrv);
+  if (wakeUpFlag) {this->wakeUp();}
+  else if (moveInitFlag) {this->moveInit();}
+  else if (standFlag) {this->stand();}
+  else if (restFlag) {this->rest();}
+  else {moveTowardClient.call(moveSrv);}
+}
+
+void joyRemote::wakeUp() {
+  wakeUpClient.call(wakeUpSrv);
+  wakeUpFlag = false;
+}
+
+void joyRemote::moveInit() {
+  moveInitClient.call(moveInitSrv);
+  moveInitFlag = false;
+}
+
+void joyRemote::stand() {
+  wakeUpClient.call(wakeUpSrv);
+  standSrv.request.postureName = "Stand";
+  standClient.call(standSrv);
+  moveInitClient.call(moveInitSrv);
+  standFlag = false;
+}
+
+void joyRemote::rest() {
+  moveInitClient.call(moveInitSrv);
+  restClient.call(restSrv);
+  restFlag = false;
 }
 
 int main(int argc, char *argv[]) {

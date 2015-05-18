@@ -12,6 +12,8 @@
 #include <cmath>
 
 #include <sensor_msgs/Joy.h>
+#include <std_srvs/Empty.h>
+#include "motion/setPosture.h"
 
 #include "motion/moveToward.h"
 
@@ -27,12 +29,34 @@ class joyRemote {
 
   void sendCmd();
 
+  void wakeUp();
+
+  void moveInit();
+
+  void stand();
+
+  void rest();
+
  private:
+  // Flags
+  bool wakeUpFlag;
+  bool moveInitFlag;
+  bool standFlag;
+  bool restFlag;
+
   // ROS
-  motion::moveToward moveSrv;
-  ros::ServiceClient moveClient;
   ros::NodeHandle* nh_;
   ros::Subscriber joy_sub_;
+  motion::moveToward moveSrv;
+  std_srvs::Empty wakeUpSrv;
+  std_srvs::Empty moveInitSrv;
+  motion::setPosture standSrv;
+  std_srvs::Empty restSrv;
+  ros::ServiceClient moveTowardClient;
+  ros::ServiceClient wakeUpClient;
+  ros::ServiceClient moveInitClient;
+  ros::ServiceClient standClient;
+  ros::ServiceClient restClient;
 
 };
 
