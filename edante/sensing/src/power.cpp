@@ -57,7 +57,8 @@ void Power::powerPub() {
   bool b = fMemoryProxy.getData("BatteryPowerPluggedChanged");
   if (b) {powerEvent.data = "plugged";} else {powerEvent.data = "unplugged";}
   power_status_pub_.publish(powerEvent);
-  powerCharge.data = int(fMemoryProxy.getData("BatteryChargeChanged"));
+  powerCharge.data = static_cast<int>
+                     (fMemoryProxy.getData("BatteryChargeChanged"));
   power_charge_pub_.publish(powerCharge);
 }
 
