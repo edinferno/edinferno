@@ -22,11 +22,14 @@ Power::Power(
   // setModuleDescription("Sensing Test module.");
   functionName("powerPub", getName(), "Plugged / Unplugged + battery charge");
   BIND_METHOD(Power::powerPub)
+  functionName("hotJointDetected", getName(), "Hot Joint event callback");
+  BIND_METHOD(Power::hotJointDetected)
 }
 
 Power::~Power() {
   fMemoryProxy.unsubscribeToEvent("BatteryPowerPluggedChanged", "Power");
   fMemoryProxy.unsubscribeToEvent("BatteryChargeChanged", "Power");
+  fMemoryProxy.unsubscribeToEvent("HotJointDetected", "Power");
 }
 
 void Power::init() {
@@ -36,6 +39,8 @@ void Power::init() {
                                   "powerPub");
     fMemoryProxy.subscribeToEvent("BatteryChargeChanged", "Power",
                                   "powerPub");
+    fMemoryProxy.subscribeToEvent("HotJointDetected", "Power",
+                                  "hotJointDetected");
   } catch (const AL::ALError& e) {
     DEBUG(e.what() << std::endl);
   }
@@ -54,4 +59,9 @@ void Power::powerPub() {
   power_status_pub_.publish(powerEvent);
   powerCharge.data = int(fMemoryProxy.getData("BatteryChargeChanged"));
   power_charge_pub_.publish(powerCharge);
+}
+
+void Power::hotJointDetected() {
+  AL::ALCriticalSection section(fCallbackMutex);
+  ERR("Hot Joint Detected!");
 }

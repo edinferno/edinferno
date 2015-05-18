@@ -40,6 +40,8 @@ class Power : public AL::ALModule  {
 
   void powerPub();
 
+  void hotJointDetected();
+
  private:
   // Flags
   std_msgs::String powerEvent;
