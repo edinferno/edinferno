@@ -57,19 +57,21 @@ void Fsr::spin() {
 void Fsr::pubContact() {
   AL::ALCriticalSection section(fCallbackMutex);
   std_msgs::Bool msg;
-  msg.data = bool(fMemoryProxy.getData("footContactChanged"));
+  msg.data = static_cast<bool>(fMemoryProxy.getData("footContactChanged"));
   fsr_contact_pub_.publish(msg);
 }
 
 void Fsr::pubFsr() {
   AL::ALCriticalSection section(fCallbackMutex);
   sensing::fsr msg;
-  if (float(fMemoryProxy.getData("leftFootContact")) > 0.5f)
+  if (static_cast<float>(fMemoryProxy.getData("leftFootContact")) > 0.5f)
   {msg.leftContact = true;} else {msg.leftContact = false;}
-  if (float(fMemoryProxy.getData("rightFootContact")) > 0.5f)
+  if (static_cast<float>(fMemoryProxy.getData("rightFootContact")) > 0.5f)
   {msg.rightContact = true;} else {msg.rightContact = false;}
-  msg.leftWeight = float(fMemoryProxy.getData("leftFootTotalWeight"));
-  msg.rightWeight = float(fMemoryProxy.getData("rightFootTotalWeight"));
+  msg.leftWeight = static_cast<float>
+                   (fMemoryProxy.getData("leftFootTotalWeight"));
+  msg.rightWeight = static_cast<float>
+                    (fMemoryProxy.getData("rightFootTotalWeight"));
   fsr_data_pub_.publish(msg);
 }
 

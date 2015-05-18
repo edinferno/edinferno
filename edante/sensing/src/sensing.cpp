@@ -23,8 +23,8 @@ boost::shared_ptr<AL::ALBroker> naoqiBroker(std::string brokerName, int pt) {
 
   boost::shared_ptr<AL::ALBroker> broker;
   try {
-    broker = AL::ALBroker::createBroker( brokerName, brokerIp, brokerPort,
-                                         parentBrokerIP, parentBrokerPort, 0);
+    broker = AL::ALBroker::createBroker(brokerName, brokerIp, brokerPort,
+                                        parentBrokerIP, parentBrokerPort, 0);
   } catch (const AL::ALError& /* e */) {
     std::cerr << "Faild to connect broker to: "
               << parentBrokerIP << ":" << parentBrokerPort << std::endl;

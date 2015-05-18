@@ -9,11 +9,8 @@
 #define SONAR_H
 
 #include <ros/ros.h>
-#include <string>
 #include <std_msgs/Bool.h>
 #include <std_msgs/String.h>
-#include "sensing/sonars.h"
-#include "sensing/enable.h"
 
 #include <boost/shared_ptr.hpp>
 #include <alcommon/almodule.h>
@@ -21,17 +18,13 @@
 #include <alproxies/alsonarproxy.h>
 #include <althread/almutex.h>
 
+#include <string>
+#include "sensing/sonars.h"
+#include "sensing/enable.h"
 #include "definitions.h"
-
-namespace AL {
-class ALBroker;
-}
-
-using namespace std;
 
 class Sonar : public AL::ALModule {
  public:
-
   // ROS publishers
   Sonar(boost::shared_ptr<AL::ALBroker> broker, const std::string& name);
   ~Sonar();

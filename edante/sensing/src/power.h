@@ -8,24 +8,23 @@
 #define POWER_H
 
 #include <ros/ros.h>
-#include <string>
 #include <std_msgs/String.h>
 #include <std_msgs/UInt32.h>
-#include "sensing/sonars.h"
-#include "sensing/enable.h"
-
 #include <boost/shared_ptr.hpp>
+
+#include <althread/almutex.h>
 #include <alcommon/almodule.h>
 #include <alproxies/almemoryproxy.h>
 #include <alproxies/alsonarproxy.h>
-#include <althread/almutex.h>
 
+#include <string>
+#include "sensing/sonars.h"
+#include "sensing/enable.h"
 #include "definitions.h"
 
 namespace AL {
 class ALBroker;
 }
-using namespace std;
 
 class Power : public AL::ALModule  {
  public:
