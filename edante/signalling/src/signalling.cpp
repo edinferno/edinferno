@@ -14,7 +14,6 @@
 
 #include "led.h"
 #include "audio.h"
-
 #include "definitions.h"
 
 int main(int argc, char *argv[]) {

@@ -7,8 +7,6 @@
 
 #include "led.h"
 
-using namespace std;
-
 Led::Led(ros::NodeHandle* nh) {
   nh_ = nh;
   leds = new AL::ALLedsProxy("127.0.0.1", 9559);

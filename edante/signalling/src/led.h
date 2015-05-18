@@ -7,15 +7,14 @@
 
 #include <ros/ros.h>
 
+#include <alproxies/alledsproxy.h>
+
 #include "signalling/createLedGroup.h"
 #include "signalling/earLedsSetAngle.h"
 #include "signalling/fade.h"
 #include "signalling/getNames.h"
 #include "signalling/rotateEyes.h"
 #include "signalling/setIntensity.h"
-
-#include <alproxies/alledsproxy.h>
-
 #include "definitions.h"
 
 #ifndef LED_H_
@@ -23,7 +22,7 @@
 
 class Led {
  public:
-  Led(ros::NodeHandle* nh);
+  explicit Led(ros::NodeHandle* nh);
   ~Led();
 
   bool createLedGroup(signalling::createLedGroup::Request &req,
@@ -54,7 +53,6 @@ class Led {
 
   // NaoQI
   AL::ALLedsProxy* leds;
-
 };
 
 #endif /* LED_H_ */
