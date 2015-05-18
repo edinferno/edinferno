@@ -17,6 +17,7 @@ joyRemote::joyRemote(ros::NodeHandle* nh) {
   standClient = nh_->serviceClient<motion::setPosture>("/motion/goToPosture",
                 true);
   restClient = nh_->serviceClient<std_srvs::Empty>("/motion/rest", true);
+  stopMoveClient = nh_->serviceClient<std_srvs::Empty>("/motion/stopMove", true);
   INFO("Joystick remote node initialised" << std::endl);
   wakeUpFlag = false;
   moveInitFlag = false;
@@ -71,7 +72,10 @@ void joyRemote::stand() {
 }
 
 void joyRemote::rest() {
+  stopMoveClient.call(stopSrv);
+  sleep(0.25);
   moveInitClient.call(moveInitSrv);
+  sleep(0.25);
   restClient.call(restSrv);
   restFlag = false;
 }

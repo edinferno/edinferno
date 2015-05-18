@@ -52,11 +52,13 @@ class joyRemote {
   std_srvs::Empty moveInitSrv;
   motion::setPosture standSrv;
   std_srvs::Empty restSrv;
+  std_srvs::Empty stopSrv;
   ros::ServiceClient moveTowardClient;
   ros::ServiceClient wakeUpClient;
   ros::ServiceClient moveInitClient;
   ros::ServiceClient standClient;
   ros::ServiceClient restClient;
+  ros::ServiceClient stopMoveClient;
 
 };
 
