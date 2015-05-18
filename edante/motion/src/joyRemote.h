@@ -9,19 +9,18 @@
 #define JOY_REMOTE_H
 
 #include <ros/ros.h>
-#include <cmath>
 
 #include <sensor_msgs/Joy.h>
 #include <std_srvs/Empty.h>
-#include "motion/setPosture.h"
+#include <cmath>
 
 #include "motion/moveToward.h"
-
+#include "motion/setPosture.h"
 #include "definitions.h"
 
 class joyRemote {
  public:
-  joyRemote(ros::NodeHandle* nh);
+  explicit joyRemote(ros::NodeHandle* nh);
 
   ~joyRemote();
 
@@ -59,7 +58,6 @@ class joyRemote {
   ros::ServiceClient standClient;
   ros::ServiceClient restClient;
   ros::ServiceClient stopMoveClient;
-
 };
 
 #endif  /* JOY_REMOTE_H */

@@ -1,10 +1,8 @@
 /*
-* @File: motion.h
-* @Author: Alejandro Bordallo
-* @Date:   2015-04-04 20:47:59
-* @Last Modified by:   Alejandro Bordallo
-* @Last Modified time: 2015-04-04 20:47:59
-* @Desc: Defines the Joint Control Wrapper functions
+* @Copyright: Copyright[2015]<Alejandro Bordallo>
+* @Date:      2015-05-18
+* @Email:     alex.bordallo@ed.ac.uk
+* @Desc:      Defines the Joint Control Wrapper functions
 */
 
 #ifndef JOINT_CONTROL_H_
@@ -12,21 +10,17 @@
 
 #include <ros/ros.h>
 
-#include "motion/float32List.h"
+#include <alproxies/almotionproxy.h>
+#include <alerror/alerror.h>
 
+#include "motion/float32List.h"
 #include "motion/angleInterp.h"
 #include "motion/angleInterpSpeed.h"
 #include "motion/setAngles.h"
 #include "motion/changeAngles.h"
 #include "motion/getAngles.h"
 #include "motion/useHand.h"
-
-#include <alproxies/almotionproxy.h>
-#include <alerror/alerror.h>
-
 #include "definitions.h"
-
-using namespace std;
 
 class Joint_Control {
  public:
@@ -62,6 +56,5 @@ class Joint_Control {
 
   // NAOqi
   AL::ALMotionProxy* mProxy_;
-
 };
 #endif /* JOINT_CONTROL_H_ */

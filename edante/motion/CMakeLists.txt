@@ -17,7 +17,6 @@ endif()
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
  roscpp
- # sensor_msgs
  message_generation)
 
 ## System dependencies are found with CMake's conventions
@@ -75,10 +74,6 @@ add_service_files(
   setPosition.srv
   changePosition.srv
   getPosition.srv
-  transformInterpolation.srv
-  transformInterpolations.srv
-  setTransform.srv
-  changeTransform.srv
   getTransform.srv
   # Body_Balancer
   footState.srv
@@ -100,7 +95,6 @@ add_service_files(
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES
-  # sensor_msgs
 )
 
 ###################################

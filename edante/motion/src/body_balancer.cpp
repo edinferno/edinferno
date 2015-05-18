@@ -8,7 +8,6 @@
 #include "body_balancer.h"
 
 Body_Balancer::Body_Balancer(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy) {
-
   nh_ = nh;
   mProxy_ = mProxy;
   isBalancing_ = false;
@@ -16,27 +15,27 @@ Body_Balancer::Body_Balancer(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy) {
   balance_pub_ = nh_->advertise<std_msgs::Bool>("isBalancing", 10);
 
   INFO("Setting up Body Balancer services" << std::endl);
-  srv_enable_balance_ = nh_->advertiseService(
-                          "enableBalance",
+  srv_enable_balance_ =
+    nh_->advertiseService("enableBalance",
                           &Body_Balancer::enableBalance, this);
-  srv_foot_state_ = nh_->advertiseService(
-                      "footState",
-                      &Body_Balancer::footState, this);
-  srv_enable_balance_constraint_ = nh_->advertiseService(
-                                     "enableBalanceConstraint",
-                                     &Body_Balancer::enableBalanceConstraint, this);
-  srv_go_to_balance_ = nh_->advertiseService(
-                         "goToBalance",
-                         &Body_Balancer::goToBalance, this);
-  srv_enable_effector_control_ = nh_->advertiseService(
-                                   "enableEffectorControl",
-                                   &Body_Balancer::enableEffectorControl, this);
-  srv_set_effector_control_ = nh_->advertiseService(
-                                "setEffectorControl",
-                                &Body_Balancer::setEffectorControl, this);
-  srv_enable_effector_optimization_ = nh_->advertiseService(
-                                        "EnableEffectorOptimization",
-                                        &Body_Balancer::enableEffectorOptimization, this);
+  srv_foot_state_ =
+    nh_->advertiseService("footState",
+                          &Body_Balancer::footState, this);
+  srv_enable_balance_constraint_ =
+    nh_->advertiseService("enableBalanceConstraint",
+                          &Body_Balancer::enableBalanceConstraint, this);
+  srv_go_to_balance_ =
+    nh_->advertiseService("goToBalance",
+                          &Body_Balancer::goToBalance, this);
+  srv_enable_effector_control_ =
+    nh_->advertiseService("enableEffectorControl",
+                          &Body_Balancer::enableEffectorControl, this);
+  srv_set_effector_control_ =
+    nh_->advertiseService("setEffectorControl",
+                          &Body_Balancer::setEffectorControl, this);
+  srv_enable_effector_optimization_ =
+    nh_->advertiseService("EnableEffectorOptimization",
+                          &Body_Balancer::enableEffectorOptimization, this);
 }
 
 Body_Balancer::~Body_Balancer() {
@@ -82,15 +81,16 @@ bool Body_Balancer::enableEffectorControl(
   return true;
 }
 
-bool Body_Balancer::setEffectorControl(motion::setEffectorControl::Request &req,
-                                       motion::setEffectorControl::Response &res) {
+bool Body_Balancer::setEffectorControl(
+  motion::setEffectorControl::Request &req,
+  motion::setEffectorControl::Response &res) {
   mProxy_->wbSetEffectorControl(req.effectorName, req.targetCoordinate);
   return true;
 }
 
-bool Body_Balancer::enableEffectorOptimization(motion::enableEffector::Request
-    &req,
-    motion::enableEffector::Response &res) {
+bool Body_Balancer::enableEffectorOptimization(
+  motion::enableEffector::Request &req,
+  motion::enableEffector::Response &res) {
   mProxy_->wbEnableEffectorOptimization(req.effectorName, req.isEnabled);
   return true;
 }

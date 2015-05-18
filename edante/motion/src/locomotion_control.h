@@ -1,3 +1,9 @@
+/*
+* @Copyright: Copyright[2015]<Alejandro Bordallo>
+* @Date:      2015-05-18
+* @Email:     alex.bordallo@ed.ac.uk
+* @Desc:      ROS wrapper for NaoQI locomotion control methods
+*/
 
 #ifndef LOCOMOTION_CONTROL_H_
 #define LOCOMOTION_CONTROL_H_

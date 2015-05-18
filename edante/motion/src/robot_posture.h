@@ -4,6 +4,7 @@
 * @Email:     alex.bordallo@ed.ac.uk
 * @Desc:      ROS wrapper for NaoQI ALRobotPosture
 */
+
 #ifndef ROBOT_POSTURE_H_
 #define ROBOT_POSTURE_H_
 
@@ -16,10 +17,7 @@
 #include "motion/setPosture.h"
 #include "motion/getPostureFamily.h"
 #include "motion/setMaxTryNumber.h"
-
 #include "definitions.h"
-
-using namespace std;
 
 class Robot_Posture {
  public:
@@ -55,7 +53,6 @@ class Robot_Posture {
 
   // NaoQI
   AL::ALRobotPostureProxy* pProxy_;
-
 };
 
 #endif /* ROBOT_POSTURE_H_ */

@@ -1,3 +1,10 @@
+/*
+* @Copyright: Copyright[2015]<Alejandro Bordallo>
+* @Date:      2015-05-18
+* @Email:     alex.bordallo@ed.ac.uk
+* @Desc:      Debug test file for testing complex services
+*/
+
 #include <ros/ros.h>
 // #include "joint_control.h"
 #include "definitions.h"
@@ -23,15 +30,14 @@
 // #include "motion/setEffectorControl.h"
 
 int main(int argc, char *argv[]) {
-
-  using namespace std;
   ros::init(argc, argv, "srv_test");
 
   ros::NodeHandle n;
   ros::Rate r(10);
 
   // // ANGLE INTERPOLATION TEST
-  // ros::ServiceClient client1 = n.serviceClient<motion::angleInterp>("/motion/angleInterp");
+  // ros::ServiceClient client1 =
+  // n.serviceClient<motion::angleInterp>("/motion/angleInterp");
   // motion::angleInterp srv;
 
   // motion::angleInterp serv;
@@ -62,7 +68,8 @@ int main(int argc, char *argv[]) {
   // }
 
   // // STIFFNESS INTERPOLATION TEST
-  // ros::ServiceClient client1 = n.serviceClient<motion::stiffnessInterp>("/motion/stiffnessInterpolation");
+  // ros::ServiceClient client1 =
+  // n.serviceClient<motion::stiffnessInterp>("/motion/stiffnessInterpolation");
   // motion::stiffnessInterp srv;
 
   // motion::stiffnessInterp serv;
@@ -94,7 +101,8 @@ int main(int argc, char *argv[]) {
   // // GET TASK LIST TEST
   // sleep(1);
 
-  // ros::ServiceClient client2 = n.serviceClient<motion::getTaskList>("motion/getTaskList");
+  // ros::ServiceClient client2 =
+  // n.serviceClient<motion::getTaskList>("motion/getTaskList");
   // motion::getTaskList srv2;
 
   // if (client2.call(srv2)){
@@ -112,7 +120,8 @@ int main(int argc, char *argv[]) {
   // // KILL TASK TEST
   // sleep(1);
 
-  // ros::ServiceClient client3 = n.serviceClient<std_srvs::Empty>("motion/killAll");
+  // ros::ServiceClient client3 =
+  // n.serviceClient<std_srvs::Empty>("motion/killAll");
   // std_srvs::Empty srv3;
 
   // if (client3.call(srv3)){
@@ -128,8 +137,8 @@ int main(int argc, char *argv[]) {
   //       true);
   // motion::setEffectorControl srv1;
   // ros::ServiceClient client2 =
-  //   n.serviceClient<motion::positionInterpolation>("/motion/positionInterpolation",
-  //       true);
+  // n.serviceClient<motion::positionInterpolation>
+  // ("/motion/positionInterpolation", true);
   // motion::positionInterpolation srv2;
 
   // motion::positionInterpolation serv;

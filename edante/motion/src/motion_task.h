@@ -1,23 +1,26 @@
+/*
+* @Copyright: Copyright[2015]<Alejandro Bordallo>
+* @Date:      2015-05-17
+* @Email:     alex.bordallo@ed.ac.uk
+* @Desc:      ROS wrapper for NaoQI motion task methods
+*/
+
 #ifndef MOTION_TASK_H_
 #define MOTION_TASK_H_
 
 #include <ros/ros.h>
 #include <std_msgs/Bool.h>
 #include <std_srvs/Empty.h>
-#include <vector>
-
-#include "motion/task.h"
-
-#include "motion/getTaskList.h"
-#include "motion/areResourcesAvailable.h"
-#include "motion/taskResource.h"
 
 #include <alproxies/almotionproxy.h>
 #include <alerror/alerror.h>
 
+#include <vector>
+#include "motion/task.h"
+#include "motion/getTaskList.h"
+#include "motion/areResourcesAvailable.h"
+#include "motion/taskResource.h"
 #include "definitions.h"
-
-using namespace std;
 
 class Motion_Task {
  public:
@@ -35,7 +38,7 @@ class Motion_Task {
   bool killAll(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
 
  private:
-  //ROS
+  // ROS
   ros::NodeHandle *nh_;
   ros::ServiceServer srv_get_task_list_;
   ros::ServiceServer srv_are_res_avail_;
@@ -45,7 +48,6 @@ class Motion_Task {
 
   // NAOqi
   AL::ALMotionProxy* mProxy_;
-
 };
 
 #endif /* MOTION_TASK_H_ */

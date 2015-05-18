@@ -19,10 +19,7 @@
 
 #include "definitions.h"
 
-using namespace std;
-
 class Fall_Manager {
-
  public:
   Fall_Manager(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy,
                AL::ALMemoryProxy* memProxy);
