@@ -1,0 +1,5 @@
+string name
+int32 space
+bool use_sensor_values
+---
+float32[] position

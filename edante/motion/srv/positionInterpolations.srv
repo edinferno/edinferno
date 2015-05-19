@@ -1,7 +1,0 @@
-string[] effectorNames
-int32 space
-path[] paths
-int32[] axisMasks
-float32List[] durations
-bool isAbsolute
----

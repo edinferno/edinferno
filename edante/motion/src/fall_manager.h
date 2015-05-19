@@ -14,24 +14,24 @@
 #include <alproxies/almotionproxy.h>
 #include <alproxies/almemoryproxy.h>
 
-#include "motion/enable.h"
-#include "motion/isEnabled.h"
+#include "motion/Enable.h"
+#include "motion/IsEnabled.h"
 
 #include "definitions.h"
 
-class Fall_Manager {
+class FallManager {
  public:
-  Fall_Manager(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy,
-               AL::ALMemoryProxy* memProxy);
-  ~Fall_Manager();
+  FallManager(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy,
+              AL::ALMemoryProxy* memProxy);
+  ~FallManager();
 
   void spinTopics();
 
   // ROS services
-  bool setFallManagerEnabled(motion::enable::Request &req,
-                             motion::enable::Response &res);
-  bool getFallManagerEnabled(motion::isEnabled::Request &req,
-                             motion::isEnabled::Response &res);
+  bool setFallManagerEnabled(motion::Enable::Request &req,
+                             motion::Enable::Response &res);
+  bool getFallManagerEnabled(motion::IsEnabled::Request &req,
+                             motion::IsEnabled::Response &res);
 
  private:
   // ROS

@@ -13,32 +13,32 @@
 
 #include <alproxies/alrobotpostureproxy.h>
 
-#include "motion/getPostureList.h"
-#include "motion/setPosture.h"
-#include "motion/getPostureFamily.h"
-#include "motion/setMaxTryNumber.h"
+#include "motion/GetPostureList.h"
+#include "motion/SetPosture.h"
+#include "motion/GetPostureFamily.h"
+#include "motion/SetMaxTryNumber.h"
 #include "definitions.h"
 
-class Robot_Posture {
+class RobotPosture {
  public:
-  Robot_Posture(ros::NodeHandle* nh, AL::ALRobotPostureProxy* pProxy);
-  ~Robot_Posture();
+  RobotPosture(ros::NodeHandle* nh, AL::ALRobotPostureProxy* pProxy);
+  ~RobotPosture();
 
   // ROS services
-  bool getPostureList(motion::getPostureList::Request &req,
-                      motion::getPostureList::Response &res);
-  bool goToPosture(motion::setPosture::Request &req,
-                   motion::setPosture::Response &res);
-  bool applyPosture(motion::setPosture::Request &req,
-                    motion::setPosture::Response &res);
+  bool getPostureList(motion::GetPostureList::Request &req,
+                      motion::GetPostureList::Response &res);
+  bool goToPosture(motion::SetPosture::Request &req,
+                   motion::SetPosture::Response &res);
+  bool applyPosture(motion::SetPosture::Request &req,
+                    motion::SetPosture::Response &res);
   bool stopPosture(std_srvs::Empty::Request &req,
                    std_srvs::Empty::Response &res);
-  bool getPostureFamily(motion::getPostureFamily::Request &req,
-                        motion::getPostureFamily::Response &res);
-  bool getPostureFamilyList(motion::getPostureList::Request &req,
-                            motion::getPostureList::Response &res);
-  bool setMaxTryNumber(motion::setMaxTryNumber::Request &req,
-                       motion::setMaxTryNumber::Response &res);
+  bool getPostureFamily(motion::GetPostureFamily::Request &req,
+                        motion::GetPostureFamily::Response &res);
+  bool getPostureFamilyList(motion::GetPostureList::Request &req,
+                            motion::GetPostureList::Response &res);
+  bool setMaxTryNumber(motion::SetMaxTryNumber::Request &req,
+                       motion::SetMaxTryNumber::Response &res);
 
  private:
   // ROS

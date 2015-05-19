@@ -14,32 +14,32 @@
 #include <alproxies/almotionproxy.h>
 
 #include <vector>
-#include "motion/positionInterpolation.h"
-#include "motion/positionInterpolations.h"
-#include "motion/setPosition.h"
-#include "motion/changePosition.h"
-#include "motion/getPosition.h"
-#include "motion/getTransform.h"
+#include "motion/PositionInterpolation.h"
+#include "motion/PositionInterpolations.h"
+#include "motion/SetPosition.h"
+#include "motion/ChangePosition.h"
+#include "motion/GetPosition.h"
+#include "motion/GetTransform.h"
 #include "definitions.h"
 
-class Cartesian_Control {
+class CartesianControl {
  public:
-  Cartesian_Control(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
-  ~Cartesian_Control();
+  CartesianControl(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
+  ~CartesianControl();
 
   // ROS services
-  bool positionInterpolation(motion::positionInterpolation::Request &req,
-                             motion::positionInterpolation::Response &res);
-  bool positionInterpolations(motion::positionInterpolations::Request &req,
-                              motion::positionInterpolations::Response &res);
-  bool setPosition(motion::setPosition::Request &req,
-                   motion::setPosition::Response &res);
-  bool changePosition(motion::changePosition::Request &req,
-                      motion::changePosition::Response &res);
-  bool getPosition(motion::getPosition::Request &req,
-                   motion::getPosition::Response &res);
-  bool getTransform(motion::getTransform::Request &req,
-                    motion::getTransform::Response &res);
+  bool positionInterpolation(motion::PositionInterpolation::Request &req,
+                             motion::PositionInterpolation::Response &res);
+  bool positionInterpolations(motion::PositionInterpolations::Request &req,
+                              motion::PositionInterpolations::Response &res);
+  bool setPosition(motion::SetPosition::Request &req,
+                   motion::SetPosition::Response &res);
+  bool changePosition(motion::ChangePosition::Request &req,
+                      motion::ChangePosition::Response &res);
+  bool getPosition(motion::GetPosition::Request &req,
+                   motion::GetPosition::Response &res);
+  bool getTransform(motion::GetTransform::Request &req,
+                    motion::GetTransform::Response &res);
 
 
  private:

@@ -13,35 +13,35 @@
 #include <alproxies/almotionproxy.h>
 #include <alerror/alerror.h>
 
-#include "motion/float32List.h"
-#include "motion/angleInterp.h"
-#include "motion/angleInterpSpeed.h"
-#include "motion/setAngles.h"
-#include "motion/changeAngles.h"
-#include "motion/getAngles.h"
-#include "motion/useHand.h"
+#include "motion/Float32List.h"
+#include "motion/AngleInterp.h"
+#include "motion/AngleInterpSpeed.h"
+#include "motion/SetAngles.h"
+#include "motion/ChangeAngles.h"
+#include "motion/GetAngles.h"
+#include "motion/UseHand.h"
 #include "definitions.h"
 
-class Joint_Control {
+class JointControl {
  public:
-  Joint_Control(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
-  ~Joint_Control();
+  JointControl(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
+  ~JointControl();
 
   // ROS services
-  bool angleInterp(motion::angleInterp::Request &req,
-                   motion::angleInterp::Response &res);
-  bool angleInterpSpeed(motion::angleInterpSpeed::Request &req,
-                        motion::angleInterpSpeed::Response &res);
-  bool setAngles(motion::setAngles::Request &req,
-                 motion::setAngles::Response &res);
-  bool changeAngles(motion::changeAngles::Request &req,
-                    motion::changeAngles::Response &res);
-  bool getAngles(motion::getAngles::Request &req,
-                 motion::getAngles::Response &res);
-  bool closeHand(motion::useHand::Request &req,
-                 motion::useHand::Response &res);
-  bool openHand(motion::useHand::Request &req,
-                motion::useHand::Response &res);
+  bool angleInterp(motion::AngleInterp::Request &req,
+                   motion::AngleInterp::Response &res);
+  bool angleInterpSpeed(motion::AngleInterpSpeed::Request &req,
+                        motion::AngleInterpSpeed::Response &res);
+  bool setAngles(motion::SetAngles::Request &req,
+                 motion::SetAngles::Response &res);
+  bool changeAngles(motion::ChangeAngles::Request &req,
+                    motion::ChangeAngles::Response &res);
+  bool getAngles(motion::GetAngles::Request &req,
+                 motion::GetAngles::Response &res);
+  bool closeHand(motion::UseHand::Request &req,
+                 motion::UseHand::Response &res);
+  bool openHand(motion::UseHand::Request &req,
+                motion::UseHand::Response &res);
 
  private:
   // ROS

@@ -9,15 +9,15 @@
 #define LOCOMOTION_CONTROL_H_
 
 #include <ros/ros.h>
-#include <motion/move.h>
-#include <motion/moveTo.h>
-#include <motion/moveToward.h>
-#include <motion/getMoveConfig.h>
-#include <motion/getRobotPosition.h>
-#include <motion/getNextRobotPosition.h>
-#include <motion/getRobotVelocity.h>
-#include <motion/getWalkArmsEnabled.h>
-#include <motion/setWalkArmsEnabled.h>
+#include <motion/Move.h>
+#include <motion/MoveTo.h>
+#include <motion/MoveToward.h>
+#include <motion/GetMoveConfig.h>
+#include <motion/GetRobotPosition.h>
+#include <motion/GetNextRobotPosition.h>
+#include <motion/GetRobotVelocity.h>
+#include <motion/GetWalkArmsEnabled.h>
+#include <motion/SetWalkArmsEnabled.h>
 
 #include <alproxies/almotionproxy.h>
 
@@ -29,19 +29,19 @@
 
 using std::vector;
 
-class Locomotion_Control {
+class LocomotionControl {
  public:
-  Locomotion_Control(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
-  ~Locomotion_Control();
+  LocomotionControl(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
+  ~LocomotionControl();
 
   // ROS services
-  bool move(motion::move::Request &req,
-            motion::move::Response &res);
+  bool move(motion::Move::Request &req,
+            motion::Move::Response &res);
 
-  bool moveTo(motion::moveTo::Request &req,
-              motion::moveTo::Response &res);
-  bool moveToward(motion::moveToward::Request &req,
-                  motion::moveToward::Response &res);
+  bool moveTo(motion::MoveTo::Request &req,
+              motion::MoveTo::Response &res);
+  bool moveToward(motion::MoveToward::Request &req,
+                  motion::MoveToward::Response &res);
 
   bool moveInit(std_srvs::Empty::Request &req,
                 std_srvs::Empty::Response &res);
@@ -50,18 +50,18 @@ class Locomotion_Control {
   bool moveIsActive();
   bool stopMove(std_srvs::Empty::Request &req,
                 std_srvs::Empty::Response &res);
-  bool getMoveConfig(motion::getMoveConfig::Request &req,
-                     motion::getMoveConfig::Response &res);
-  bool getRobotPosition(motion::getRobotPosition::Request &req,
-                        motion::getRobotPosition::Response &res);
-  bool getNextRobotPosition(motion::getNextRobotPosition::Request &req,
-                            motion::getNextRobotPosition::Response &res);
-  bool getRobotVelocity(motion::getRobotVelocity::Request &req,
-                        motion::getRobotVelocity::Response &res);
-  bool getWalkArmsEnabled(motion::getWalkArmsEnabled::Request &req,
-                          motion::getWalkArmsEnabled::Response &res);
-  bool setWalkArmsEnabled(motion::setWalkArmsEnabled::Request &req,
-                          motion::setWalkArmsEnabled::Response &res);
+  bool getMoveConfig(motion::GetMoveConfig::Request &req,
+                     motion::GetMoveConfig::Response &res);
+  bool getRobotPosition(motion::GetRobotPosition::Request &req,
+                        motion::GetRobotPosition::Response &res);
+  bool getNextRobotPosition(motion::GetNextRobotPosition::Request &req,
+                            motion::GetNextRobotPosition::Response &res);
+  bool getRobotVelocity(motion::GetRobotVelocity::Request &req,
+                        motion::GetRobotVelocity::Response &res);
+  bool getWalkArmsEnabled(motion::GetWalkArmsEnabled::Request &req,
+                          motion::GetWalkArmsEnabled::Response &res);
+  bool setWalkArmsEnabled(motion::SetWalkArmsEnabled::Request &req,
+                          motion::SetWalkArmsEnabled::Response &res);
 
   // ROS publisher
   void spinTopics();

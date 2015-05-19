@@ -7,70 +7,70 @@
 
 #include "stiffness_control.h"
 
-Stiffness_Control::Stiffness_Control(ros::NodeHandle* nh,
-                                     AL::ALMotionProxy* mProxy) {
+StiffnessControl::StiffnessControl(ros::NodeHandle* nh,
+                                   AL::ALMotionProxy* mProxy) {
   nh_ = nh;
   mProxy_ = mProxy;
   awake_ = false;
   INFO("Setting up Stiffness Control publishers" << std::endl);
-  wake_pub_ = nh_->advertise<std_msgs::Bool>("isAwake", 10);
+  wake_pub_ = nh_->advertise<std_msgs::Bool>("is_awake", 10);
 
   INFO("Setting up Stiffness Control services" << std::endl);
-  srv_wake_up_ = nh_->advertiseService("wakeUp",
-                                       &Stiffness_Control::wakeUp, this);
+  srv_wake_up_ = nh_->advertiseService("wake_up",
+                                       &StiffnessControl::wakeUp, this);
   srv_rest_ = nh_->advertiseService("rest",
-                                    &Stiffness_Control::rest, this);
-  stiffness_interp_ = nh_->advertiseService("stiffnessInterpolation",
-                      &Stiffness_Control::stiffnessInterp, this);
+                                    &StiffnessControl::rest, this);
+  stiffness_interp_ = nh_->advertiseService("stiffness_interpolation",
+                      &StiffnessControl::stiffnessInterp, this);
   set_stiffness_ =
-    nh_->advertiseService("setStiffness",
-                          &Stiffness_Control::setStiffness, this);
+    nh_->advertiseService("set_stiffness",
+                          &StiffnessControl::setStiffness, this);
   get_stiffness_ =
-    nh_->advertiseService("getStiffness",
-                          &Stiffness_Control::getStiffness, this);
+    nh_->advertiseService("get_stiffness",
+                          &StiffnessControl::getStiffness, this);
 }
 
-Stiffness_Control::~Stiffness_Control() {
+StiffnessControl::~StiffnessControl() {
   ros::shutdown();
 }
 
-void Stiffness_Control::spinTopics() {
+void StiffnessControl::spinTopics() {
   std_msgs::Bool msg;
   msg.data = awake_;
   wake_pub_.publish(msg);
 }
 
-bool Stiffness_Control::wakeUp(std_srvs::Empty::Request &req,
-                               std_srvs::Empty::Response &res) {
+bool StiffnessControl::wakeUp(std_srvs::Empty::Request &req,
+                              std_srvs::Empty::Response &res) {
   mProxy_->wakeUp();
   awake_ = true;
   return true;
 }
 
-bool Stiffness_Control::rest(std_srvs::Empty::Request &req,
-                             std_srvs::Empty::Response &res) {
+bool StiffnessControl::rest(std_srvs::Empty::Request &req,
+                            std_srvs::Empty::Response &res) {
   mProxy_->rest();
   awake_ = false;
   return true;
 }
 
-bool Stiffness_Control::stiffnessInterp(
-  motion::stiffnessInterp::Request &req,
-  motion::stiffnessInterp::Response &res) {
+bool StiffnessControl::stiffnessInterp(
+  motion::StiffnessInterp::Request &req,
+  motion::StiffnessInterp::Response &res) {
   size_t s = req.names.size();
 
-  AL::ALValue stiffnessLists;
-  stiffnessLists.arraySetSize(s);
-  AL::ALValue timeLists;
-  timeLists.arraySetSize(s);
+  AL::ALValue stiffness_lists;
+  stiffness_lists.arraySetSize(s);
+  AL::ALValue time_lists;
+  time_lists.arraySetSize(s);
 
   for (size_t i = 0; i < s; ++i) {
-    stiffnessLists[i] = req.stiffnessLists[i].floatList;
-    timeLists[i] = req.timeLists[i].floatList;
+    stiffness_lists[i] = req.stiffness_lists[i].float_list;
+    time_lists[i] = req.time_lists[i].float_list;
   }
 
   try {
-    mProxy_->post.stiffnessInterpolation(req.names, stiffnessLists, timeLists);
+    mProxy_->post.stiffnessInterpolation(req.names, stiffness_lists, time_lists);
     res.res = true;
   } catch (const std::exception& e) {
     res.res = false;
@@ -78,8 +78,8 @@ bool Stiffness_Control::stiffnessInterp(
   return true;
 }
 
-bool Stiffness_Control::setStiffness(motion::setStiffness::Request &req,
-                                     motion::setStiffness::Response &res) {
+bool StiffnessControl::setStiffness(motion::SetStiffness::Request &req,
+                                    motion::SetStiffness::Response &res) {
   bool nameIsVect;
   string jointName;
   vector<string> jointNameVect;
@@ -120,14 +120,14 @@ bool Stiffness_Control::setStiffness(motion::setStiffness::Request &req,
   return true;
 }
 
-bool Stiffness_Control::getStiffness(motion::getStiffness::Request &req,
-                                     motion::getStiffness::Response &res) {
+bool StiffnessControl::getStiffness(motion::GetStiffness::Request &req,
+                                    motion::GetStiffness::Response &res) {
   res.stiffnesses = mProxy_->getStiffnesses(req.names);
   return true;
 }
 
-bool Stiffness_Control::setStiffnesses(const string& name,
-                                       const float& stiffness) {
+bool StiffnessControl::setStiffnesses(const string& name,
+                                      const float& stiffness) {
   try {
     mProxy_->setStiffnesses(name, stiffness);
   } catch (const std::exception& e) {
@@ -136,8 +136,8 @@ bool Stiffness_Control::setStiffnesses(const string& name,
   return true;
 }
 
-bool Stiffness_Control::setStiffnesses(const string& name,
-                                       const vector<float>& stiffnesses) {
+bool StiffnessControl::setStiffnesses(const string& name,
+                                      const vector<float>& stiffnesses) {
   try {
     mProxy_->setStiffnesses(name, stiffnesses);
   } catch (const std::exception& e) {
@@ -146,8 +146,8 @@ bool Stiffness_Control::setStiffnesses(const string& name,
   return true;
 }
 
-bool Stiffness_Control::setStiffnesses(const vector<string>& names,
-                                       const float& stiffness) {
+bool StiffnessControl::setStiffnesses(const vector<string>& names,
+                                      const float& stiffness) {
   try {
     mProxy_->setStiffnesses(names, stiffness);
   } catch (const std::exception& e) {
@@ -156,8 +156,8 @@ bool Stiffness_Control::setStiffnesses(const vector<string>& names,
   return true;
 }
 
-bool Stiffness_Control::setStiffnesses(const vector<string>& names,
-                                       const vector<float>& stiffnesses) {
+bool StiffnessControl::setStiffnesses(const vector<string>& names,
+                                      const vector<float>& stiffnesses) {
   try {
     mProxy_->setStiffnesses(names, stiffnesses);
   } catch (const std::exception& e) {

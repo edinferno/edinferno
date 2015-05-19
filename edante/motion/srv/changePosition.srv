@@ -1,6 +1,0 @@
-string effectorName
-int32 space
-float32[] positionChange
-float32 fractionMaxSpeed
-int32 axisMask
----

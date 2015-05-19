@@ -1,5 +1,0 @@
-string[] names
-float32List[] stiffnessLists
-float32List[] timeLists
----
-bool res

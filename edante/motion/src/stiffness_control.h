@@ -16,18 +16,18 @@
 #include <alerror/alerror.h>
 
 #include <vector>
-#include "motion/stiffnessInterp.h"
-#include "motion/setStiffness.h"
-#include "motion/getStiffness.h"
+#include "motion/StiffnessInterp.h"
+#include "motion/SetStiffness.h"
+#include "motion/GetStiffness.h"
 #include "definitions.h"
 
 using std::string;
 using std::vector;
 
-class Stiffness_Control {
+class StiffnessControl {
  public:
-  Stiffness_Control(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
-  ~Stiffness_Control();
+  StiffnessControl(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
+  ~StiffnessControl();
 
 // ROS publisher
   void spinTopics();
@@ -37,12 +37,12 @@ class Stiffness_Control {
               std_srvs::Empty::Response &res);
   bool rest(std_srvs::Empty::Request &req,
             std_srvs::Empty::Response &res);
-  bool stiffnessInterp(motion::stiffnessInterp::Request &req,
-                       motion::stiffnessInterp::Response &res);
-  bool setStiffness(motion::setStiffness::Request &req,
-                    motion::setStiffness::Response &res);
-  bool getStiffness(motion::getStiffness::Request &req,
-                    motion::getStiffness::Response &res);
+  bool stiffnessInterp(motion::StiffnessInterp::Request &req,
+                       motion::StiffnessInterp::Response &res);
+  bool setStiffness(motion::SetStiffness::Request &req,
+                    motion::SetStiffness::Response &res);
+  bool getStiffness(motion::GetStiffness::Request &req,
+                    motion::GetStiffness::Response &res);
 
   // Stiffness control API
   bool setStiffnesses(const string& name, const float& stiffness);

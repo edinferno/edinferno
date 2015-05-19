@@ -1,5 +1,0 @@
-string[] names
-float32[] changes
-float32 fractionMaxSpeed
----
-bool res

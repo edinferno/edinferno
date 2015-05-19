@@ -1,2 +1,0 @@
-string taskName
-int32 motionID

@@ -1,0 +1,7 @@
+string[] effector_names
+int32 space
+Path[] paths
+int32[] axis_masks
+Float32List[] durations
+bool is_absolute
+---

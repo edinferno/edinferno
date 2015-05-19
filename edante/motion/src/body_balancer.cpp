@@ -7,7 +7,7 @@
 
 #include "body_balancer.h"
 
-Body_Balancer::Body_Balancer(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy) {
+BodyBalancer::BodyBalancer(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy) {
   nh_ = nh;
   mProxy_ = mProxy;
   isBalancing_ = false;
@@ -16,81 +16,81 @@ Body_Balancer::Body_Balancer(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy) {
 
   INFO("Setting up Body Balancer services" << std::endl);
   srv_enable_balance_ =
-    nh_->advertiseService("enableBalance",
-                          &Body_Balancer::enableBalance, this);
+    nh_->advertiseService("enable_balance",
+                          &BodyBalancer::enableBalance, this);
   srv_foot_state_ =
-    nh_->advertiseService("footState",
-                          &Body_Balancer::footState, this);
+    nh_->advertiseService("foot_state",
+                          &BodyBalancer::footState, this);
   srv_enable_balance_constraint_ =
-    nh_->advertiseService("enableBalanceConstraint",
-                          &Body_Balancer::enableBalanceConstraint, this);
+    nh_->advertiseService("enable_balance_constraint",
+                          &BodyBalancer::enableBalanceConstraint, this);
   srv_go_to_balance_ =
-    nh_->advertiseService("goToBalance",
-                          &Body_Balancer::goToBalance, this);
+    nh_->advertiseService("goto_balance",
+                          &BodyBalancer::goToBalance, this);
   srv_enable_effector_control_ =
-    nh_->advertiseService("enableEffectorControl",
-                          &Body_Balancer::enableEffectorControl, this);
+    nh_->advertiseService("enable_effector_control",
+                          &BodyBalancer::enableEffectorControl, this);
   srv_set_effector_control_ =
-    nh_->advertiseService("setEffectorControl",
-                          &Body_Balancer::setEffectorControl, this);
+    nh_->advertiseService("set_effector_control",
+                          &BodyBalancer::setEffectorControl, this);
   srv_enable_effector_optimization_ =
-    nh_->advertiseService("EnableEffectorOptimization",
-                          &Body_Balancer::enableEffectorOptimization, this);
+    nh_->advertiseService("enable_effector_optimization",
+                          &BodyBalancer::enableEffectorOptimization, this);
 }
 
-Body_Balancer::~Body_Balancer() {
+BodyBalancer::~BodyBalancer() {
   ros::shutdown();
 }
 
-void Body_Balancer::spinTopics() {
+void BodyBalancer::spinTopics() {
   std_msgs::Bool msg;
   msg.data = isBalancing_;
   balance_pub_.publish(msg);
 }
 
-bool Body_Balancer::enableBalance(motion::enable::Request &req,
-                                  motion::enable::Response &res) {
-  mProxy_->wbEnable(req.isEnabled);
-  isBalancing_ = req.isEnabled;
+bool BodyBalancer::enableBalance(motion::Enable::Request &req,
+                                 motion::Enable::Response &res) {
+  mProxy_->wbEnable(req.is_enabled);
+  isBalancing_ = req.is_enabled;
   return true;
 }
 
-bool Body_Balancer::footState(motion::footState::Request &req,
-                              motion::footState::Response &res) {
-  mProxy_->wbFootState(req.stateName, req.supportLeg);
+bool BodyBalancer::footState(motion::FootState::Request &req,
+                             motion::FootState::Response &res) {
+  mProxy_->wbFootState(req.state_name, req.support_leg);
   return true;
 }
 
-bool Body_Balancer::enableBalanceConstraint(
-  motion::enableBalanceConstraint::Request &req,
-  motion::enableBalanceConstraint::Response &res) {
-  mProxy_->wbEnableBalanceConstraint(req.isEnabled, req.supportLeg);
+bool BodyBalancer::enableBalanceConstraint(
+  motion::EnableBalanceConstraint::Request &req,
+  motion::EnableBalanceConstraint::Response &res) {
+  mProxy_->wbEnableBalanceConstraint(req.is_enabled, req.support_leg);
   return true;
 }
 
-bool Body_Balancer::goToBalance(motion::goToBalance::Request &req,
-                                motion::goToBalance::Response &res) {
-  mProxy_->wbGoToBalance(req.supportLeg, req.duration);
+bool BodyBalancer::goToBalance(motion::GoToBalance::Request &req,
+                               motion::GoToBalance::Response &res) {
+  mProxy_->wbGoToBalance(req.support_leg, req.duration);
   return true;
 }
 
-bool Body_Balancer::enableEffectorControl(
-  motion::enableEffector::Request &req,
-  motion::enableEffector::Response &res) {
-  mProxy_->wbEnableEffectorControl(req.effectorName, req.isEnabled);
+bool BodyBalancer::enableEffectorControl(
+  motion::EnableEffector::Request &req,
+  motion::EnableEffector::Response &res) {
+  mProxy_->wbEnableEffectorControl(req.effector_name, req.is_enabled);
   return true;
 }
 
-bool Body_Balancer::setEffectorControl(
-  motion::setEffectorControl::Request &req,
-  motion::setEffectorControl::Response &res) {
-  mProxy_->wbSetEffectorControl(req.effectorName, req.targetCoordinate);
+bool BodyBalancer::setEffectorControl(
+  motion::SetEffectorControl::Request &req,
+  motion::SetEffectorControl::Response &res) {
+  mProxy_->wbSetEffectorControl(req.effector_name, req.target_coordinate);
   return true;
 }
 
-bool Body_Balancer::enableEffectorOptimization(
-  motion::enableEffector::Request &req,
-  motion::enableEffector::Response &res) {
-  mProxy_->wbEnableEffectorOptimization(req.effectorName, req.isEnabled);
+bool BodyBalancer::enableEffectorOptimization(
+  motion::EnableEffector::Request &req,
+  motion::EnableEffector::Response &res) {
+  mProxy_->wbEnableEffectorOptimization(req.effector_name, req.is_enabled);
   return true;
 }
