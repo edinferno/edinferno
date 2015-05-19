@@ -9,7 +9,7 @@
 
 #include <alproxies/alaudiodeviceproxy.h>
 
-#include "signalling/playSine.h"
+#include "signalling/PlaySine.h"
 #include "definitions.h"
 
 #ifndef AUDIO_H_
@@ -20,8 +20,8 @@ class Audio {
   explicit Audio(ros::NodeHandle* nh);
   ~Audio();
 
-  bool playSine(signalling::playSine::Request &req,
-                signalling::playSine::Response &res);
+  bool playSine(signalling::PlaySine::Request &req,
+                signalling::PlaySine::Response &res);
 
  private:
   // ROS
