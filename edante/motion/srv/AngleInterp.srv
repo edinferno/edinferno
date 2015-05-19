@@ -1,0 +1,6 @@
+string[] names
+Float32List[] angle_lists
+Float32List[] time_lists
+bool is_absolute
+---
+bool res

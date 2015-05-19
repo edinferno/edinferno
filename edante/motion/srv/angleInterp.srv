@@ -1,6 +1,0 @@
-string[] names
-float32List[] angleLists
-float32List[] timeLists
-bool isAbsolute
----
-bool res

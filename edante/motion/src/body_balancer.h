@@ -13,38 +13,38 @@
 
 #include <alproxies/almotionproxy.h>
 
-#include "motion/enable.h"
-#include "motion/footState.h"
-#include "motion/enableBalanceConstraint.h"
-#include "motion/goToBalance.h"
-#include "motion/enableEffector.h"
-#include "motion/setEffectorControl.h"
+#include "motion/Enable.h"
+#include "motion/FootState.h"
+#include "motion/EnableBalanceConstraint.h"
+#include "motion/GoToBalance.h"
+#include "motion/EnableEffector.h"
+#include "motion/SetEffectorControl.h"
 
 #include "definitions.h"
 
-class Body_Balancer {
+class BodyBalancer {
  public:
-  Body_Balancer(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
-  ~Body_Balancer();
+  BodyBalancer(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
+  ~BodyBalancer();
 
   // ROS publisher
   void spinTopics();
 
   // ROS services
-  bool enableBalance(motion::enable::Request &req,
-                     motion::enable::Response &res);
-  bool footState(motion::footState::Request &req,
-                 motion::footState::Response &res);
-  bool enableBalanceConstraint(motion::enableBalanceConstraint::Request &req,
-                               motion::enableBalanceConstraint::Response &res);
-  bool goToBalance(motion::goToBalance::Request &req,
-                   motion::goToBalance::Response &res);
-  bool enableEffectorControl(motion::enableEffector::Request &req,
-                             motion::enableEffector::Response &res);
-  bool setEffectorControl(motion::setEffectorControl::Request &req,
-                          motion::setEffectorControl::Response &res);
-  bool enableEffectorOptimization(motion::enableEffector::Request &req,
-                                  motion::enableEffector::Response &res);
+  bool enableBalance(motion::Enable::Request &req,
+                     motion::Enable::Response &res);
+  bool footState(motion::FootState::Request &req,
+                 motion::FootState::Response &res);
+  bool enableBalanceConstraint(motion::EnableBalanceConstraint::Request &req,
+                               motion::EnableBalanceConstraint::Response &res);
+  bool goToBalance(motion::GoToBalance::Request &req,
+                   motion::GoToBalance::Response &res);
+  bool enableEffectorControl(motion::EnableEffector::Request &req,
+                             motion::EnableEffector::Response &res);
+  bool setEffectorControl(motion::SetEffectorControl::Request &req,
+                          motion::SetEffectorControl::Response &res);
+  bool enableEffectorOptimization(motion::EnableEffector::Request &req,
+                                  motion::EnableEffector::Response &res);
 
  private:
 // Flags

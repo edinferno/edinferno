@@ -7,8 +7,8 @@
 
 #include "locomotion_control.h"
 
-Locomotion_Control::Locomotion_Control(ros::NodeHandle* nh,
-                                       AL::ALMotionProxy* mProxy) {
+LocomotionControl::LocomotionControl(ros::NodeHandle* nh,
+                                     AL::ALMotionProxy* mProxy) {
   nh_ = nh;
   mProxy_ = mProxy;
   INFO("Setting up Locomotion Control publishers" << std::endl);
@@ -16,228 +16,228 @@ Locomotion_Control::Locomotion_Control(ros::NodeHandle* nh,
   INFO("Setting up Locomotion Control services" << std::endl);
   srv_move_ =
     nh_->advertiseService("move",
-                          &Locomotion_Control::move, this);
+                          &LocomotionControl::move, this);
   srv_move_to_ =
-    nh_->advertiseService("moveTo",
-                          &Locomotion_Control::moveTo, this);
+    nh_->advertiseService("move_to",
+                          &LocomotionControl::moveTo, this);
   srv_move_toward_ =
-    nh_->advertiseService("moveToward",
-                          &Locomotion_Control::moveToward, this);
+    nh_->advertiseService("move_toward",
+                          &LocomotionControl::moveToward, this);
   srv_move_init_ =
-    nh_->advertiseService("moveInit",
-                          &Locomotion_Control::moveInit, this);
+    nh_->advertiseService("move_init",
+                          &LocomotionControl::moveInit, this);
   srv_wait_move_finished_ =
-    nh_->advertiseService("waitMoveFinish",
-                          &Locomotion_Control::waitUntilMoveIsFinished, this);
+    nh_->advertiseService("wait_move_finish",
+                          &LocomotionControl::waitUntilMoveIsFinished, this);
   srv_stop_move_ =
-    nh_->advertiseService("stopMove",
-                          &Locomotion_Control::stopMove, this);
+    nh_->advertiseService("stop_move",
+                          &LocomotionControl::stopMove, this);
   srv_get_move_config_ =
-    nh_->advertiseService("getMoveConfig",
-                          &Locomotion_Control::getMoveConfig, this);
+    nh_->advertiseService("get_move_config",
+                          &LocomotionControl::getMoveConfig, this);
   srv_get_robot_position_ =
-    nh_->advertiseService("getRobotPosition",
-                          &Locomotion_Control::getRobotPosition, this);
+    nh_->advertiseService("get_robot_position",
+                          &LocomotionControl::getRobotPosition, this);
   srv_get_next_robot_position_ =
-    nh_->advertiseService("getNextRobotPosition",
-                          &Locomotion_Control::getNextRobotPosition, this);
+    nh_->advertiseService("get_next_robot_position",
+                          &LocomotionControl::getNextRobotPosition, this);
   srv_get_robot_velocity_ =
-    nh_->advertiseService("getRobotVelocity",
-                          &Locomotion_Control::getRobotVelocity, this);
+    nh_->advertiseService("get_robot_velocity",
+                          &LocomotionControl::getRobotVelocity, this);
   srv_get_walk_arms_enabled_ =
-    nh_->advertiseService("getWalkArmsEnabled",
-                          &Locomotion_Control::getWalkArmsEnabled, this);
+    nh_->advertiseService("get_walk_arms_enabled",
+                          &LocomotionControl::getWalkArmsEnabled, this);
   srv_set_walk_arms_enabled_ =
-    nh_->advertiseService("setWalkArmsEnabled",
-                          &Locomotion_Control::setWalkArmsEnabled, this);
+    nh_->advertiseService("set_walk_arms_enabled",
+                          &LocomotionControl::setWalkArmsEnabled, this);
 }
 
-Locomotion_Control::~Locomotion_Control() {
+LocomotionControl::~LocomotionControl() {
   ros::shutdown();
 }
 
-bool Locomotion_Control::move(motion::move::Request &req,
-                              motion::move::Response &res) {
-  // Check for size of moveConfiguration
-  int configSize = req.moveConfiguration.names.size();
-  AL::ALValue moveConfiguration;
+bool LocomotionControl::move(motion::Move::Request &req,
+                             motion::Move::Response &res) {
+  // Check for size of move_configuration
+  int configSize = req.move_configuration.names.size();
+  AL::ALValue move_configuration;
   if (configSize > 0) {
-    moveConfiguration.arraySetSize(configSize);
+    move_configuration.arraySetSize(configSize);
     for (int i = 0; i < configSize; ++i) {
-      moveConfiguration[i] = AL::ALValue::array(
-                               req.moveConfiguration.names[i],
-                               req.moveConfiguration.values[i]);
+      move_configuration[i] = AL::ALValue::array(
+                                req.move_configuration.names[i],
+                                req.move_configuration.values[i]);
     }
   }
 
   res.res = true;
   if (configSize == 0) {
-    mProxy_->move(req.targetVelocity.x,
-                  req.targetVelocity.y,
-                  req.targetVelocity.theta);
+    mProxy_->move(req.target_velocity.x,
+                  req.target_velocity.y,
+                  req.target_velocity.theta);
   } else if (configSize > 0) {
-    mProxy_->move(req.targetVelocity.x,
-                  req.targetVelocity.y,
-                  req.targetVelocity.theta,
-                  moveConfiguration);
+    mProxy_->move(req.target_velocity.x,
+                  req.target_velocity.y,
+                  req.target_velocity.theta,
+                  move_configuration);
   } else {
     res.res = false;
   }
   return true;
 }
 
-bool Locomotion_Control::moveTo(motion::moveTo::Request &req,
-                                motion::moveTo::Response &res) {
+bool LocomotionControl::moveTo(motion::MoveTo::Request &req,
+                               motion::MoveTo::Response &res) {
   //  Check for multiple positions
-  int posNum = req.controlPoints.size();
-  AL::ALValue controlPoints;
+  int posNum = req.control_points.size();
+  AL::ALValue control_points;
   if (posNum > 1) {
-    controlPoints.arraySetSize(posNum);
+    control_points.arraySetSize(posNum);
     for (int i = 0; i < posNum; ++i) {
-      controlPoints[i] = AL::ALValue::array(req.controlPoints[i].x,
-                                            req.controlPoints[i].y,
-                                            req.controlPoints[i].theta);
+      control_points[i] = AL::ALValue::array(req.control_points[i].x,
+                                             req.control_points[i].y,
+                                             req.control_points[i].theta);
     }
   }
 
-  // Check for size of moveConfiguration
-  int configSize = req.moveConfiguration.names.size();
-  AL::ALValue moveConfiguration;
+  // Check for size of move_configuration
+  int configSize = req.move_configuration.names.size();
+  AL::ALValue move_configuration;
   if (configSize > 0) {
-    moveConfiguration.arraySetSize(configSize);
+    move_configuration.arraySetSize(configSize);
     for (int i = 0; i < configSize; ++i) {
-      moveConfiguration[i] = AL::ALValue::array(
-                               req.moveConfiguration.names[i],
-                               req.moveConfiguration.values[i]);
+      move_configuration[i] = AL::ALValue::array(
+                                req.move_configuration.names[i],
+                                req.move_configuration.values[i]);
     }
   }
 
   res.res = true;
   if (posNum == 1 && configSize == 0) {
-    mProxy_->post.moveTo(req.controlPoints[0].x,
-                         req.controlPoints[0].y,
-                         req.controlPoints[0].theta);
+    mProxy_->post.moveTo(req.control_points[0].x,
+                         req.control_points[0].y,
+                         req.control_points[0].theta);
   } else if (posNum > 1 && configSize == 0) {
-    mProxy_->post.moveTo(controlPoints);
+    mProxy_->post.moveTo(control_points);
   } else if (posNum == 1 && configSize > 0) {
-    mProxy_->post.moveTo(req.controlPoints[0].x,
-                         req.controlPoints[0].y,
-                         req.controlPoints[0].theta,
-                         moveConfiguration);
+    mProxy_->post.moveTo(req.control_points[0].x,
+                         req.control_points[0].y,
+                         req.control_points[0].theta,
+                         move_configuration);
   } else if (posNum > 1 && configSize > 0) {
-    mProxy_->post.moveTo(controlPoints, moveConfiguration);
+    mProxy_->post.moveTo(control_points, move_configuration);
   } else {
     res.res = false;
   }
   return true;
 }
 
-bool Locomotion_Control::moveToward(motion::moveToward::Request &req,
-                                    motion::moveToward::Response &res) {
-  // Check for size of moveConfiguration
-  int configSize = req.moveConfiguration.names.size();
-  AL::ALValue moveConfiguration;
+bool LocomotionControl::moveToward(motion::MoveToward::Request &req,
+                                   motion::MoveToward::Response &res) {
+  // Check for size of move_configuration
+  int configSize = req.move_configuration.names.size();
+  AL::ALValue move_configuration;
   if (configSize > 0) {
-    moveConfiguration.arraySetSize(configSize);
+    move_configuration.arraySetSize(configSize);
     for (int i = 0; i < configSize; ++i) {
-      moveConfiguration[i] = AL::ALValue::array(
-                               req.moveConfiguration.names[i],
-                               req.moveConfiguration.values[i]);
+      move_configuration[i] = AL::ALValue::array(
+                                req.move_configuration.names[i],
+                                req.move_configuration.values[i]);
     }
   }
 
   res.res = true;
   if (configSize == 0) {
-    mProxy_->moveToward(req.normVelocity.x,
-                        req.normVelocity.y,
-                        req.normVelocity.theta);
+    mProxy_->moveToward(req.norm_velocity.x,
+                        req.norm_velocity.y,
+                        req.norm_velocity.theta);
   } else if (configSize > 0) {
-    mProxy_->moveToward(req.normVelocity.x,
-                        req.normVelocity.y,
-                        req.normVelocity.theta,
-                        moveConfiguration);
+    mProxy_->moveToward(req.norm_velocity.x,
+                        req.norm_velocity.y,
+                        req.norm_velocity.theta,
+                        move_configuration);
   } else {
     res.res = false;
   }
   return true;
 }
 
-bool Locomotion_Control::moveInit(std_srvs::Empty::Request &req,
-                                  std_srvs::Empty::Response &res) {
+bool LocomotionControl::moveInit(std_srvs::Empty::Request &req,
+                                 std_srvs::Empty::Response &res) {
   mProxy_->moveInit();
   return true;
 }
 
-bool Locomotion_Control::waitUntilMoveIsFinished(
+bool LocomotionControl::waitUntilMoveIsFinished(
   std_srvs::Empty::Request &req,
   std_srvs::Empty::Response &res) {
   mProxy_->waitUntilMoveIsFinished();
   return true;
 }
 
-bool Locomotion_Control::moveIsActive() {
+bool LocomotionControl::moveIsActive() {
   return mProxy_->moveIsActive();
 }
 
-bool Locomotion_Control::stopMove(std_srvs::Empty::Request &req,
-                                  std_srvs::Empty::Response &res) {
+bool LocomotionControl::stopMove(std_srvs::Empty::Request &req,
+                                 std_srvs::Empty::Response &res) {
   mProxy_->stopMove();
   return true;
 }
 
-bool Locomotion_Control::getMoveConfig(motion::getMoveConfig::Request &req,
-                                       motion::getMoveConfig::Response &res) {
-  AL::ALValue moveConfiguration;
-  moveConfiguration = mProxy_->getMoveConfig(req.config);
-  std::size_t CSize = moveConfiguration.getSize();
-  res.moveConfiguration.names.resize(CSize);
-  res.moveConfiguration.values.resize(CSize);
+bool LocomotionControl::getMoveConfig(motion::GetMoveConfig::Request &req,
+                                      motion::GetMoveConfig::Response &res) {
+  AL::ALValue move_configuration;
+  move_configuration = mProxy_->getMoveConfig(req.config);
+  std::size_t CSize = move_configuration.getSize();
+  res.move_configuration.names.resize(CSize);
+  res.move_configuration.values.resize(CSize);
   for (size_t i = 0; i < CSize; ++i) {
-    res.moveConfiguration.names[i] = moveConfiguration[i][0].toString();
-    res.moveConfiguration.values[i] = moveConfiguration[i][1];
+    res.move_configuration.names[i] = move_configuration[i][0].toString();
+    res.move_configuration.values[i] = move_configuration[i][1];
   }
   return true;
 }
 
-bool Locomotion_Control::getRobotPosition(
-  motion::getRobotPosition::Request &req,
-  motion::getRobotPosition::Response &res) {
-  res.positions = mProxy_->getRobotPosition(req.useSensors);
+bool LocomotionControl::getRobotPosition(
+  motion::GetRobotPosition::Request &req,
+  motion::GetRobotPosition::Response &res) {
+  res.positions = mProxy_->getRobotPosition(req.use_sensors);
   return true;
 }
 
-bool Locomotion_Control::getNextRobotPosition(
-  motion::getNextRobotPosition::Request &req,
-  motion::getNextRobotPosition::Response &res) {
+bool LocomotionControl::getNextRobotPosition(
+  motion::GetNextRobotPosition::Request &req,
+  motion::GetNextRobotPosition::Response &res) {
   res.positions = mProxy_->getNextRobotPosition();
   return true;
 }
 
-bool Locomotion_Control::getRobotVelocity(
-  motion::getRobotVelocity::Request &req,
-  motion::getRobotVelocity::Response &res) {
+bool LocomotionControl::getRobotVelocity(
+  motion::GetRobotVelocity::Request &req,
+  motion::GetRobotVelocity::Response &res) {
   res.velocity = mProxy_->getRobotVelocity();
   return true;
 }
 
-bool Locomotion_Control::getWalkArmsEnabled(
-  motion::getWalkArmsEnabled::Request &req,
-  motion::getWalkArmsEnabled::Response &res) {
+bool LocomotionControl::getWalkArmsEnabled(
+  motion::GetWalkArmsEnabled::Request &req,
+  motion::GetWalkArmsEnabled::Response &res) {
   AL::ALValue result = mProxy_->getWalkArmsEnabled();
-  res.armMotions.resize(2);
-  res.armMotions[0] = static_cast<bool>(result[0]);
-  res.armMotions[1] = static_cast<bool>(result[1]);
+  res.arm_motions.resize(2);
+  res.arm_motions[0] = static_cast<bool>(result[0]);
+  res.arm_motions[1] = static_cast<bool>(result[1]);
   return true;
 }
 
-bool Locomotion_Control::setWalkArmsEnabled(
-  motion::setWalkArmsEnabled::Request &req,
-  motion::setWalkArmsEnabled::Response &res) {
-  mProxy_->setWalkArmsEnabled(req.leftArmEnable, req.rightArmEnable);
+bool LocomotionControl::setWalkArmsEnabled(
+  motion::SetWalkArmsEnabled::Request &req,
+  motion::SetWalkArmsEnabled::Response &res) {
+  mProxy_->setWalkArmsEnabled(req.left_arm_enable, req.right_arm_enable);
   return true;
 }
 
-void Locomotion_Control::spinTopics() {
+void LocomotionControl::spinTopics() {
   std_msgs::Bool msg;
   msg.data = moveIsActive();
   moving_pub_.publish(msg);

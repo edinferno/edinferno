@@ -16,24 +16,24 @@
 #include <alerror/alerror.h>
 
 #include <vector>
-#include "motion/task.h"
-#include "motion/getTaskList.h"
-#include "motion/areResourcesAvailable.h"
-#include "motion/taskResource.h"
+#include "motion/Task.h"
+#include "motion/GetTaskList.h"
+#include "motion/AreResourcesAvailable.h"
+#include "motion/TaskResource.h"
 #include "definitions.h"
 
-class Motion_Task {
+class MotionTask {
  public:
-  Motion_Task(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
-  ~Motion_Task();
+  MotionTask(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
+  ~MotionTask();
 
   // ROS services
-  bool getTaskList(motion::getTaskList::Request &req,
-                   motion::getTaskList::Response &res);
-  bool areResourcesAvailable(motion::areResourcesAvailable::Request &req,
-                             motion::areResourcesAvailable::Response &res);
-  bool killTasksResources(motion::taskResource::Request &req,
-                          motion::taskResource::Response &res);
+  bool getTaskList(motion::GetTaskList::Request &req,
+                   motion::GetTaskList::Response &res);
+  bool areResourcesAvailable(motion::AreResourcesAvailable::Request &req,
+                             motion::AreResourcesAvailable::Response &res);
+  bool killTasksResources(motion::TaskResource::Request &req,
+                          motion::TaskResource::Response &res);
   bool killMove(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
   bool killAll(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res);
 

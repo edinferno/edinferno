@@ -1,4 +1,0 @@
-string[] names
-bool useSensors
----
-float32[] jointAngles

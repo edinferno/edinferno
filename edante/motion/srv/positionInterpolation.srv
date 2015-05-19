@@ -1,7 +1,0 @@
-string chainName
-int32 space
-path path
-int32 axisMask
-float32[] durations
-bool isAbsolute
----

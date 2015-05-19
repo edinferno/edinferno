@@ -30,66 +30,66 @@ find_package(catkin REQUIRED COMPONENTS
 # Generate messages in the 'msg' folder
 add_message_files(
   FILES
-  float32List.msg
-  # Locomotion_Control
-  velocity.msg
-  position.msg
-  moveConfiguration.msg
-  # Cartesian_Control
-  path.msg
-  # Motion_Task
-  task.msg
+  Float32List.msg
+  # LocomotionControl
+  Velocity.msg
+  Position.msg
+  MoveConfiguration.msg
+  # CartesianControl
+  Path.msg
+  # MotionTask
+  Task.msg
 )
 
 ## Generate services in the 'srv' folder
 add_service_files(
   FILES
   # General
-  enable.srv
-  isEnabled.srv
-  # Stiffness_Control
-  stiffnessInterp.srv
-  setStiffness.srv
-  getStiffness.srv
-  # Joint_Control
-  angleInterp.srv
-  angleInterpSpeed.srv
-  setAngles.srv
-  changeAngles.srv
-  getAngles.srv
-  useHand.srv
+  Enable.srv
+  IsEnabled.srv
+  # StiffnessControl
+  StiffnessInterp.srv
+  SetStiffness.srv
+  GetStiffness.srv
+  # JointControl
+  AngleInterp.srv
+  AngleInterpSpeed.srv
+  SetAngles.srv
+  ChangeAngles.srv
+  GetAngles.srv
+  UseHand.srv
   # Locomotion_control
-  move.srv
-  moveTo.srv
-  moveToward.srv
-  getMoveConfig.srv
-  getRobotPosition.srv
-  getNextRobotPosition.srv
-  getRobotVelocity.srv
-  getWalkArmsEnabled.srv
-  setWalkArmsEnabled.srv
-  # Cartesian_Control
-  positionInterpolation.srv
-  positionInterpolations.srv
-  setPosition.srv
-  changePosition.srv
-  getPosition.srv
-  getTransform.srv
-  # Body_Balancer
-  footState.srv
-  enableBalanceConstraint.srv
-  goToBalance.srv
-  enableEffector.srv
-  setEffectorControl.srv
-  # Motion_Task
-  getTaskList.srv
-  areResourcesAvailable.srv
-  taskResource.srv
-  # Robot_Posture
-  getPostureList.srv
-  setPosture.srv
-  getPostureFamily.srv
-  setMaxTryNumber.srv
+  Move.srv
+  MoveTo.srv
+  MoveToward.srv
+  GetMoveConfig.srv
+  GetRobotPosition.srv
+  GetNextRobotPosition.srv
+  GetRobotVelocity.srv
+  GetWalkArmsEnabled.srv
+  SetWalkArmsEnabled.srv
+  # CartesianControl
+  PositionInterpolation.srv
+  PositionInterpolations.srv
+  SetPosition.srv
+  ChangePosition.srv
+  GetPosition.srv
+  GetTransform.srv
+  # BodyBalancer
+  FootState.srv
+  EnableBalanceConstraint.srv
+  GoToBalance.srv
+  EnableEffector.srv
+  SetEffectorControl.srv
+  # MotionTask
+  GetTaskList.srv
+  AreResourcesAvailable.srv
+  TaskResource.srv
+  # RobotPosture
+  GetPostureList.srv
+  SetPosture.srv
+  GetPostureFamily.srv
+  SetMaxTryNumber.srv
 )
 
 ## Generate added messages and services with any dependencies listed here
@@ -142,14 +142,14 @@ add_executable(motion
 add_executable(srv_test
   src/srv_test.cpp)
 
-add_executable(joyRemote
- src/joyRemote.cpp)
+add_executable(joy_remote
+ src/joy_remote.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(motion motion_generate_messages_cpp)
 add_dependencies(srv_test motion_generate_messages_cpp)
-add_dependencies(joyRemote motion_generate_messages_cpp)
+add_dependencies(joy_remote motion_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(motion
@@ -168,7 +168,7 @@ target_link_libraries(srv_test
   alvalue
 )
 
-target_link_libraries(joyRemote
+target_link_libraries(joy_remote
   ${catkin_LIBRARIES}
   alcommon
   alerror

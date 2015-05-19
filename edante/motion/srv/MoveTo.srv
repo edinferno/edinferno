@@ -1,0 +1,4 @@
+Position[] control_points
+MoveConfiguration move_configuration
+---
+bool res
