@@ -1,0 +1,3 @@
+int32 rgb
+float32 time_for_rotation
+float32 total_duration
