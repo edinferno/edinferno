@@ -39,19 +39,19 @@ find_package(Boost REQUIRED)
 add_message_files(
   FILES
   # Sonar
-  sonars.msg
+  Sonars.msg
   # Touch
-  bumpers.msg
-  head.msg
-  hand.msg
+  Bumpers.msg
+  Head.msg
+  Hand.msg
   # Fsr
-  fsr.msg
+  Fsr.msg
 )
 
 ## Generate services in the 'srv' folder
 add_service_files(
   FILES
-  enable.srv
+  Enable.srv
 )
 
 ## Generate added messages and services with any dependencies listed here

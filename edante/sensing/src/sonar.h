@@ -19,8 +19,8 @@
 #include <althread/almutex.h>
 
 #include <string>
-#include "sensing/sonars.h"
-#include "sensing/enable.h"
+#include "sensing/Sonars.h"
+#include "sensing/Enable.h"
 #include "definitions.h"
 
 class Sonar : public AL::ALModule {
@@ -43,8 +43,8 @@ class Sonar : public AL::ALModule {
 
   void pubSonars();
 
-  bool enableSonarPub(sensing::enable::Request &req,
-                      sensing::enable::Response &res);
+  bool enableSonarPub(sensing::Enable::Request &req,
+                      sensing::Enable::Response &res);
 
  private:
   // Private

@@ -117,11 +117,11 @@ void Touch::init() {
 
 void Touch::rosSetup(ros::NodeHandle* nh) {
   nh_ = nh;
-  bumpers_pub_ = nh_->advertise<sensing::bumpers>("bumpers", 10);
+  bumpers_pub_ = nh_->advertise<sensing::Bumpers>("bumpers", 10);
   chest_pub_ = nh_->advertise<std_msgs::String>("chest", 10);
-  head_pub_ = nh_->advertise<sensing::head>("head", 10);
-  right_hand_pub_ = nh_->advertise<sensing::hand>("rightHand", 10);
-  left_hand_pub_ = nh_->advertise<sensing::hand>("leftHand", 10);
+  head_pub_ = nh_->advertise<sensing::Head>("head", 10);
+  right_hand_pub_ = nh_->advertise<sensing::Hand>("right_hand", 10);
+  left_hand_pub_ = nh_->advertise<sensing::Hand>("left_hand", 10);
 }
 
 void Touch::rightBumperPressed() {
