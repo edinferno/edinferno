@@ -48,8 +48,8 @@ void Power::init() {
 
 void Power::rosSetup(ros::NodeHandle * nh) {
   nh_ = nh;
-  power_status_pub_ = nh_->advertise<std_msgs::String>("powerStatus", 10);
-  power_charge_pub_ = nh_->advertise<std_msgs::UInt32>("powerCharge", 10);
+  power_status_pub_ = nh_->advertise<std_msgs::String>("power_status", 10);
+  power_charge_pub_ = nh_->advertise<std_msgs::Int32>("power_charge", 10);
 }
 
 void Power::powerPub() {

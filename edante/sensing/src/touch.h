@@ -18,9 +18,9 @@
 #include <althread/almutex.h>
 
 #include <string>
-#include "sensing/bumpers.h"
-#include "sensing/hand.h"
-#include "sensing/head.h"
+#include "sensing/Bumpers.h"
+#include "sensing/Hand.h"
+#include "sensing/Head.h"
 #include "definitions.h"
 
 class Touch : public AL::ALModule {
@@ -61,11 +61,11 @@ class Touch : public AL::ALModule {
   ros::Publisher head_pub_;
   ros::Publisher right_hand_pub_;
   ros::Publisher left_hand_pub_;
-  sensing::bumpers bumperMsg_;
+  sensing::Bumpers bumperMsg_;
   std_msgs::String chestMsg_;
-  sensing::head headMsg_;
-  sensing::hand rightHandMsg_;
-  sensing::hand leftHandMsg_;
+  sensing::Head headMsg_;
+  sensing::Hand rightHandMsg_;
+  sensing::Hand leftHandMsg_;
 
   // NaoQI
   AL::ALMemoryProxy* memProxy_;

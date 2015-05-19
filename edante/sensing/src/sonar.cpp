@@ -62,9 +62,9 @@ void Sonar::init() {
 void Sonar::rosSetup(ros::NodeHandle* nh, bool pubSonars) {
   nh_ = nh;
   pubSonars_ = pubSonars;
-  sonar_event_pub_ = nh_->advertise<std_msgs::String>("sonarEvent", 10);
-  sonar_data_pub_ = nh_->advertise<sensing::sonars>("sonarData", 10);
-  srv_enab_sonar_ = nh_->advertiseService("enableSonarPub",
+  sonar_event_pub_ = nh_->advertise<std_msgs::String>("sonar_event", 10);
+  sonar_data_pub_ = nh_->advertise<sensing::Sonars>("sonar_data", 10);
+  srv_enab_sonar_ = nh_->advertiseService("enable_sonar_pub",
                                           &Sonar::enableSonarPub, this);
   sonarProxy_ = new AL::ALSonarProxy("127.0.0.1", 9559);
   sonarProxy_->subscribe("Sonar");
@@ -115,7 +115,7 @@ void Sonar::sonarRightNothingDetected() {
 void Sonar::pubSonars() {
   AL::ALCriticalSection section(fCallbackMutex);
   if (!sonar_data_pub_) {ERR("Sonar Data Pub not ready!")} else {
-    sensing::sonars data;
+    sensing::Sonars data;
     data.left = fMemoryProxy.getData(
                   "Device/SubDeviceList/US/Left/Sensor/Value");
     data.right = fMemoryProxy.getData(
@@ -124,8 +124,8 @@ void Sonar::pubSonars() {
   }
 }
 
-bool Sonar::enableSonarPub(sensing::enable::Request & req,
-                           sensing::enable::Response & res) {
-  pubSonars_ = req.isEnabled;
+bool Sonar::enableSonarPub(sensing::Enable::Request & req,
+                           sensing::Enable::Response & res) {
+  pubSonars_ = req.is_enabled;
   return true;
 }

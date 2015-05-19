@@ -9,7 +9,7 @@
 
 #include <ros/ros.h>
 #include <std_msgs/String.h>
-#include <std_msgs/UInt32.h>
+#include <std_msgs/Int32.h>
 #include <boost/shared_ptr.hpp>
 
 #include <althread/almutex.h>
@@ -18,8 +18,7 @@
 #include <alproxies/alsonarproxy.h>
 
 #include <string>
-#include "sensing/sonars.h"
-#include "sensing/enable.h"
+#include "sensing/Enable.h"
 #include "definitions.h"
 
 namespace AL {
@@ -44,7 +43,7 @@ class Power : public AL::ALModule  {
  private:
   // Flags
   std_msgs::String powerEvent;
-  std_msgs::UInt32 powerCharge;
+  std_msgs::Int32 powerCharge;
 
   // ROS
   ros::NodeHandle* nh_;
