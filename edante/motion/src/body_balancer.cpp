@@ -12,7 +12,7 @@ BodyBalancer::BodyBalancer(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy) {
   mProxy_ = mProxy;
   isBalancing_ = false;
   INFO("Setting up Body Balancer publishers" << std::endl);
-  balance_pub_ = nh_->advertise<std_msgs::Bool>("isBalancing", 10);
+  balance_pub_ = nh_->advertise<std_msgs::Bool>("is_balancing", 10);
 
   INFO("Setting up Body Balancer services" << std::endl);
   srv_enable_balance_ =

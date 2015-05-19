@@ -12,7 +12,7 @@ LocomotionControl::LocomotionControl(ros::NodeHandle* nh,
   nh_ = nh;
   mProxy_ = mProxy;
   INFO("Setting up Locomotion Control publishers" << std::endl);
-  moving_pub_ = nh_->advertise<std_msgs::Bool>("isMoving", 10);
+  moving_pub_ = nh_->advertise<std_msgs::Bool>("is_moving", 10);
   INFO("Setting up Locomotion Control services" << std::endl);
   srv_move_ =
     nh_->advertiseService("move",

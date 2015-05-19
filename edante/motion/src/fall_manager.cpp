@@ -13,7 +13,7 @@ FallManager::FallManager(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy,
   mProxy_ = mProxy;
   memProxy_ = memProxy;
   INFO("Setting up Fall Manager publishers" << std::endl);
-  has_fallen_pub_ = nh_->advertise<std_msgs::Bool>("hasFallen", 10);
+  has_fallen_pub_ = nh_->advertise<std_msgs::Bool>("has_fallen", 10);
   INFO("Setting up Fall Manager services" << std::endl);
   srv_set_fall_manager_ = nh_->advertiseService("set_fall_manager_enabled",
                           &FallManager::setFallManagerEnabled, this);
