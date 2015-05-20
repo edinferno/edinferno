@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<!--
+This launch file starts a series of nodes for remote controlling the Nao robot.
+
+If you receive an error message that contains "Excecute as root"
+then go to the bin folder and execute: sudo setcap cap_net_raw+ep
+or enable the USE_SETCAP flag in the cmake file and recompile again.
+-->
+
+<launch>
+        <node name="motion" pkg="motion" type="motion" output="screen">
+        </node>
+
+        <node name="joy_remote" pkg="motion" type="joy_remote" output="screen">
+        </node>
+</launch>
