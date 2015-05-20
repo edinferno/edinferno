@@ -1,4 +1,4 @@
-int32 frequence
+int32 frequency
 int32 gain
 int32 pan
 float32 duration

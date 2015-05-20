@@ -9,22 +9,20 @@
 
 #include <ros/ros.h>
 #include <std_msgs/Bool.h>
-#include <sensing/fsr.h>
-#include "sensing/enable.h"
-
 #include <boost/shared_ptr.hpp>
+
 #include <alcommon/almodule.h>
 #include <alproxies/almemoryproxy.h>
 #include <alproxies/alsonarproxy.h>
 #include <althread/almutex.h>
 
+#include <sensing/Fsr.h>
+#include "sensing/Enable.h"
 #include "definitions.h"
 
 namespace AL {
 class ALBroker;
 }
-
-using namespace std;
 
 class Fsr : public AL::ALModule {
  public:
@@ -42,11 +40,11 @@ class Fsr : public AL::ALModule {
   void pubContact();
   void pubFsr();
 
-  bool enableFsrPub(sensing::enable::Request &req,
-                    sensing::enable::Response &res);
+  bool enableFsrPub(sensing::Enable::Request &req,
+                    sensing::Enable::Response &res);
 
  private:
-  //Flags
+  // Flags
   bool pubFsrs_;
 
   // ROS
@@ -58,7 +56,6 @@ class Fsr : public AL::ALModule {
   // NaoQI
   boost::shared_ptr<AL::ALMutex> fCallbackMutex;
   AL::ALMemoryProxy fMemoryProxy;
-
 };
 
 #endif  /* FSR_H */

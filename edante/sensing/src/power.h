@@ -8,24 +8,22 @@
 #define POWER_H
 
 #include <ros/ros.h>
-#include <string>
 #include <std_msgs/String.h>
-#include <std_msgs/UInt32.h>
-#include "sensing/sonars.h"
-#include "sensing/enable.h"
-
+#include <std_msgs/Int32.h>
 #include <boost/shared_ptr.hpp>
+
+#include <althread/almutex.h>
 #include <alcommon/almodule.h>
 #include <alproxies/almemoryproxy.h>
 #include <alproxies/alsonarproxy.h>
-#include <althread/almutex.h>
 
+#include <string>
+#include "sensing/Enable.h"
 #include "definitions.h"
 
 namespace AL {
 class ALBroker;
 }
-using namespace std;
 
 class Power : public AL::ALModule  {
  public:
@@ -40,10 +38,12 @@ class Power : public AL::ALModule  {
 
   void powerPub();
 
+  void hotJointDetected();
+
  private:
   // Flags
   std_msgs::String powerEvent;
-  std_msgs::UInt32 powerCharge;
+  std_msgs::Int32 powerCharge;
 
   // ROS
   ros::NodeHandle* nh_;

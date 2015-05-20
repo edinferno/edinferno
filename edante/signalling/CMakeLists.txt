@@ -65,14 +65,14 @@ add_message_files(
 add_service_files(
   FILES
   # LED
-  createLedGroup.srv
-  earLedsSetAngle.srv
-  fade.srv
-  getNames.srv
-  rotateEyes.srv
-  setIntensity.srv
+  CreateLedGroup.srv
+  EarLedsSetAngle.srv
+  Fade.srv
+  GetNames.srv
+  RotateEyes.srv
+  SetIntensity.srv
   # Audio
-  playSine.srv
+  PlaySine.srv
 )
 
 ## Generate actions in the 'action' folder

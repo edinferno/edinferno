@@ -9,30 +9,22 @@
 #define TOUCH_H
 
 #include <ros/ros.h>
-#include <string>
 #include <std_msgs/Bool.h>
 #include <std_msgs/String.h>
-#include "sensing/bumpers.h"
-#include "sensing/hand.h"
-#include "sensing/head.h"
 
 #include <boost/shared_ptr.hpp>
 #include <alcommon/almodule.h>
 #include <alproxies/almemoryproxy.h>
 #include <althread/almutex.h>
 
+#include <string>
+#include "sensing/Bumpers.h"
+#include "sensing/Hand.h"
+#include "sensing/Head.h"
 #include "definitions.h"
 
-namespace AL {
-class ALBroker;
-}
-
-using namespace std;
-
 class Touch : public AL::ALModule {
-
  public:
-
   Touch(boost::shared_ptr<AL::ALBroker> broker, const std::string& name);
   ~Touch();
 
@@ -69,11 +61,11 @@ class Touch : public AL::ALModule {
   ros::Publisher head_pub_;
   ros::Publisher right_hand_pub_;
   ros::Publisher left_hand_pub_;
-  sensing::bumpers bumperMsg_;
+  sensing::Bumpers bumperMsg_;
   std_msgs::String chestMsg_;
-  sensing::head headMsg_;
-  sensing::hand rightHandMsg_;
-  sensing::hand leftHandMsg_;
+  sensing::Head headMsg_;
+  sensing::Hand rightHandMsg_;
+  sensing::Hand leftHandMsg_;
 
   // NaoQI
   AL::ALMemoryProxy* memProxy_;

@@ -22,11 +22,14 @@ Power::Power(
   // setModuleDescription("Sensing Test module.");
   functionName("powerPub", getName(), "Plugged / Unplugged + battery charge");
   BIND_METHOD(Power::powerPub)
+  functionName("hotJointDetected", getName(), "Hot Joint event callback");
+  BIND_METHOD(Power::hotJointDetected)
 }
 
 Power::~Power() {
   fMemoryProxy.unsubscribeToEvent("BatteryPowerPluggedChanged", "Power");
   fMemoryProxy.unsubscribeToEvent("BatteryChargeChanged", "Power");
+  fMemoryProxy.unsubscribeToEvent("HotJointDetected", "Power");
 }
 
 void Power::init() {
@@ -36,6 +39,8 @@ void Power::init() {
                                   "powerPub");
     fMemoryProxy.subscribeToEvent("BatteryChargeChanged", "Power",
                                   "powerPub");
+    fMemoryProxy.subscribeToEvent("HotJointDetected", "Power",
+                                  "hotJointDetected");
   } catch (const AL::ALError& e) {
     DEBUG(e.what() << std::endl);
   }
@@ -43,8 +48,8 @@ void Power::init() {
 
 void Power::rosSetup(ros::NodeHandle * nh) {
   nh_ = nh;
-  power_status_pub_ = nh_->advertise<std_msgs::String>("powerStatus", 10);
-  power_charge_pub_ = nh_->advertise<std_msgs::UInt32>("powerCharge", 10);
+  power_status_pub_ = nh_->advertise<std_msgs::String>("power_status", 10);
+  power_charge_pub_ = nh_->advertise<std_msgs::Int32>("power_charge", 10);
 }
 
 void Power::powerPub() {
@@ -52,6 +57,12 @@ void Power::powerPub() {
   bool b = fMemoryProxy.getData("BatteryPowerPluggedChanged");
   if (b) {powerEvent.data = "plugged";} else {powerEvent.data = "unplugged";}
   power_status_pub_.publish(powerEvent);
-  powerCharge.data = int(fMemoryProxy.getData("BatteryChargeChanged"));
+  powerCharge.data = static_cast<int>
+                     (fMemoryProxy.getData("BatteryChargeChanged"));
   power_charge_pub_.publish(powerCharge);
+}
+
+void Power::hotJointDetected() {
+  AL::ALCriticalSection section(fCallbackMutex);
+  ERR("Hot Joint Detected!");
 }

@@ -19,14 +19,12 @@ find_package(catkin REQUIRED COMPONENTS
  roscpp
  std_msgs
  message_generation
- # std_srvs
  )
 
 find_package(Boost REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
-
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -41,19 +39,19 @@ find_package(Boost REQUIRED)
 add_message_files(
   FILES
   # Sonar
-  sonars.msg
+  Sonars.msg
   # Touch
-  bumpers.msg
-  head.msg
-  hand.msg
+  Bumpers.msg
+  Head.msg
+  Hand.msg
   # Fsr
-  fsr.msg
+  Fsr.msg
 )
 
 ## Generate services in the 'srv' folder
 add_service_files(
   FILES
-  enable.srv
+  Enable.srv
 )
 
 ## Generate added messages and services with any dependencies listed here

@@ -1,4 +1,4 @@
 int32 degrees
 float32 duration
-bool leaveOnAtEnd
+bool leave_on_at_end
 ---

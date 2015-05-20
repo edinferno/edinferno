@@ -7,15 +7,14 @@
 
 #include <ros/ros.h>
 
-#include "signalling/createLedGroup.h"
-#include "signalling/earLedsSetAngle.h"
-#include "signalling/fade.h"
-#include "signalling/getNames.h"
-#include "signalling/rotateEyes.h"
-#include "signalling/setIntensity.h"
-
 #include <alproxies/alledsproxy.h>
 
+#include "signalling/CreateLedGroup.h"
+#include "signalling/EarLedsSetAngle.h"
+#include "signalling/Fade.h"
+#include "signalling/GetNames.h"
+#include "signalling/RotateEyes.h"
+#include "signalling/SetIntensity.h"
 #include "definitions.h"
 
 #ifndef LED_H_
@@ -23,23 +22,23 @@
 
 class Led {
  public:
-  Led(ros::NodeHandle* nh);
+  explicit Led(ros::NodeHandle* nh);
   ~Led();
 
-  bool createLedGroup(signalling::createLedGroup::Request &req,
-                      signalling::createLedGroup::Response &res);
-  bool earLedsSetAngle(signalling::earLedsSetAngle::Request &req,
-                       signalling::earLedsSetAngle::Response &res);
-  bool fade(signalling::fade::Request &req,
-            signalling::fade::Response &res);
-  bool listGroups(signalling::getNames::Request &req,
-                  signalling::getNames::Response &res);
-  bool listLEDs(signalling::getNames::Request &req,
-                signalling::getNames::Response &res);
-  bool rotateEyes(signalling::rotateEyes::Request &req,
-                  signalling::rotateEyes::Response &res);
-  bool setIntensity(signalling::setIntensity::Request &req,
-                    signalling::setIntensity::Response &res);
+  bool createLedGroup(signalling::CreateLedGroup::Request &req,
+                      signalling::CreateLedGroup::Response &res);
+  bool earLedsSetAngle(signalling::EarLedsSetAngle::Request &req,
+                       signalling::EarLedsSetAngle::Response &res);
+  bool fade(signalling::Fade::Request &req,
+            signalling::Fade::Response &res);
+  bool listGroups(signalling::GetNames::Request &req,
+                  signalling::GetNames::Response &res);
+  bool listLEDs(signalling::GetNames::Request &req,
+                signalling::GetNames::Response &res);
+  bool rotateEyes(signalling::RotateEyes::Request &req,
+                  signalling::RotateEyes::Response &res);
+  bool setIntensity(signalling::SetIntensity::Request &req,
+                    signalling::SetIntensity::Response &res);
 
  private:
   // ROS
@@ -54,7 +53,6 @@ class Led {
 
   // NaoQI
   AL::ALLedsProxy* leds;
-
 };
 
 #endif /* LED_H_ */

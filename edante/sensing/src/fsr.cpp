@@ -42,9 +42,9 @@ void Fsr::init() {
 void Fsr::rosSetup(ros::NodeHandle* nh, bool pubFsrs) {
   nh_ = nh;
   pubFsrs_ = pubFsrs;
-  fsr_contact_pub_ = nh_->advertise<std_msgs::Bool>("fsrContact", 10);
-  fsr_data_pub_ = nh_->advertise<sensing::fsr>("fsrData", 10);
-  srv_enab_fsr_ = nh_->advertiseService("enableFsrPub",
+  fsr_contact_pub_ = nh_->advertise<std_msgs::Bool>("fsr_contact", 10);
+  fsr_data_pub_ = nh_->advertise<sensing::Fsr>("fsr_data", 10);
+  srv_enab_fsr_ = nh_->advertiseService("enable_fsr_pub",
                                         &Fsr::enableFsrPub, this);
 }
 
@@ -57,24 +57,26 @@ void Fsr::spin() {
 void Fsr::pubContact() {
   AL::ALCriticalSection section(fCallbackMutex);
   std_msgs::Bool msg;
-  msg.data = bool(fMemoryProxy.getData("footContactChanged"));
+  msg.data = static_cast<bool>(fMemoryProxy.getData("footContactChanged"));
   fsr_contact_pub_.publish(msg);
 }
 
 void Fsr::pubFsr() {
   AL::ALCriticalSection section(fCallbackMutex);
-  sensing::fsr msg;
-  if (float(fMemoryProxy.getData("leftFootContact")) > 0.5f)
-  {msg.leftContact = true;} else {msg.leftContact = false;}
-  if (float(fMemoryProxy.getData("rightFootContact")) > 0.5f)
-  {msg.rightContact = true;} else {msg.rightContact = false;}
-  msg.leftWeight = float(fMemoryProxy.getData("leftFootTotalWeight"));
-  msg.rightWeight = float(fMemoryProxy.getData("rightFootTotalWeight"));
+  sensing::Fsr msg;
+  if (static_cast<float>(fMemoryProxy.getData("leftFootContact")) > 0.5f)
+  {msg.left_contact = true;} else {msg.left_contact = false;}
+  if (static_cast<float>(fMemoryProxy.getData("rightFootContact")) > 0.5f)
+  {msg.right_contact = true;} else {msg.right_contact = false;}
+  msg.left_weight = static_cast<float>
+                    (fMemoryProxy.getData("leftFootTotalWeight"));
+  msg.right_weight = static_cast<float>
+                     (fMemoryProxy.getData("rightFootTotalWeight"));
   fsr_data_pub_.publish(msg);
 }
 
-bool Fsr::enableFsrPub(sensing::enable::Request &req,
-                       sensing::enable::Response &res) {
-  pubFsrs_ = req.isEnabled;
+bool Fsr::enableFsrPub(sensing::Enable::Request &req,
+                       sensing::Enable::Response &res) {
+  pubFsrs_ = req.is_enabled;
   return true;
 }
