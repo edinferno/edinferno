@@ -12,6 +12,7 @@ JoyRemote::JoyRemote(ros::NodeHandle* nh) {
   joy_sub_ = nh_->subscribe("joy", 1000, &JoyRemote::joyCallback, this);
   moveTowardClient = nh_->serviceClient<motion::MoveToward>(
                        "/motion/move_toward", true);
+  moveTowardClient.waitForExistence();
   wakeUpClient = nh_->serviceClient<std_srvs::Empty>(
                    "/motion/wake_up", true);
   moveInitClient = nh_->serviceClient<std_srvs::Empty>(
