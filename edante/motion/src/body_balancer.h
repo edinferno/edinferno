@@ -20,15 +20,24 @@
 #include "motion/EnableEffector.h"
 #include "motion/SetEffectorControl.h"
 
+#include <boost/shared_ptr.hpp>
+#include <alcommon/almodule.h>
+#include <alproxies/almemoryproxy.h>
+#include <alproxies/almotionproxy.h>
+#include <althread/almutex.h>
+
 #include "definitions.h"
 
-class BodyBalancer {
+class BodyBalancer : public AL::ALModule  {
  public:
-  BodyBalancer(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
+  BodyBalancer(boost::shared_ptr<AL::ALBroker> broker,
+               const std::string& name);
   ~BodyBalancer();
 
-  // ROS publisher
-  void spinTopics();
+  void init();
+
+  void rosSetup(ros::NodeHandle* nh);
+
 
   // ROS services
   bool enableBalance(motion::Enable::Request &req,
@@ -47,10 +56,7 @@ class BodyBalancer {
                                   motion::EnableEffector::Response &res);
 
  private:
-// Flags
-  bool isBalancing_;
-
-// ROS
+  // ROS
   ros::NodeHandle* nh_;
   ros::Publisher balance_pub_;
   ros::ServiceServer srv_enable_balance_;
@@ -60,9 +66,12 @@ class BodyBalancer {
   ros::ServiceServer srv_enable_effector_control_;
   ros::ServiceServer srv_set_effector_control_;
   ros::ServiceServer srv_enable_effector_optimization_;
+  std_msgs::Bool isBalancing_;
 
-// NaoQI
-  AL::ALMotionProxy* mProxy_;
+  // NaoQI
+  boost::shared_ptr<AL::ALMutex> fCallbackMutex;
+  AL::ALMemoryProxy fMemoryProxy;
+  AL::ALMotionProxy mProxy_;
 };
 
 #endif /* BODY_BALANCER_H_ */

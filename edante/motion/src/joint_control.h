@@ -10,8 +10,12 @@
 
 #include <ros/ros.h>
 
-#include <alproxies/almotionproxy.h>
 #include <alerror/alerror.h>
+#include <boost/shared_ptr.hpp>
+#include <alcommon/almodule.h>
+#include <alproxies/almemoryproxy.h>
+#include <alproxies/almotionproxy.h>
+#include <althread/almutex.h>
 
 #include "motion/Float32List.h"
 #include "motion/AngleInterp.h"
@@ -22,10 +26,14 @@
 #include "motion/UseHand.h"
 #include "definitions.h"
 
-class JointControl {
+class JointControl : public AL::ALModule  {
  public:
-  JointControl(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
+  JointControl(boost::shared_ptr<AL::ALBroker> broker, const std::string& name);
   ~JointControl();
+
+  void init();
+
+  void rosSetup(ros::NodeHandle* nh);
 
   // ROS services
   bool angleInterp(motion::AngleInterp::Request &req,
@@ -55,6 +63,8 @@ class JointControl {
   ros::ServiceServer srv_open_hand_;
 
   // NAOqi
-  AL::ALMotionProxy* mProxy_;
+  boost::shared_ptr<AL::ALMutex> fCallbackMutex;
+  AL::ALMemoryProxy fMemoryProxy;
+  AL::ALMotionProxy mProxy_;
 };
 #endif /* JOINT_CONTROL_H_ */

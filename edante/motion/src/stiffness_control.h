@@ -12,8 +12,13 @@
 #include <std_msgs/Bool.h>
 #include <std_srvs/Empty.h>
 
-#include <alproxies/almotionproxy.h>
 #include <alerror/alerror.h>
+
+#include <boost/shared_ptr.hpp>
+#include <alcommon/almodule.h>
+#include <alproxies/almemoryproxy.h>
+#include <alproxies/almotionproxy.h>
+#include <althread/almutex.h>
 
 #include <vector>
 #include "motion/StiffnessInterp.h"
@@ -24,13 +29,15 @@
 using std::string;
 using std::vector;
 
-class StiffnessControl {
+class StiffnessControl : public AL::ALModule  {
  public:
-  StiffnessControl(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
+  StiffnessControl(boost::shared_ptr<AL::ALBroker> broker,
+                   const std::string& name);
   ~StiffnessControl();
 
-// ROS publisher
-  void spinTopics();
+  void init();
+
+  void rosSetup(ros::NodeHandle* nh);
 
 // ROS services
   bool wakeUp(std_srvs::Empty::Request &req,
@@ -52,7 +59,7 @@ class StiffnessControl {
                       const vector<float>& stiffnesses);
 
  private:
-// ROS
+  // ROS
   ros::NodeHandle* nh_;
   ros::Publisher wake_pub_;
   ros::ServiceServer stiffness_interp_;
@@ -61,11 +68,12 @@ class StiffnessControl {
   ros::ServiceServer srv_wake_up_;
   ros::ServiceServer srv_rest_;
 
-// NAOqi
-  AL::ALMotionProxy* mProxy_;
+  std_msgs::Bool awake_;
 
-// Internal
-  bool awake_;
+  // NAOqi
+  boost::shared_ptr<AL::ALMutex> fCallbackMutex;
+  AL::ALMotionProxy mProxy_;
+  AL::ALMemoryProxy fMemoryProxy;
 };
 
 #endif /* STIFFNESS_CONTROL_H_ */

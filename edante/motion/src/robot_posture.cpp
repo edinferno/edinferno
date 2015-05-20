@@ -7,10 +7,36 @@
 
 #include "robot_posture.h"
 
-RobotPosture::RobotPosture(ros::NodeHandle* nh,
-                           AL::ALRobotPostureProxy* pProxy) {
+#include <alvalue/alvalue.h>
+#include <alcommon/alproxy.h>
+#include <alcommon/albroker.h>
+#include <althread/alcriticalsection.h>
+
+#include <qi/log.hpp>
+
+
+RobotPosture::RobotPosture(
+  boost::shared_ptr<AL::ALBroker> broker,
+  const std::string& name): AL::ALModule(broker, name),
+  fCallbackMutex(AL::ALMutex::createALMutex()) {
+  qi::log::setVerbosity(qi::log::info);
+  // setModuleDescription("Robot posture module.");
+}
+
+RobotPosture::~RobotPosture() {
+}
+
+void RobotPosture::init() {
+  try {
+    fMemoryProxy = AL::ALMemoryProxy(getParentBroker());
+    pProxy_ = AL::ALRobotPostureProxy(getParentBroker());
+  } catch (const AL::ALError& e) {
+    DEBUG(e.what() << std::endl);
+  }
+}
+
+void RobotPosture::rosSetup(ros::NodeHandle* nh) {
   nh_ = nh;
-  pProxy_ = pProxy;
   INFO("Setting up Robot Posture services" << std::endl);
   srv_get_posture_list_ = nh_->advertiseService("get_posture_list",
                           &RobotPosture::getPostureList, this);
@@ -28,50 +54,45 @@ RobotPosture::RobotPosture(ros::NodeHandle* nh,
                             &RobotPosture::setMaxTryNumber, this);
 }
 
-RobotPosture::~RobotPosture() {
-  ros::shutdown();
-}
-
-
 bool RobotPosture::getPostureList(motion::GetPostureList::Request &req,
                                   motion::GetPostureList::Response &res) {
-  res.posture_list = pProxy_->getPostureList();
+  res.posture_list = pProxy_.getPostureList();
   return true;
 }
 
 bool RobotPosture::goToPosture(motion::SetPosture::Request &req,
                                motion::SetPosture::Response &res) {
-  res.success = pProxy_->goToPosture(req.posture_name, req.speed);
+  res.success = pProxy_.goToPosture(req.posture_name, req.speed);
   return true;
 }
 
 bool RobotPosture::applyPosture(motion::SetPosture::Request &req,
                                 motion::SetPosture::Response &res) {
-  res.success = pProxy_->applyPosture(req.posture_name, req.speed);
+  res.success = pProxy_.applyPosture(req.posture_name, req.speed);
   return true;
 }
 
 bool RobotPosture::stopPosture(std_srvs::Empty::Request &req,
                                std_srvs::Empty::Response &res) {
-  pProxy_->stopMove();
+  pProxy_.stopMove();
   return true;
 }
 
 bool RobotPosture::getPostureFamily(motion::GetPostureFamily::Request &req,
                                     motion::GetPostureFamily::Response &res) {
-  res.posture_family = pProxy_->getPostureFamily();
+  res.posture_family = pProxy_.getPostureFamily();
   return true;
 }
 
 bool RobotPosture::getPostureFamilyList(motion::GetPostureList::Request &req,
                                         motion::GetPostureList::Response &res) {
-  res.posture_list = pProxy_->getPostureFamilyList();
+  res.posture_list = pProxy_.getPostureFamilyList();
   return true;
 }
 
 bool RobotPosture::setMaxTryNumber(motion::SetMaxTryNumber::Request &req,
                                    motion::SetMaxTryNumber::Response &res) {
-  pProxy_->setMaxTryNumber(req.max_try_number);
+  pProxy_.setMaxTryNumber(req.max_try_number);
   return true;
 }
 

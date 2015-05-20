@@ -11,7 +11,11 @@
 #include <ros/ros.h>
 #include <std_msgs/Bool.h>
 
+#include <boost/shared_ptr.hpp>
+#include <alcommon/almodule.h>
+#include <alproxies/almemoryproxy.h>
 #include <alproxies/almotionproxy.h>
+#include <althread/almutex.h>
 
 #include <vector>
 #include "motion/PositionInterpolation.h"
@@ -22,10 +26,15 @@
 #include "motion/GetTransform.h"
 #include "definitions.h"
 
-class CartesianControl {
+class CartesianControl : public AL::ALModule  {
  public:
-  CartesianControl(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
+  CartesianControl(boost::shared_ptr<AL::ALBroker> broker,
+                   const std::string& name);
   ~CartesianControl();
+
+  void init();
+
+  void rosSetup(ros::NodeHandle* nh);
 
   // ROS services
   bool positionInterpolation(motion::PositionInterpolation::Request &req,
@@ -57,7 +66,9 @@ class CartesianControl {
   ros::ServiceServer srv_get_transform_;
 
   // NAOqi
-  AL::ALMotionProxy* mProxy_;
+  boost::shared_ptr<AL::ALMutex> fCallbackMutex;
+  AL::ALMemoryProxy fMemoryProxy;
+  AL::ALMotionProxy mProxy_;
 };
 
 #endif /* CARTESIAN_CONTROL_H_ */
