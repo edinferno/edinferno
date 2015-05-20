@@ -7,12 +7,37 @@
 
 #include "locomotion_control.h"
 
-LocomotionControl::LocomotionControl(ros::NodeHandle* nh,
-                                     AL::ALMotionProxy* mProxy) {
+#include <alvalue/alvalue.h>
+#include <alcommon/alproxy.h>
+#include <alcommon/albroker.h>
+#include <althread/alcriticalsection.h>
+
+#include <qi/log.hpp>
+
+LocomotionControl::LocomotionControl(
+  boost::shared_ptr<AL::ALBroker> broker,
+  const std::string& name): AL::ALModule(broker, name),
+  fCallbackMutex(AL::ALMutex::createALMutex()) {
+  qi::log::setVerbosity(qi::log::info);
+  // setModuleDescription("Locomotion control module.");
+}
+
+LocomotionControl::~LocomotionControl() {
+}
+
+void LocomotionControl::init() {
+  try {
+    fMemoryProxy = AL::ALMemoryProxy(getParentBroker());
+    mProxy_ = AL::ALMotionProxy(getParentBroker());
+  } catch (const AL::ALError& e) {
+    DEBUG(e.what() << std::endl);
+  }
+}
+
+void LocomotionControl::rosSetup(ros::NodeHandle* nh) {
   nh_ = nh;
-  mProxy_ = mProxy;
   INFO("Setting up Locomotion Control publishers" << std::endl);
-  moving_pub_ = nh_->advertise<std_msgs::Bool>("isMoving", 10);
+  moving_pub_ = nh_->advertise<std_msgs::Bool>("is_moving", 10, true);
   INFO("Setting up Locomotion Control services" << std::endl);
   srv_move_ =
     nh_->advertiseService("move",
@@ -50,10 +75,7 @@ LocomotionControl::LocomotionControl(ros::NodeHandle* nh,
   srv_set_walk_arms_enabled_ =
     nh_->advertiseService("set_walk_arms_enabled",
                           &LocomotionControl::setWalkArmsEnabled, this);
-}
-
-LocomotionControl::~LocomotionControl() {
-  ros::shutdown();
+  this->checkMoveActive();
 }
 
 bool LocomotionControl::move(motion::Move::Request &req,
@@ -72,17 +94,18 @@ bool LocomotionControl::move(motion::Move::Request &req,
 
   res.res = true;
   if (configSize == 0) {
-    mProxy_->move(req.target_velocity.x,
-                  req.target_velocity.y,
-                  req.target_velocity.theta);
+    mProxy_.move(req.target_velocity.x,
+                 req.target_velocity.y,
+                 req.target_velocity.theta);
   } else if (configSize > 0) {
-    mProxy_->move(req.target_velocity.x,
-                  req.target_velocity.y,
-                  req.target_velocity.theta,
-                  move_configuration);
+    mProxy_.move(req.target_velocity.x,
+                 req.target_velocity.y,
+                 req.target_velocity.theta,
+                 move_configuration);
   } else {
     res.res = false;
   }
+  this->checkMoveActive();
   return true;
 }
 
@@ -114,21 +137,22 @@ bool LocomotionControl::moveTo(motion::MoveTo::Request &req,
 
   res.res = true;
   if (posNum == 1 && configSize == 0) {
-    mProxy_->post.moveTo(req.control_points[0].x,
-                         req.control_points[0].y,
-                         req.control_points[0].theta);
+    mProxy_.post.moveTo(req.control_points[0].x,
+                        req.control_points[0].y,
+                        req.control_points[0].theta);
   } else if (posNum > 1 && configSize == 0) {
-    mProxy_->post.moveTo(control_points);
+    mProxy_.post.moveTo(control_points);
   } else if (posNum == 1 && configSize > 0) {
-    mProxy_->post.moveTo(req.control_points[0].x,
-                         req.control_points[0].y,
-                         req.control_points[0].theta,
-                         move_configuration);
+    mProxy_.post.moveTo(req.control_points[0].x,
+                        req.control_points[0].y,
+                        req.control_points[0].theta,
+                        move_configuration);
   } else if (posNum > 1 && configSize > 0) {
-    mProxy_->post.moveTo(control_points, move_configuration);
+    mProxy_.post.moveTo(control_points, move_configuration);
   } else {
     res.res = false;
   }
+  this->checkMoveActive();
   return true;
 }
 
@@ -148,47 +172,47 @@ bool LocomotionControl::moveToward(motion::MoveToward::Request &req,
 
   res.res = true;
   if (configSize == 0) {
-    mProxy_->moveToward(req.norm_velocity.x,
-                        req.norm_velocity.y,
-                        req.norm_velocity.theta);
+    mProxy_.moveToward(req.norm_velocity.x,
+                       req.norm_velocity.y,
+                       req.norm_velocity.theta);
   } else if (configSize > 0) {
-    mProxy_->moveToward(req.norm_velocity.x,
-                        req.norm_velocity.y,
-                        req.norm_velocity.theta,
-                        move_configuration);
+    mProxy_.moveToward(req.norm_velocity.x,
+                       req.norm_velocity.y,
+                       req.norm_velocity.theta,
+                       move_configuration);
   } else {
     res.res = false;
   }
+  this->checkMoveActive();
   return true;
 }
 
 bool LocomotionControl::moveInit(std_srvs::Empty::Request &req,
                                  std_srvs::Empty::Response &res) {
-  mProxy_->moveInit();
+  mProxy_.moveInit();
+  this->checkMoveActive();
   return true;
 }
 
 bool LocomotionControl::waitUntilMoveIsFinished(
   std_srvs::Empty::Request &req,
   std_srvs::Empty::Response &res) {
-  mProxy_->waitUntilMoveIsFinished();
+  mProxy_.waitUntilMoveIsFinished();
+  this->checkMoveActive();
   return true;
-}
-
-bool LocomotionControl::moveIsActive() {
-  return mProxy_->moveIsActive();
 }
 
 bool LocomotionControl::stopMove(std_srvs::Empty::Request &req,
                                  std_srvs::Empty::Response &res) {
-  mProxy_->stopMove();
+  mProxy_.stopMove();
+  this->checkMoveActive();
   return true;
 }
 
 bool LocomotionControl::getMoveConfig(motion::GetMoveConfig::Request &req,
                                       motion::GetMoveConfig::Response &res) {
   AL::ALValue move_configuration;
-  move_configuration = mProxy_->getMoveConfig(req.config);
+  move_configuration = mProxy_.getMoveConfig(req.config);
   std::size_t CSize = move_configuration.getSize();
   res.move_configuration.names.resize(CSize);
   res.move_configuration.values.resize(CSize);
@@ -196,49 +220,54 @@ bool LocomotionControl::getMoveConfig(motion::GetMoveConfig::Request &req,
     res.move_configuration.names[i] = move_configuration[i][0].toString();
     res.move_configuration.values[i] = move_configuration[i][1];
   }
+  this->checkMoveActive();
   return true;
 }
 
 bool LocomotionControl::getRobotPosition(
   motion::GetRobotPosition::Request &req,
   motion::GetRobotPosition::Response &res) {
-  res.positions = mProxy_->getRobotPosition(req.use_sensors);
+  res.positions = mProxy_.getRobotPosition(req.use_sensors);
+  this->checkMoveActive();
   return true;
 }
 
 bool LocomotionControl::getNextRobotPosition(
   motion::GetNextRobotPosition::Request &req,
   motion::GetNextRobotPosition::Response &res) {
-  res.positions = mProxy_->getNextRobotPosition();
+  res.positions = mProxy_.getNextRobotPosition();
+  this->checkMoveActive();
   return true;
 }
 
 bool LocomotionControl::getRobotVelocity(
   motion::GetRobotVelocity::Request &req,
   motion::GetRobotVelocity::Response &res) {
-  res.velocity = mProxy_->getRobotVelocity();
+  res.velocity = mProxy_.getRobotVelocity();
+  this->checkMoveActive();
   return true;
 }
 
 bool LocomotionControl::getWalkArmsEnabled(
   motion::GetWalkArmsEnabled::Request &req,
   motion::GetWalkArmsEnabled::Response &res) {
-  AL::ALValue result = mProxy_->getWalkArmsEnabled();
+  AL::ALValue result = mProxy_.getWalkArmsEnabled();
   res.arm_motions.resize(2);
   res.arm_motions[0] = static_cast<bool>(result[0]);
   res.arm_motions[1] = static_cast<bool>(result[1]);
+  this->checkMoveActive();
   return true;
 }
 
 bool LocomotionControl::setWalkArmsEnabled(
   motion::SetWalkArmsEnabled::Request &req,
   motion::SetWalkArmsEnabled::Response &res) {
-  mProxy_->setWalkArmsEnabled(req.left_arm_enable, req.right_arm_enable);
+  mProxy_.setWalkArmsEnabled(req.left_arm_enable, req.right_arm_enable);
+  this->checkMoveActive();
   return true;
 }
 
-void LocomotionControl::spinTopics() {
-  std_msgs::Bool msg;
-  msg.data = moveIsActive();
-  moving_pub_.publish(msg);
+void LocomotionControl::checkMoveActive() {
+  move_active.data = mProxy_.moveIsActive();
+  moving_pub_.publish(move_active);
 }

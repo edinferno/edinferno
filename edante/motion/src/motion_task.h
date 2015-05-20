@@ -12,8 +12,12 @@
 #include <std_msgs/Bool.h>
 #include <std_srvs/Empty.h>
 
-#include <alproxies/almotionproxy.h>
 #include <alerror/alerror.h>
+#include <boost/shared_ptr.hpp>
+#include <alcommon/almodule.h>
+#include <alproxies/almemoryproxy.h>
+#include <alproxies/almotionproxy.h>
+#include <althread/almutex.h>
 
 #include <vector>
 #include "motion/Task.h"
@@ -22,10 +26,15 @@
 #include "motion/TaskResource.h"
 #include "definitions.h"
 
-class MotionTask {
+class MotionTask : public AL::ALModule  {
  public:
-  MotionTask(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
+  MotionTask(boost::shared_ptr<AL::ALBroker> broker,
+             const std::string& name);
   ~MotionTask();
+
+  void init();
+
+  void rosSetup(ros::NodeHandle* nh);
 
   // ROS services
   bool getTaskList(motion::GetTaskList::Request &req,
@@ -47,7 +56,9 @@ class MotionTask {
   ros::ServiceServer srv_kill_all_;
 
   // NAOqi
-  AL::ALMotionProxy* mProxy_;
+  boost::shared_ptr<AL::ALMutex> fCallbackMutex;
+  AL::ALMemoryProxy fMemoryProxy;
+  AL::ALMotionProxy mProxy_;
 };
 
 #endif /* MOTION_TASK_H_ */

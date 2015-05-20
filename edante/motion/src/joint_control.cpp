@@ -7,10 +7,35 @@
 
 #include "joint_control.h"
 
-JointControl::JointControl(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy) {
-  nh_ = nh;
-  mProxy_ = mProxy;
+#include <alvalue/alvalue.h>
+#include <alcommon/alproxy.h>
+#include <alcommon/albroker.h>
+#include <althread/alcriticalsection.h>
 
+#include <qi/log.hpp>
+
+JointControl::JointControl(
+  boost::shared_ptr<AL::ALBroker> broker,
+  const std::string& name): AL::ALModule(broker, name),
+  fCallbackMutex(AL::ALMutex::createALMutex()) {
+  qi::log::setVerbosity(qi::log::info);
+  // setModuleDescription("Joint control module.");
+}
+
+JointControl::~JointControl() {
+}
+
+void JointControl::init() {
+  try {
+    fMemoryProxy = AL::ALMemoryProxy(getParentBroker());
+    mProxy_ = AL::ALMotionProxy(getParentBroker());
+  } catch (const AL::ALError& e) {
+    DEBUG(e.what() << std::endl);
+  }
+}
+
+void JointControl::rosSetup(ros::NodeHandle* nh) {
+  nh_ = nh;
   INFO("Setting up Joint Control services" << std::endl);
 
   srv_angle_interp_ = nh_->advertiseService("angle_interp",
@@ -29,10 +54,6 @@ JointControl::JointControl(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy) {
                                          &JointControl::openHand, this);
 }
 
-JointControl::~JointControl() {
-  ros::shutdown();
-}
-
 bool JointControl::angleInterp(motion::AngleInterp::Request &req,
                                motion::AngleInterp::Response &res) {
   size_t s = req.names.size();
@@ -48,8 +69,8 @@ bool JointControl::angleInterp(motion::AngleInterp::Request &req,
   }
 
   try {
-    mProxy_->post.angleInterpolation(req.names, angle_lists,
-                                     time_lists, req.is_absolute);
+    mProxy_.post.angleInterpolation(req.names, angle_lists,
+                                    time_lists, req.is_absolute);
     res.res = true;
   } catch (const std::exception& e) {
     res.res = false;
@@ -59,7 +80,7 @@ bool JointControl::angleInterp(motion::AngleInterp::Request &req,
 bool JointControl::angleInterpSpeed(motion::AngleInterpSpeed::Request &req,
                                     motion::AngleInterpSpeed::Response &res) {
   try {
-    mProxy_->post.angleInterpolationWithSpeed(req.names, req.target_angles,
+    mProxy_.post.angleInterpolationWithSpeed(req.names, req.target_angles,
         req.max_speed_fraction);
     res.res = true;
   } catch (const std::exception& e) {
@@ -71,7 +92,7 @@ bool JointControl::angleInterpSpeed(motion::AngleInterpSpeed::Request &req,
 bool JointControl::setAngles(motion::SetAngles::Request &req,
                              motion::SetAngles::Response &res) {
   try {
-    mProxy_->setAngles(req.names, req.angles, req.fraction_max_speed);
+    mProxy_.setAngles(req.names, req.angles, req.fraction_max_speed);
     res.res = true;
   } catch (const std::exception& e) {
     res.res = false;
@@ -82,7 +103,7 @@ bool JointControl::setAngles(motion::SetAngles::Request &req,
 bool JointControl::changeAngles(motion::ChangeAngles::Request &req,
                                 motion::ChangeAngles::Response &res) {
   try {
-    mProxy_->changeAngles(req.names, req.changes, req.fraction_max_speed);
+    mProxy_.changeAngles(req.names, req.changes, req.fraction_max_speed);
     res.res = true;
   } catch (const std::exception& e) {
     res.res = false;
@@ -93,7 +114,7 @@ bool JointControl::changeAngles(motion::ChangeAngles::Request &req,
 bool JointControl::getAngles(motion::GetAngles::Request &req,
                              motion::GetAngles::Response &res) {
   try {
-    res.joint_angles = mProxy_->getAngles(req.names, req.use_sensors);
+    res.joint_angles = mProxy_.getAngles(req.names, req.use_sensors);
   } catch (const std::exception& e) {
     return false;
   }
@@ -103,7 +124,7 @@ bool JointControl::getAngles(motion::GetAngles::Request &req,
 bool JointControl::closeHand(motion::UseHand::Request &req,
                              motion::UseHand::Response &res) {
   try {
-    mProxy_->closeHand(req.hand_name);
+    mProxy_.closeHand(req.hand_name);
     res.res = true;
   } catch (const std::exception& e) {
     res.res = false;
@@ -113,7 +134,7 @@ bool JointControl::closeHand(motion::UseHand::Request &req,
 bool JointControl::openHand(motion::UseHand::Request &req,
                             motion::UseHand::Response &res) {
   try {
-    mProxy_->openHand(req.hand_name);
+    mProxy_.openHand(req.hand_name);
     res.res = true;
   } catch (const std::exception& e) {
     res.res = false;

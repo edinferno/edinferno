@@ -7,9 +7,35 @@
 
 #include "motion_task.h"
 
-MotionTask::MotionTask(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy) {
+#include <alvalue/alvalue.h>
+#include <alcommon/alproxy.h>
+#include <alcommon/albroker.h>
+#include <althread/alcriticalsection.h>
+
+#include <qi/log.hpp>
+
+MotionTask::MotionTask(
+  boost::shared_ptr<AL::ALBroker> broker,
+  const std::string& name): AL::ALModule(broker, name),
+  fCallbackMutex(AL::ALMutex::createALMutex()) {
+  qi::log::setVerbosity(qi::log::info);
+  // setModuleDescription("Motion Task module.");
+}
+
+MotionTask::~MotionTask() {
+}
+
+void MotionTask::init() {
+  try {
+    fMemoryProxy = AL::ALMemoryProxy(getParentBroker());
+    mProxy_ = AL::ALMotionProxy(getParentBroker());
+  } catch (const AL::ALError& e) {
+    DEBUG(e.what() << std::endl);
+  }
+}
+
+void MotionTask::rosSetup(ros::NodeHandle* nh) {
   nh_ = nh;
-  mProxy_ = mProxy;
   INFO("Setting up Motion Task services" << std::endl);
   srv_get_task_list_ = nh_->advertiseService("get_task_list",
                        &MotionTask::getTaskList, this);
@@ -23,13 +49,9 @@ MotionTask::MotionTask(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy) {
                                         &MotionTask::killAll, this);
 }
 
-MotionTask::~MotionTask() {
-  ros::shutdown();
-}
-
 bool MotionTask::getTaskList(motion::GetTaskList::Request &req,
                              motion::GetTaskList::Response &res) {
-  AL::ALValue task_list = mProxy_->getTaskList();
+  AL::ALValue task_list = mProxy_.getTaskList();
   size_t s = task_list.getSize();
   res.task_list.resize(s);
   if (s > 0) {
@@ -44,14 +66,14 @@ bool MotionTask::getTaskList(motion::GetTaskList::Request &req,
 bool MotionTask::areResourcesAvailable(
   motion::AreResourcesAvailable::Request &req,
   motion::AreResourcesAvailable::Response &res) {
-  res.available = mProxy_->areResourcesAvailable(req.resource_names);
+  res.available = mProxy_.areResourcesAvailable(req.resource_names);
   return true;
 }
 
 bool MotionTask::killTasksResources(motion::TaskResource::Request &req,
                                     motion::TaskResource::Response &res) {
   try {
-    mProxy_->killTasksUsingResources(req.resource_names);
+    mProxy_.killTasksUsingResources(req.resource_names);
     res.res = true;
   } catch (const std::exception& e) {
     ERR(e.what());
@@ -63,7 +85,7 @@ bool MotionTask::killTasksResources(motion::TaskResource::Request &req,
 bool MotionTask::killMove(std_srvs::Empty::Request &req,
                           std_srvs::Empty::Response &res) {
   try {
-    mProxy_->killMove();
+    mProxy_.killMove();
   } catch (const std::exception& e) {
     ERR(e.what());
   }
@@ -73,7 +95,7 @@ bool MotionTask::killMove(std_srvs::Empty::Request &req,
 bool MotionTask::killAll(std_srvs::Empty::Request &req,
                          std_srvs::Empty::Response &res) {
   try {
-    mProxy_->killAll();
+    mProxy_.killAll();
   } catch (const std::exception& e) {
     ERR(e.what());
   }

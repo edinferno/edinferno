@@ -11,7 +11,11 @@
 #include <ros/ros.h>
 #include <std_srvs/Empty.h>
 
+#include <boost/shared_ptr.hpp>
+#include <alcommon/almodule.h>
+#include <alproxies/almemoryproxy.h>
 #include <alproxies/alrobotpostureproxy.h>
+#include <althread/almutex.h>
 
 #include "motion/GetPostureList.h"
 #include "motion/SetPosture.h"
@@ -19,10 +23,15 @@
 #include "motion/SetMaxTryNumber.h"
 #include "definitions.h"
 
-class RobotPosture {
+class RobotPosture : public AL::ALModule  {
  public:
-  RobotPosture(ros::NodeHandle* nh, AL::ALRobotPostureProxy* pProxy);
+  RobotPosture(boost::shared_ptr<AL::ALBroker> broker,
+               const std::string& name);
   ~RobotPosture();
+
+  void init();
+
+  void rosSetup(ros::NodeHandle* nh);
 
   // ROS services
   bool getPostureList(motion::GetPostureList::Request &req,
@@ -52,7 +61,9 @@ class RobotPosture {
   ros::ServiceServer srv_set_max_try_number_;
 
   // NaoQI
-  AL::ALRobotPostureProxy* pProxy_;
+  boost::shared_ptr<AL::ALMutex> fCallbackMutex;
+  AL::ALMemoryProxy fMemoryProxy;
+  AL::ALRobotPostureProxy pProxy_;
 };
 
 #endif /* ROBOT_POSTURE_H_ */

@@ -19,20 +19,29 @@
 #include <motion/GetWalkArmsEnabled.h>
 #include <motion/SetWalkArmsEnabled.h>
 
-#include <alproxies/almotionproxy.h>
-
 #include <std_msgs/Bool.h>
 #include <std_srvs/Empty.h>
 #include <vector>
+
+#include <boost/shared_ptr.hpp>
+#include <alcommon/almodule.h>
+#include <alproxies/almemoryproxy.h>
+#include <alproxies/almotionproxy.h>
+#include <althread/almutex.h>
 
 #include "definitions.h"
 
 using std::vector;
 
-class LocomotionControl {
+class LocomotionControl : public AL::ALModule  {
  public:
-  LocomotionControl(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy);
+  LocomotionControl(boost::shared_ptr<AL::ALBroker> broker,
+                    const std::string& name);
   ~LocomotionControl();
+
+  void init();
+
+  void rosSetup(ros::NodeHandle* nh);
 
   // ROS services
   bool move(motion::Move::Request &req,
@@ -47,7 +56,6 @@ class LocomotionControl {
                 std_srvs::Empty::Response &res);
   bool waitUntilMoveIsFinished(std_srvs::Empty::Request &req,
                                std_srvs::Empty::Response &res);
-  bool moveIsActive();
   bool stopMove(std_srvs::Empty::Request &req,
                 std_srvs::Empty::Response &res);
   bool getMoveConfig(motion::GetMoveConfig::Request &req,
@@ -64,7 +72,7 @@ class LocomotionControl {
                           motion::SetWalkArmsEnabled::Response &res);
 
   // ROS publisher
-  void spinTopics();
+  void checkMoveActive();
 
  private:
   // ROS
@@ -82,10 +90,13 @@ class LocomotionControl {
   ros::ServiceServer srv_get_robot_velocity_;
   ros::ServiceServer srv_get_walk_arms_enabled_;
   ros::ServiceServer srv_set_walk_arms_enabled_;
+  std_msgs::Bool move_active;
 
 
   // NAOqi
-  AL::ALMotionProxy* mProxy_;
+  boost::shared_ptr<AL::ALMutex> fCallbackMutex;
+  AL::ALMemoryProxy fMemoryProxy;
+  AL::ALMotionProxy mProxy_;
 };
 
 #endif /* LOCOMOTION_CONTROL_H_ */

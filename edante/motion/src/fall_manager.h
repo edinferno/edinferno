@@ -11,21 +11,25 @@
 #include <ros/ros.h>
 #include <std_msgs/Bool.h>
 
-#include <alproxies/almotionproxy.h>
-#include <alproxies/almemoryproxy.h>
-
 #include "motion/Enable.h"
 #include "motion/IsEnabled.h"
 
+#include <boost/shared_ptr.hpp>
+#include <alcommon/almodule.h>
+#include <alproxies/almemoryproxy.h>
+#include <alproxies/almotionproxy.h>
+#include <althread/almutex.h>
+
 #include "definitions.h"
 
-class FallManager {
+class FallManager : public AL::ALModule  {
  public:
-  FallManager(ros::NodeHandle* nh, AL::ALMotionProxy* mProxy,
-              AL::ALMemoryProxy* memProxy);
+  FallManager(boost::shared_ptr<AL::ALBroker> broker, const std::string& name);
   ~FallManager();
 
-  void spinTopics();
+  void init();
+
+  void rosSetup(ros::NodeHandle* nh);
 
   // ROS services
   bool setFallManagerEnabled(motion::Enable::Request &req,
@@ -33,16 +37,20 @@ class FallManager {
   bool getFallManagerEnabled(motion::IsEnabled::Request &req,
                              motion::IsEnabled::Response &res);
 
+  void hasFallen();
+
  private:
   // ROS
   ros::NodeHandle* nh_;
   ros::Publisher has_fallen_pub_;
   ros::ServiceServer srv_set_fall_manager_;
   ros::ServiceServer srv_get_fall_manager_;
+  std_msgs::Bool fallen_;
 
   // NaoQI
-  AL::ALMotionProxy* mProxy_;
-  AL::ALMemoryProxy* memProxy_;
+  boost::shared_ptr<AL::ALMutex> fCallbackMutex;
+  AL::ALMotionProxy mProxy_;
+  AL::ALMemoryProxy fMemoryProxy;
 };
 
 #endif /* FALL_MANAGER_H_ */

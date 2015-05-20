@@ -7,13 +7,39 @@
 
 #include "stiffness_control.h"
 
-StiffnessControl::StiffnessControl(ros::NodeHandle* nh,
-                                   AL::ALMotionProxy* mProxy) {
+#include <alvalue/alvalue.h>
+#include <alcommon/alproxy.h>
+#include <alcommon/albroker.h>
+#include <althread/alcriticalsection.h>
+
+#include <qi/log.hpp>
+
+StiffnessControl::StiffnessControl(
+  boost::shared_ptr<AL::ALBroker> broker,
+  const std::string& name): AL::ALModule(broker, name),
+  fCallbackMutex(AL::ALMutex::createALMutex()) {
+  qi::log::setVerbosity(qi::log::info);
+  // setModuleDescription("Fall Test module.");
+  // functionName("hasFallen", getName(), "Robot has fallen");
+  // BIND_METHOD(StiffnessControl::hasFallen)
+}
+
+StiffnessControl::~StiffnessControl() {
+}
+
+void StiffnessControl::init() {
+  try {
+    fMemoryProxy = AL::ALMemoryProxy(getParentBroker());
+    mProxy_ = AL::ALMotionProxy(getParentBroker());
+  } catch (const AL::ALError& e) {
+    DEBUG(e.what() << std::endl);
+  }
+}
+
+void StiffnessControl::rosSetup(ros::NodeHandle* nh) {
   nh_ = nh;
-  mProxy_ = mProxy;
-  awake_ = false;
   INFO("Setting up Stiffness Control publishers" << std::endl);
-  wake_pub_ = nh_->advertise<std_msgs::Bool>("is_awake", 10);
+  wake_pub_ = nh_->advertise<std_msgs::Bool>("is_awake", 10, true);
 
   INFO("Setting up Stiffness Control services" << std::endl);
   srv_wake_up_ = nh_->advertiseService("wake_up",
@@ -28,29 +54,23 @@ StiffnessControl::StiffnessControl(ros::NodeHandle* nh,
   get_stiffness_ =
     nh_->advertiseService("get_stiffness",
                           &StiffnessControl::getStiffness, this);
-}
-
-StiffnessControl::~StiffnessControl() {
-  ros::shutdown();
-}
-
-void StiffnessControl::spinTopics() {
-  std_msgs::Bool msg;
-  msg.data = awake_;
-  wake_pub_.publish(msg);
+  awake_.data = false;
+  wake_pub_.publish(awake_);
 }
 
 bool StiffnessControl::wakeUp(std_srvs::Empty::Request &req,
                               std_srvs::Empty::Response &res) {
-  mProxy_->wakeUp();
-  awake_ = true;
+  mProxy_.wakeUp();
+  awake_.data = true;
+  wake_pub_.publish(awake_);
   return true;
 }
 
 bool StiffnessControl::rest(std_srvs::Empty::Request &req,
                             std_srvs::Empty::Response &res) {
-  mProxy_->rest();
-  awake_ = false;
+  mProxy_.rest();
+  awake_.data = false;
+  wake_pub_.publish(awake_);
   return true;
 }
 
@@ -70,7 +90,7 @@ bool StiffnessControl::stiffnessInterp(
   }
 
   try {
-    mProxy_->post.stiffnessInterpolation(req.names, stiffness_lists, time_lists);
+    mProxy_.post.stiffnessInterpolation(req.names, stiffness_lists, time_lists);
     res.res = true;
   } catch (const std::exception& e) {
     res.res = false;
@@ -122,14 +142,14 @@ bool StiffnessControl::setStiffness(motion::SetStiffness::Request &req,
 
 bool StiffnessControl::getStiffness(motion::GetStiffness::Request &req,
                                     motion::GetStiffness::Response &res) {
-  res.stiffnesses = mProxy_->getStiffnesses(req.names);
+  res.stiffnesses = mProxy_.getStiffnesses(req.names);
   return true;
 }
 
 bool StiffnessControl::setStiffnesses(const string& name,
                                       const float& stiffness) {
   try {
-    mProxy_->setStiffnesses(name, stiffness);
+    mProxy_.setStiffnesses(name, stiffness);
   } catch (const std::exception& e) {
     return false;
   }
@@ -139,7 +159,7 @@ bool StiffnessControl::setStiffnesses(const string& name,
 bool StiffnessControl::setStiffnesses(const string& name,
                                       const vector<float>& stiffnesses) {
   try {
-    mProxy_->setStiffnesses(name, stiffnesses);
+    mProxy_.setStiffnesses(name, stiffnesses);
   } catch (const std::exception& e) {
     return false;
   }
@@ -149,7 +169,7 @@ bool StiffnessControl::setStiffnesses(const string& name,
 bool StiffnessControl::setStiffnesses(const vector<string>& names,
                                       const float& stiffness) {
   try {
-    mProxy_->setStiffnesses(names, stiffness);
+    mProxy_.setStiffnesses(names, stiffness);
   } catch (const std::exception& e) {
     return false;
   }
@@ -159,7 +179,7 @@ bool StiffnessControl::setStiffnesses(const vector<string>& names,
 bool StiffnessControl::setStiffnesses(const vector<string>& names,
                                       const vector<float>& stiffnesses) {
   try {
-    mProxy_->setStiffnesses(names, stiffnesses);
+    mProxy_.setStiffnesses(names, stiffnesses);
   } catch (const std::exception& e) {
     return false;
   }
