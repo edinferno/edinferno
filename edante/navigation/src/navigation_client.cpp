@@ -16,7 +16,7 @@ int main (int argc, char **argv) {
 
   ROS_INFO("%s started, sending goal.", ac_name.c_str());
   navigation::NavigateGoal goal;
-  goal.target_pose.x = 1.0f;
+  goal.target_pose.x = 0.5f;
   goal.target_pose.y = 0.0f;
   goal.target_pose.theta = 0.0f;
   ac.sendGoal(goal);

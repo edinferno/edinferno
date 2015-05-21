@@ -2,8 +2,12 @@
 #define NAVIGATION_SERVER_H_
 
 #include <ros/ros.h>
+#include <cmath>
 #include <actionlib/server/simple_action_server.h>
 #include <navigation/NavigateAction.h>
+#include <std_srvs/Empty.h>
+#include "motion/GetRobotPosition.h"
+#include "motion/MoveTo.h"
 
 #include "definitions.h"
 
@@ -24,6 +28,14 @@ class NavigateAction {
 
   void executeCB(const navigation::NavigateGoalConstPtr &goal);
 
+ private:
+  motion::GetRobotPosition get_pose_srv_;
+  motion::GetRobotPosition start_position_;
+  ros::ServiceClient get_pose_client_;
+  motion::MoveTo move_to_srv_;
+  ros::ServiceClient move_to_client_;
+  std_srvs::Empty stop_srv_;
+  ros::ServiceClient stop_move_client_;
 };
 
 
