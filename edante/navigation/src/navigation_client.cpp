@@ -18,7 +18,7 @@ int main (int argc, char **argv) {
   navigation::NavigateGoal goal;
   goal.target_pose.x = 0.5f;
   goal.target_pose.y = 0.0f;
-  goal.target_pose.theta = 0.0f;
+  goal.target_pose.theta = -1.6f;
   ac.sendGoal(goal);
 
   bool finished_before_timeout = ac.waitForResult(ros::Duration(30.0));

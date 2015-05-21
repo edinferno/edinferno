@@ -34,8 +34,10 @@ class NavigateAction {
   ros::ServiceClient get_pose_client_;
   motion::MoveTo move_to_srv_;
   ros::ServiceClient move_to_client_;
-  std_srvs::Empty stop_srv_;
+  std_srvs::Empty stop_move_srv_;
   ros::ServiceClient stop_move_client_;
+  std_srvs::Empty move_init_srv_;
+  ros::ServiceClient move_init_client_;
 };
 
 
