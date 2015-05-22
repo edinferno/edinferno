@@ -16,9 +16,9 @@ int main (int argc, char **argv) {
 
   ROS_INFO("%s started, sending goal.", ac_name.c_str());
   navigation::NavigateGoal goal;
-  goal.target_pose.x = 0.5f;
+  goal.target_pose.x = 0.25f;
   goal.target_pose.y = 0.0f;
-  goal.target_pose.theta = -1.6f;
+  goal.target_pose.theta = -0.4f;
   ac.sendGoal(goal);
 
   bool finished_before_timeout = ac.waitForResult(ros::Duration(30.0));
@@ -27,7 +27,9 @@ int main (int argc, char **argv) {
     actionlib::SimpleClientGoalState state = ac.getState();
     ROS_INFO("Action finished: %s", state.toString().c_str());
   } else
-    ROS_INFO("Action did not finish before the time out.");
+  { ROS_INFO("Action did not finish before the time out."); }
+
+  ros::shutdown();
 
   return 0;
 }

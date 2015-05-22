@@ -12,7 +12,7 @@ NavigateAction::NavigateAction(std::string name) :
   stop_move_client_ = nh_.serviceClient<std_srvs::Empty>(
                         "/motion/stop_move", true);
   stop_move_client_.waitForExistence();
-  move_init_client_ = nh_.serviceClient<motion::MoveTo>(
+  move_init_client_ = nh_.serviceClient<std_srvs::Empty>(
                         "/motion/move_init", true);
   move_init_client_.waitForExistence();
   start_position_.request.use_sensors = true;
@@ -27,7 +27,7 @@ NavigateAction::~NavigateAction(void) {
 void NavigateAction::executeCB(const navigation::NavigateGoalConstPtr &goal) {
   bool going = true;
   bool success = true;
-  float thresh = 0.05f;
+  float thresh = 0.01f;
   ROS_INFO("Executing goal for %s", action_name_.c_str());
   get_pose_client_.call(start_position_);
 
@@ -65,9 +65,12 @@ void NavigateAction::executeCB(const navigation::NavigateGoalConstPtr &goal) {
              goal->target_pose.x,
              goal->target_pose.y,
              goal->target_pose.theta);
-    float distance = fabs(goal->target_pose.x - feedback_.curr_pose.x);
-    ROS_INFO("Distance:%f", distance);
-    if (distance < thresh) {
+    float theta_error = goal->target_pose.theta - feedback_.curr_pose.theta;
+    float distance = sqrt(pow(feedback_.curr_pose.x, 2) +
+                          pow(feedback_.curr_pose.y, 2) );
+    float distance_error = goal->target_pose.x - distance;
+    ROS_INFO("Theta error: %f, Distance_error: %f", theta_error, distance_error);
+    if ((fabs(distance_error) < thresh) && (fabs(theta_error) < thresh)) {
       ROS_INFO("%s: Arrived", action_name_.c_str());
       going = false;
     }
