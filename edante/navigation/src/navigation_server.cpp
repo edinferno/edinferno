@@ -12,6 +12,9 @@ NavigateAction::NavigateAction(std::string name) :
   stop_move_client_ = nh_.serviceClient<std_srvs::Empty>(
                         "/motion/stop_move", true);
   stop_move_client_.waitForExistence();
+  move_init_client_ = nh_.serviceClient<std_srvs::Empty>(
+                        "/motion/move_init", true);
+  move_init_client_.waitForExistence();
   start_position_.request.use_sensors = true;
   get_pose_srv_.request.use_sensors = true;
   ROS_INFO("Starting Navigation server");
@@ -24,16 +27,19 @@ NavigateAction::~NavigateAction(void) {
 void NavigateAction::executeCB(const navigation::NavigateGoalConstPtr &goal) {
   bool going = true;
   bool success = true;
-  float thresh = 0.05f;
+  float thresh = 0.01f;
   ROS_INFO("Executing goal for %s", action_name_.c_str());
   get_pose_client_.call(start_position_);
 
-  move_to_srv_.request.control_points.resize(1);
-  move_to_srv_.request.control_points[0].x = goal->target_pose.x;
-  move_to_srv_.request.control_points[0].y = goal->target_pose.y;
+  // ROTATE FIRST, THEN STRAIGHT TO GOAL
+  move_to_srv_.request.control_points.resize(2);
+  move_to_srv_.request.control_points[0].x = 0.0f;
+  move_to_srv_.request.control_points[0].y = 0.0f;
   move_to_srv_.request.control_points[0].theta = goal->target_pose.theta;
+  move_to_srv_.request.control_points[1].x = goal->target_pose.x;
+  move_to_srv_.request.control_points[1].y = 0.0f;
+  move_to_srv_.request.control_points[1].theta = 0.0f;
   move_to_client_.call(move_to_srv_);
-
   while (going == true) {
     if (as_.isPreemptRequested() || !ros::ok()) {
       ROS_INFO("%s: Preempted", action_name_.c_str());
@@ -59,15 +65,18 @@ void NavigateAction::executeCB(const navigation::NavigateGoalConstPtr &goal) {
              goal->target_pose.x,
              goal->target_pose.y,
              goal->target_pose.theta);
-    float distance = fabs(goal->target_pose.x - feedback_.curr_pose.x);
-    ROS_INFO("Distance:%f", distance);
-    if (distance < thresh) {
+    float theta_error = goal->target_pose.theta - feedback_.curr_pose.theta;
+    float distance = sqrt(pow(feedback_.curr_pose.x, 2) +
+                          pow(feedback_.curr_pose.y, 2) );
+    float distance_error = goal->target_pose.x - distance;
+    ROS_INFO("Theta error: %f, Distance_error: %f", theta_error, distance_error);
+    if ((fabs(distance_error) < thresh) && (fabs(theta_error) < thresh)) {
       ROS_INFO("%s: Arrived", action_name_.c_str());
       going = false;
     }
   }
 
-  stop_move_client_.call(stop_srv_);
+  stop_move_client_.call(stop_move_srv_);
 
   if (success) {
     result_.success = true;
@@ -78,5 +87,7 @@ void NavigateAction::executeCB(const navigation::NavigateGoalConstPtr &goal) {
     ROS_INFO("%s: Failed!", action_name_.c_str());
     as_.setSucceeded(result_);
   }
+
+  move_init_client_.call(move_init_srv_);
 
 }
