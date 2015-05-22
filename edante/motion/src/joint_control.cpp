@@ -92,7 +92,7 @@ bool JointControl::angleInterpSpeed(motion::AngleInterpSpeed::Request &req,
 bool JointControl::setAngles(motion::SetAngles::Request &req,
                              motion::SetAngles::Response &res) {
   try {
-    mProxy_.setAngles(req.names, req.angles, req.fraction_max_speed);
+    mProxy_.post.setAngles(req.names, req.angles, req.fraction_max_speed);
     res.res = true;
   } catch (const std::exception& e) {
     res.res = false;
@@ -103,7 +103,7 @@ bool JointControl::setAngles(motion::SetAngles::Request &req,
 bool JointControl::changeAngles(motion::ChangeAngles::Request &req,
                                 motion::ChangeAngles::Response &res) {
   try {
-    mProxy_.changeAngles(req.names, req.changes, req.fraction_max_speed);
+    mProxy_.post.changeAngles(req.names, req.changes, req.fraction_max_speed);
     res.res = true;
   } catch (const std::exception& e) {
     res.res = false;
@@ -124,7 +124,7 @@ bool JointControl::getAngles(motion::GetAngles::Request &req,
 bool JointControl::closeHand(motion::UseHand::Request &req,
                              motion::UseHand::Response &res) {
   try {
-    mProxy_.closeHand(req.hand_name);
+    mProxy_.post.closeHand(req.hand_name);
     res.res = true;
   } catch (const std::exception& e) {
     res.res = false;
@@ -134,7 +134,7 @@ bool JointControl::closeHand(motion::UseHand::Request &req,
 bool JointControl::openHand(motion::UseHand::Request &req,
                             motion::UseHand::Response &res) {
   try {
-    mProxy_.openHand(req.hand_name);
+    mProxy_.post.openHand(req.hand_name);
     res.res = true;
   } catch (const std::exception& e) {
     res.res = false;

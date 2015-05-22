@@ -189,7 +189,7 @@ bool LocomotionControl::moveToward(motion::MoveToward::Request &req,
 
 bool LocomotionControl::moveInit(std_srvs::Empty::Request &req,
                                  std_srvs::Empty::Response &res) {
-  mProxy_.moveInit();
+  mProxy_.post.moveInit();
   this->checkMoveActive();
   return true;
 }

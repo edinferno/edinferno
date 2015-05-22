@@ -16,6 +16,7 @@
 
 #include "motion/MoveToward.h"
 #include "motion/SetPosture.h"
+#include "motion/ChangeAngles.h"
 #include "definitions.h"
 
 class JoyRemote {
@@ -52,12 +53,14 @@ class JoyRemote {
   motion::SetPosture standSrv;
   std_srvs::Empty restSrv;
   std_srvs::Empty stopSrv;
+  motion::ChangeAngles headSrv;
   ros::ServiceClient moveTowardClient;
   ros::ServiceClient wakeUpClient;
   ros::ServiceClient moveInitClient;
   ros::ServiceClient standClient;
   ros::ServiceClient restClient;
   ros::ServiceClient stopMoveClient;
+  ros::ServiceClient changeAnglesClient;
 };
 
 #endif  /* JOY_REMOTE_H */
