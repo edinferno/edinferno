@@ -60,7 +60,7 @@ void StiffnessControl::rosSetup(ros::NodeHandle* nh) {
 
 bool StiffnessControl::wakeUp(std_srvs::Empty::Request &req,
                               std_srvs::Empty::Response &res) {
-  mProxy_.post.wakeUp();
+  mProxy_.wakeUp();
   awake_.data = true;
   wake_pub_.publish(awake_);
   return true;
@@ -68,7 +68,7 @@ bool StiffnessControl::wakeUp(std_srvs::Empty::Request &req,
 
 bool StiffnessControl::rest(std_srvs::Empty::Request &req,
                             std_srvs::Empty::Response &res) {
-  mProxy_.post.rest();
+  mProxy_.rest();
   awake_.data = false;
   wake_pub_.publish(awake_);
   return true;
