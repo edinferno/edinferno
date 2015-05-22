@@ -14,6 +14,7 @@
 #include <std_srvs/Empty.h>
 #include <motion_planning/StandAction.h>
 #include "motion/GetPostureFamily.h"
+#include "motion/SetPosture.h"
 
 #include "definitions.h"
 
@@ -39,6 +40,10 @@ class StandAction {
   ros::ServiceClient wake_up_client_;
   motion::GetPostureFamily get_posture_family_srv_;
   ros::ServiceClient get_posture_family_client_;
+  std_srvs::Empty stopSrv;
+  ros::ServiceClient stopMoveClient;
+  motion::SetPosture set_posture_srv_;
+  ros::ServiceClient set_posture_client_;
 
 };
 
