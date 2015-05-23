@@ -34,7 +34,7 @@ curl -k -s https://chili-research.epfl.ch/ros4nao/bootstrap.sh | sh
 
 # Attempt to install packages and write the new portage settings
 # files if necessary.
-sudo emerge --autounmask-write log4cxx netifaces pyyaml poco apr apr-util
+sudo emerge --autounmask-write log4cxx netifaces pyyaml poco apr apr-util libusb tinyxml empy
 
 echo -e "${yellow}==============================================="
 echo -e "${yellow}  INSTRUCTIONS: Select '-3' and then type 'y'"
@@ -53,7 +53,7 @@ sudo /opt/openrobots/bin/robotpkgin install nao-robot
 
 # Install ros-comm from the openrobots repo, which is 
 # currently a broken dependency
-sudo /opt/openrobots/bin/robotpkgin install ros-comm
+sudo /opt/openrobots/bin/robotpkgin install ros-comm ros-image-common
  
 # Set the ROS setup.sh to be called automatically at logon
 echo "source /opt/openrobots/etc/ros/setup.sh" >> ~/.bash_profile
