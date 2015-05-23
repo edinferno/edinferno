@@ -48,7 +48,7 @@ echo -e "\033[0m"
 sudo etc-update
 
 # Finally install the packages
-sudo emerge -gk $SYS_PACKAGES
+sudo emerge -k $SYS_PACKAGES
 
 # Install nao-robot from the openrobots repo
 sudo /opt/openrobots/bin/robotpkgin install nao-robot
