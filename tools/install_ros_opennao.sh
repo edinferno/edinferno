@@ -35,7 +35,7 @@ curl -k -s https://chili-research.epfl.ch/ros4nao/bootstrap.sh | sh
 # Attempt to install packages and write the new portage settings
 # files if necessary.
 
-SYS_PACKAGES = "log4cxx netifaces pyyaml poco apr apr-util libusb tinyxml empy"
+SYS_PACKAGES="log4cxx netifaces pyyaml poco apr apr-util libusb tinyxml empy"
 sudo emerge --autounmask-write $SYS_PACKAGES
 
 echo -e "${yellow}==============================================="
@@ -48,7 +48,7 @@ echo -e "\033[0m"
 sudo etc-update
 
 # Finally install the packages
-sudo emerge -G $SYS_PACKAGES
+sudo emerge -gk $SYS_PACKAGES
 
 # Install nao-robot from the openrobots repo
 sudo /opt/openrobots/bin/robotpkgin install nao-robot
