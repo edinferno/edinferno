@@ -35,7 +35,7 @@ curl -k -s https://chili-research.epfl.ch/ros4nao/bootstrap.sh | sh
 # Attempt to install packages and write the new portage settings
 # files if necessary.
 
-SYS_PACKAGES="log4cxx netifaces pyyaml poco apr apr-util libusb tinyxml empy"
+SYS_PACKAGES="log4cxx netifaces pyyaml poco apr apr-util tinyxml empy"
 sudo emerge --autounmask-write $SYS_PACKAGES
 
 echo -e "${yellow}==============================================="
