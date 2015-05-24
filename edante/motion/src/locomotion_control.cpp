@@ -1,9 +1,10 @@
-/*
-* @Copyright: Copyright[2015]<Alejandro Bordallo>
-* @Date:      2015-05-18
-* @Email:     alex.bordallo@ed.ac.uk
-* @Desc:      ROS wrapper for NaoQI locomotion control methods
-*/
+/**
+ * @file      locomotion_control.cpp
+ * @brief     ROS wrapper for NaoQI locomotion control methods
+ * @author    Alejandro Bordallo <alex.bordallo@ed.ac.uk>
+ * @date      2015-05-18
+ * @copyright (MIT) 2015 Edinferno
+ */
 
 #include "locomotion_control.h"
 
@@ -96,12 +97,12 @@ void LocomotionControl::rosSetup(ros::NodeHandle* nh) {
 }
 
 /**
- * @brief Makes the robot move at the given velocity
- * @details Expressed in FRAME_ROBOT, it takes an optional MoveConfiguration
+ * @brief Makes the robot move at the given velocity motion::Move
+ * @details Expressed in \e FRAME_ROBOT, it takes an optional MoveConfiguration
  *
- * @param req.velocity  motion::Velocity
- * @param req.move_configuration  motion::MoveConfiguration
- * @param res.res bool  std_msgs::Bool
+ * @param req target_velocity motion::Velocity
+ * @param req move_configuration motion::MoveConfiguration
+ * @param res res std_msgs::Bool
  *
  * @return true if service completed successfully
  */
@@ -140,9 +141,9 @@ bool LocomotionControl::move(motion::Move::Request &req,
  * @brief Makes NAO move to the given pose in the ground plane
  * @details Relative to FRAME_ROBOT, it takes optionally single/multiple control points and move configurations
  *
- * @param req.control_points  motion::Position
- * @param req.move_configuration  motion::MoveConfiguration
- * @param res.res bool  std_msgs::Bool
+ * @param req motion::Position
+ * @param req motion::MoveConfiguration
+ * @param res std_msgs::Bool
  *
  * @return true if service completed successfully
  */
