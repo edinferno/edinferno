@@ -8,10 +8,10 @@ yellow='\e[1;33m'
 
 echo -e "${yellow}==============================================="
 echo -e "${yellow}  INSTRUCTIONS: You are about to install ROS"
-echo -e "${yellow}  on a fresh OpenNAO distribution. There will" 
+echo -e "${yellow}  on a fresh OpenNAO distribution. There will"
 echo -e "${yellow}  be several instruction blocks like this one."
-echo -e "${yellow}  Please read each ENTIRE instruction block " 
-echo -e "${yellow}  before proceeding (unlike Alex)." 
+echo -e "${yellow}  Please read each ENTIRE instruction block "
+echo -e "${yellow}  before proceeding (unlike Alex)."
 echo -e "${yellow}==============================================="
 echo -e "\033[0m"
 
@@ -29,13 +29,13 @@ if [[ $? -ne 0 ]] ; then
 fi
 
 
-# Download a boostraping script which downloads some essential tools 
+# Download a boostraping script which downloads some essential tools
 curl -k -s https://chili-research.epfl.ch/ros4nao/bootstrap.sh | sh
 
 # Attempt to install packages and write the new portage settings
 # files if necessary.
 
-SYS_PACKAGES="log4cxx netifaces pyyaml poco apr apr-util tinyxml empy"
+SYS_PACKAGES="log4cxx netifaces pyyaml poco apr apr-util empy"
 sudo emerge --autounmask-write $SYS_PACKAGES
 
 echo -e "${yellow}==============================================="
@@ -48,15 +48,19 @@ echo -e "\033[0m"
 sudo etc-update
 
 # Finally install the packages
-sudo emerge -k $SYS_PACKAGES
+sudo emerge -Gk $SYS_PACKAGES
 
 # Install nao-robot from the openrobots repo
 sudo /opt/openrobots/bin/robotpkgin install nao-robot
 
-# Install ros-comm from the openrobots repo, which is 
+# Install ros-comm from the openrobots repo, which is
 # currently a broken dependency
 sudo /opt/openrobots/bin/robotpkgin install ros-comm ros-image-common
- 
+
+# Update actionlib
+sudo robotpkgin remove ros-actionlib-1.9.12
+sudo robotpkgin install ros-actionlib-1.11.2
+
 # Set the ROS setup.sh to be called automatically at logon
 echo "source /opt/openrobots/etc/ros/setup.sh" >> ~/.bash_profile
 
