@@ -14,6 +14,13 @@
 
 #include <qi/log.hpp>
 
+/**
+ * @brief Locomotion class constructor
+ * @details Called when Locomotion class is instantiated. Inheritance: ALModule.
+ *
+ * @param broker ALBroker
+ * @param name Name of class instantiation
+ */
 LocomotionControl::LocomotionControl(
   boost::shared_ptr<AL::ALBroker> broker,
   const std::string& name): AL::ALModule(broker, name),
@@ -22,6 +29,10 @@ LocomotionControl::LocomotionControl(
   // setModuleDescription("Locomotion control module.");
 }
 
+/**
+ * @brief Locomotion class destructor
+ * @details Called when Locomotion class instantiation need be destroyed
+ */
 LocomotionControl::~LocomotionControl() {
 }
 
@@ -34,6 +45,12 @@ void LocomotionControl::init() {
   }
 }
 
+/**
+ * @brief ROS setup function
+ * @details Uses the passed ROS NodeHandle to advertise all services/publisher required.
+ *
+ * @param nh NodeHandle, passed by motion node
+ */
 void LocomotionControl::rosSetup(ros::NodeHandle* nh) {
   nh_ = nh;
   INFO("Setting up Locomotion Control publishers" << std::endl);
@@ -78,6 +95,16 @@ void LocomotionControl::rosSetup(ros::NodeHandle* nh) {
   this->checkMoveActive();
 }
 
+/**
+ * @brief Makes the robot move at the given velocity
+ * @details Expressed in FRAME_ROBOT, it takes an optional MoveConfiguration
+ *
+ * @param req.velocity  motion::Velocity
+ * @param req.move_configuration  motion::MoveConfiguration
+ * @param res.res bool  std_msgs::Bool
+ *
+ * @return true if service completed successfully
+ */
 bool LocomotionControl::move(motion::Move::Request &req,
                              motion::Move::Response &res) {
   // Check for size of move_configuration
@@ -109,6 +136,16 @@ bool LocomotionControl::move(motion::Move::Request &req,
   return true;
 }
 
+/**
+ * @brief Makes NAO move to the given pose in the ground plane
+ * @details Relative to FRAME_ROBOT, it takes optionally single/multiple control points and move configurations
+ *
+ * @param req.control_points  motion::Position
+ * @param req.move_configuration  motion::MoveConfiguration
+ * @param res.res bool  std_msgs::Bool
+ *
+ * @return true if service completed successfully
+ */
 bool LocomotionControl::moveTo(motion::MoveTo::Request &req,
                                motion::MoveTo::Response &res) {
   //  Check for multiple positions
