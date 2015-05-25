@@ -1,3 +1,6 @@
+# Ignore sublime workspace files
+*.sublime-workspace
+
 # Ignore the folder with documentation
 doc/
 

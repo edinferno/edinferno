@@ -32,10 +32,14 @@ fi
 # Download a boostraping script which downloads some essential tools
 curl -k -s https://chili-research.epfl.ch/ros4nao/bootstrap.sh | sh
 
+# Remove older libyaml if present
+if [ -e "/usr/lib/libyaml-cpp.so.0.2" ]; then
+  sudo rm /usr/lib/libyaml-cpp.so.0.2
+fi
+
 # Attempt to install packages and write the new portage settings
 # files if necessary.
-
-SYS_PACKAGES="log4cxx netifaces pyyaml poco apr apr-util empy"
+SYS_PACKAGES="log4cxx netifaces pyyaml poco apr apr-util yaml-cpp empy"
 sudo emerge --autounmask-write $SYS_PACKAGES
 
 echo -e "${yellow}==============================================="
