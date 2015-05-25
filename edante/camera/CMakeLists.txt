@@ -105,12 +105,12 @@ include_directories(
 )
 
 ## Declare a cpp library
-# add_library(camera
-#   src/${PROJECT_NAME}/camera.cpp
-# )
+add_library(camera_node
+  src/camera_node.cpp
+)
 
 ## Declare a cpp executable
-add_executable(camera_node src/camera_node.cpp src/camera.cpp)
+# add_executable(camera_node src/camera_node.cpp src/camera.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
