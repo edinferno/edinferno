@@ -19,9 +19,18 @@
 #include <ros/ros.h>
 #include <image_transport/image_transport.h>
 
+// Messages
 #include <sensor_msgs/Image.h>
+#include <sensor_msgs/CameraInfo.h>
+
+// Services
+#include "camera/SetActiveCamera.h"
+#include "camera/SetColorSpace.h"
+#include "camera/SetFrameRate.h"
+#include "camera/SetResolution.h"
 
 #include "camera/camera.hpp"
+
 
 class CameraNode : public AL::ALModule {
  public:
@@ -50,27 +59,50 @@ class CameraNode : public AL::ALModule {
   // Active settings
   const Camera* active_cam_;
 
-  int active_resolution_;
   // AL::kQQVGA  160*120px
   // AL::kQVGA   320*240px
   // AL::kVGA    640*480px
   // AL::k4VGA   1280*960px
+  int active_resolution_;
 
-  int active_color_space_;
   // AL::kYUV422ColorSpace  0xY’Y’VVYYUU - native format (2 pixels)
   // AL::kYUVColorSpace     0xVVUUYY
   // AL::kRGBColorSpace     0xBBGGRR
   // AL::kHSYColorSpace     0xYYSSHH
   // AL::kBGRColorSpace     0xRRGGBB
+  int active_color_space_;
 
-  int active_fps_;
   // 1 - 30 FPS
+  int active_fps_;
+
   ros::Rate* active_rate_;
+
+  sensor_msgs::CameraInfo active_cam_info_;
+
+  // ROS service servers
+  ros::ServiceServer set_active_camera_server_;
+  ros::ServiceServer set_resolution_server_;
+  ros::ServiceServer set_frame_rate_server_;
+  ros::ServiceServer set_color_space_server_;
+
 
   void Init();
   void Spin();
 
-  void UpdateSensorMsgImage();
+  void Update();
+  void UpdateImage();
+  void UpdateCameraInfo();
+
+  // Service callbacks
+  bool set_active_camera(camera::SetActiveCamera::Request&  req,
+                         camera::SetActiveCamera::Response& res);
+  bool set_resolution(camera::SetResolution::Request&  req,
+                      camera::SetResolution::Response& res);
+  bool set_frame_rate(camera::SetFrameRate::Request&  req,
+                      camera::SetFrameRate::Response& res);
+  bool set_color_space(camera::SetColorSpace::Request&  req,
+                       camera::SetColorSpace::Response& res);
+
 };
 
 #endif

@@ -49,7 +49,7 @@ CameraNode::CameraNode(boost::shared_ptr<AL::ALBroker> broker,
 }
 
 CameraNode::~CameraNode() {
-  // TODO: Figure out when NaoQi calls _closeModule
+  // TODO(svepe): Figure out when NaoQi calls _closeModule
   // delete active_rate_;
   // delete bot_cam_;
   // delete top_cam_;
@@ -73,13 +73,24 @@ void CameraNode::Init() {
   // Advertise the camera
   image_pub_ = it_->advertiseCamera("image", 1);
 
+  // Advertise services
+  set_active_camera_server_ = nh_->advertiseService("set_active_camera",
+                              &CameraNode::set_active_camera, this);
+  set_resolution_server_ = nh_->advertiseService("set_resolution",
+                           &CameraNode::set_resolution, this);
+  set_frame_rate_server_ = nh_->advertiseService("set_frame_rate",
+                           &CameraNode::set_frame_rate, this);
+  set_color_space_server_ = nh_->advertiseService("set_color_space",
+                            &CameraNode::set_color_space, this);
+  // TODO(svepe): Add a service to control the rest of the camera params
+
   // Create both cameras
   top_cam_ = new Camera(*nh_, AL::kTopCamera, "top");
   bot_cam_ = new Camera(*nh_, AL::kBottomCamera, "bottom");
 
   // Set the default active camera to be the top one
   active_cam_ = top_cam_;
-  active_resolution_ = AL::k4VGA;
+  active_resolution_ = AL::kVGA;
   active_color_space_ = AL::kYUV422ColorSpace;
   active_fps_ = 30;
   active_rate_ = new ros::Rate(active_fps_);
@@ -89,8 +100,8 @@ void CameraNode::Init() {
                  active_cam_->id(), active_resolution_,
                  active_color_space_, active_fps_);
 
-  // Allocate the required amount of memory
-  UpdateSensorMsgImage();
+  // Update cached information
+  Update();
 
   // Spawn the thread for the node
   module_thread = new boost::thread(boost::bind(&CameraNode::Spin, this));
@@ -105,26 +116,27 @@ void CameraNode::Spin() {
     image_.header.stamp = ros::Time::now();
     memcpy(image_.data.data(), alimage->getData(), image_.data.size());
 
-    // Create valid camera info
-    sensor_msgs::CameraInfo cam_info = active_cam_->cam_info();
-    // TODO: Check if camera info matches the image size
-    cam_info.header.frame_id = image_.header.frame_id;
-    cam_info.header.stamp = image_.header.stamp;
+    // Update the timestamp of the camera info
+    active_cam_info_.header.stamp = image_.header.stamp;
 
     // Publish the image with cam_info
-    image_pub_.publish(image_, cam_info);
+    image_pub_.publish(image_, active_cam_info_);
 
+    // Release the ALImage
     camera_proxy_->releaseImage(module_name_);
-    //   camera_proxy_->setActiveCamera(name_, (++camera_idx) % 2);
-    //   camera_proxy_->setResolution(name_, AL::kVGA);
+
+    // Spin ROS
     ros::spinOnce();
     active_rate_->sleep();
   }
-
-
 }
 
-void CameraNode::UpdateSensorMsgImage() {
+void CameraNode::Update() {
+  UpdateImage();
+  UpdateCameraInfo();
+}
+
+void CameraNode::UpdateImage() {
   // Set the image frame_id
   image_.header.frame_id = active_cam_->frame_id();
 
@@ -149,7 +161,7 @@ void CameraNode::UpdateSensorMsgImage() {
   }
 
   int pixel_size;
-  //Set the image encoding
+  // Set the image encoding
   switch (active_color_space_) {
     case AL::kYUV422ColorSpace:
       image_.encoding = "yuv422";
@@ -177,4 +189,131 @@ void CameraNode::UpdateSensorMsgImage() {
   image_.is_bigendian = false;
   image_.step = image_.width * pixel_size;
   image_.data.resize(image_.height * image_.step);
+}
+
+void CameraNode::UpdateCameraInfo() {
+  active_cam_info_ = active_cam_->cam_info();
+  active_cam_info_.header.frame_id = image_.header.frame_id;
+
+  // Check if the stored camera info matches the current settings
+  if (active_cam_info_.width != image_.width ||
+      active_cam_info_.height != image_.height) {
+    // The sizes do not match so generate and uncalibrated camera settings
+    active_cam_info_ = sensor_msgs::CameraInfo();
+    active_cam_info_.width = image_.width;
+    active_cam_info_.height = image_.height;
+  }
+}
+
+bool CameraNode::set_active_camera(camera::SetActiveCamera::Request&  req,
+                                   camera::SetActiveCamera::Response& res) {
+  int new_active_cam_id;
+  Camera* new_active_cam;
+  switch (req.active_camera) {
+    case 0:
+      new_active_cam_id = AL::kTopCamera;
+      new_active_cam = top_cam_;
+      break;
+    case 1:
+      new_active_cam_id = AL::kBottomCamera;
+      new_active_cam = bot_cam_;
+      break;
+    default:
+      res.result = false;
+      return true;
+  }
+
+  res.result = camera_proxy_->setActiveCamera(module_name_, new_active_cam_id);
+
+  if (res.result) {
+    active_cam_ = new_active_cam;
+    camera_proxy_->setColorSpace(module_name_, active_color_space_);
+    camera_proxy_->setResolution(module_name_, active_resolution_);
+    camera_proxy_->setFrameRate(module_name_, active_fps_);
+
+    Update();
+  }
+
+  return true;
+}
+
+bool CameraNode::set_resolution(camera::SetResolution::Request&  req,
+                                camera::SetResolution::Response& res) {
+  int new_resolution;
+  switch (req.resolution) {
+    case 0:
+      new_resolution = AL::kQQVGA;
+      break;
+    case 1:
+      new_resolution = AL::kQVGA;
+      break;
+    case 2:
+      new_resolution = AL::kVGA;
+      break;
+    case 3:
+      new_resolution = AL::k4VGA;
+      break;
+    default:
+      res.result = false;
+      return true;
+  }
+
+  res.result = camera_proxy_->setResolution(module_name_, new_resolution);
+
+  if (res.result) {
+    active_resolution_ = new_resolution;
+    Update();
+  }
+
+  return true;
+}
+
+bool CameraNode::set_frame_rate(camera::SetFrameRate::Request&  req,
+                                camera::SetFrameRate::Response& res) {
+  if (req.frame_rate < 1 || req.frame_rate > 30) {
+    res.result = false;
+    return true;
+  }
+
+  res.result = camera_proxy_->setFrameRate(module_name_, req.frame_rate);
+
+  if (res.result) {
+    active_fps_ = req.frame_rate;
+    delete active_rate_;
+    active_rate_ = new ros::Rate(active_fps_);
+  }
+}
+
+bool CameraNode::set_color_space(camera::SetColorSpace::Request&  req,
+                                 camera::SetColorSpace::Response& res) {
+  int new_color_space;
+  switch (req.color_space) {
+    case 0:
+      new_color_space = AL::kYUV422ColorSpace;
+      break;
+    case 1:
+      new_color_space = AL::kYUVColorSpace;
+      break;
+    case 2:
+      new_color_space = AL::kRGBColorSpace;
+      break;
+    case 3:
+      new_color_space = AL::kHSYColorSpace;
+      break;
+    case 4:
+      new_color_space = AL::kBGRColorSpace;
+      break;
+    default:
+      res.result = false;
+      return true;
+  }
+
+  res.result = camera_proxy_->setColorSpace(module_name_, new_color_space);
+
+  if (res.result) {
+    active_color_space_ = new_color_space;
+    Update();
+  }
+
+  return true;
 }

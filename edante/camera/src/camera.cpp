@@ -20,7 +20,7 @@ Camera::Camera(ros::NodeHandle& nh, int id, const char* name) :
 }
 
 Camera::~Camera() {
-  // TODO: Figure out when NaoQi calls _closeModule
+  // TODO(svepe): Figure out when NaoQi calls _closeModule
   // delete cam_info_manager_;
 }
 

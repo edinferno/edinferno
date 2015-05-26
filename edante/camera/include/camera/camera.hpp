@@ -41,6 +41,5 @@ class Camera {
   sensor_msgs::CameraInfo cam_info_;
 
   void Init();
-
 };
 #endif

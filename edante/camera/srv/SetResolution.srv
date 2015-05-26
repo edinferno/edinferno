@@ -1,0 +1,8 @@
+# Index of the desired resolution
+# 0   AL::kQQVGA  160*120px
+# 1   AL::kQVGA   320*240px
+# 2   AL::kVGA    640*480px
+# 3   AL::k4VGA   1280*960px
+uint8 resolution
+---
+bool result
