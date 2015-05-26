@@ -107,6 +107,7 @@ include_directories(
 ## Declare a cpp library
 add_library(camera_node
   src/camera_node.cpp
+  src/camera.cpp
 )
 
 ## Declare a cpp executable

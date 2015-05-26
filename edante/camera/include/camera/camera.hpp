@@ -13,37 +13,34 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-#include <image_transport/image_transport.h>
 #include <camera_info_manager/camera_info_manager.h>
 
 class Camera {
  public:
   Camera(ros::NodeHandle& nh, int id, const char* name);
+  ~Camera();
 
-  bool Init();
-  void SpinOnce();
+  int id() const { return id_; }
+  std::string name() const { return name_; }
+  std::string frame_id() const { return frame_id_; }
+
+  sensor_msgs::CameraInfo cam_info() const { return cam_info_; }
 
  private:
-  void Read();
-  void Publish();
-
   ros::NodeHandle nh_;
 
   const int id_;
+  // AL::kTopCamera
+  // AL::kBottomCamera
 
   std::string name_;
   std::string cam_info_url_;
   std::string frame_id_;
 
-  std::auto_ptr<cv::VideoCapture> cap_;
-
-  std::auto_ptr<camera_info_manager::CameraInfoManager> cam_info_manager_;
+  camera_info_manager::CameraInfoManager* cam_info_manager_;
   sensor_msgs::CameraInfo cam_info_;
 
-  std::auto_ptr<image_transport::ImageTransport> it_;
-  image_transport::CameraPublisher image_pub_;
+  void Init();
 
-  sensor_msgs::Image image_;
-  cv::Mat mat_;
 };
 #endif
