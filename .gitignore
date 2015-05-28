@@ -44,3 +44,7 @@ _*.h
 _*.srv
 _*.msg
 _*.txt
+
+# Ignore Glade temporary files
+*.*~
+[#]*[#]
