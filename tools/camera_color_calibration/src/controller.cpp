@@ -29,9 +29,16 @@ bool Controller::SpinOnce() {
   // Make sure the timer is not stopped
   return true;
 }
-
-void Controller::ImageCallback(const sensor_msgs::ImageConstPtr& msg) {
-  view_->SetRawImage(*msg);
+void Controller::OnNewPixelClass(double x, double y, PixelClass pixel_class) {
+  model_->AddNewPixelClass(x, y, pixel_class);
+}
+void Controller::OnNewRawImage(const sensor_msgs::Image& msg) {
+  view_->SetRawImage(msg);
   view_->RedrawArea("raw");
+}
+
+void Controller::OnNewSegmentedImage(const sensor_msgs::Image& msg) {
+  view_->SetSegmentedImage(msg);
+  view_->RedrawArea("segmented");
 }
 

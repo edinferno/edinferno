@@ -24,6 +24,76 @@ void Model::Build(int argc, char** argv) {
   it_ = new image_transport::ImageTransport(*nh_);
 
   // Subscribe to camera images
-  image_sub_ = it_->subscribe("image", 1, &Controller::ImageCallback,
-                              controller_);
+  image_sub_ = it_->subscribe("image", 1, &Model::ImageCallback, this);
 }
+
+void Model::SegmentImage(const sensor_msgs::Image& raw,
+                         sensor_msgs::Image& seg,
+                         PixelClass table[kTableSize][kTableSize][kTableSize]) {
+  if (seg.width != raw.width || seg.height != raw.height) {
+    // Create new segmented image
+    seg.width = raw.width;
+    seg.height = raw.height;
+    seg.encoding = "mono8";
+    seg.step = seg.width;
+    seg.data.clear();
+    seg.data.resize(seg.width * seg.height, 0);
+  }
+
+  for (size_t i = 0, j = 0; i < seg.data.size(); i += 2, j += 4) {
+    // First pixel of the YUY'V pair
+    uint8_t y = raw.data[j + 0] / 4;
+    uint8_t u = raw.data[j + 1] / 4;
+    uint8_t v = raw.data[j + 3] / 4;
+    seg.data[i] = table[y][u][v];
+    // Second pixel of the YUY'V pair
+    y = raw.data[j + 2] / 4;
+    seg.data[i + 1] = table[y][u][v];
+  }
+}
+
+void Model::AddNewPixelClass(double x, double y, PixelClass pixel_class) {
+  ROS_INFO_STREAM("Class " << pixel_class << " @ [" << x << ", " << y << "]");
+  int y_px = y * (raw_image_.height - 1);
+  int x_px = x * (raw_image_.width - 1);
+  int pixel_index = 2 * (y_px * raw_image_.width + x_px);
+
+  int y_val, u_val, v_val;
+  y_val = raw_image_.data[pixel_index] / 4;
+  if (pixel_index % 4 == 0) {
+    u_val = raw_image_.data[pixel_index + 1] / 4;
+    v_val = raw_image_.data[pixel_index + 3] / 4;
+  } else if (pixel_index % 4 == 2) {
+    u_val = raw_image_.data[pixel_index - 1] / 4;
+    v_val = raw_image_.data[pixel_index + 1] / 4;
+  }
+
+  const int expand = 4;
+  int y_min = (y_val - expand < 0) ? 0 : y_val - expand;
+  int y_max = (y_val + expand > kTableSize) ? kTableSize : y_val + expand;
+  int u_min = (u_val - expand < 0) ? 0 : u_val - expand;
+  int u_max = (u_val + expand > kTableSize) ? kTableSize : u_val + expand;
+  int v_min = (v_val - expand < 0) ? 0 : v_val - expand;
+  int v_max = (v_val + expand > kTableSize) ? kTableSize : v_val + expand;
+
+  for (y_val = y_min; y_val < y_max; ++y_val) {
+    for (u_val = u_min; u_val < u_max; ++u_val) {
+      for (v_val = v_min; v_val < v_max; ++v_val) {
+        table_[y_val][u_val][v_val] = pixel_class;
+      }
+    }
+  }
+}
+
+void Model::ImageCallback(const sensor_msgs::ImageConstPtr& msg) {
+  if (msg->encoding != "yuv422") {
+    ROS_WARN_STREAM(std::string("You must use the yuv422 colorspace. Run:\n") +
+                    std::string("rosservice call /camera/set_color_space 0."));
+    return;
+  }
+  raw_image_ = *msg;
+  controller_->OnNewRawImage(raw_image_);
+  SegmentImage(raw_image_, seg_image_, table_);
+  controller_->OnNewSegmentedImage(seg_image_);
+}
+

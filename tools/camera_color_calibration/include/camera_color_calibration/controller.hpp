@@ -17,7 +17,7 @@
 
 #include "camera_color_calibration/view.hpp"
 #include "camera_color_calibration/model.hpp"
-
+#include "camera_color_calibration/camera_color_calibration.hpp"
 
 
 class Controller {
@@ -31,8 +31,12 @@ class Controller {
 
   bool SpinOnce();
 
+  // View callbacks
+  void OnNewPixelClass(double x, double y, PixelClass pixel_class);
   // Model callbacks
-  void ImageCallback(const sensor_msgs::ImageConstPtr& msg);
+  void OnNewRawImage(const sensor_msgs::Image& msg);
+  void OnNewSegmentedImage(const sensor_msgs::Image& msg);
+
 
  private:
   std::string app_name_;

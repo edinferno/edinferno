@@ -14,6 +14,8 @@
 
 #include <sensor_msgs/Image.h>
 
+#include "camera_color_calibration/camera_color_calibration.hpp"
+
 class Controller;
 
 class View {
@@ -23,6 +25,7 @@ class View {
   int Show() { return app_->run(*main_window_); }
 
   void SetRawImage(const sensor_msgs::Image& image);
+  void SetSegmentedImage(const sensor_msgs::Image& image);
   void RedrawArea(std::string name);
 
  private:
@@ -32,6 +35,8 @@ class View {
   Gtk::Window* main_window_;
   Glib::RefPtr<Gdk::Pixbuf> raw_pixbuf_;
   Glib::RefPtr<Gdk::Pixbuf> seg_pixbuf_;
+
+  PixelClass current_class_;
 
   void ConnectToolButton(std::string name);
   void ConnectDrawingArea(std::string name);

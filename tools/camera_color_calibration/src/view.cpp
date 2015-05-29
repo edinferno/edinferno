@@ -14,6 +14,7 @@
 
 View::View(Controller* controller) {
   controller_ = controller;
+  current_class_ = Nothing;
 }
 
 void View::Build(int argc, char** argv,
@@ -45,22 +46,77 @@ void View::SetRawImage(const sensor_msgs::Image& image) {
   raw_pixbuf_ = Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB, false, 8,
                                     image.width, image.height);
   guint8* pixels = raw_pixbuf_->get_pixels();
-  if (image.encoding == "bgr8") {
-    for (size_t i = 0; i < image.data.size(); i += 3) {
-      pixels[i]     = image.data[i + 2];
-      pixels[i + 1] = image.data[i + 1];
-      pixels[i + 2] = image.data[i];
-    }
-  } else if (image.encoding == "yuv422") {
-    size_t num_pixels = image.width * image.height * 3;
-    for (size_t i = 0, j = 0; i < num_pixels; i += 6, j += 4) {
-      YUVtoRGB(image.data[j + 0], image.data[j + 1], image.data[j + 3],
-               pixels[i + 0], pixels[i + 1], pixels[i + 2]);
 
-      YUVtoRGB(image.data[j + 2], image.data[j + 1], image.data[j + 3],
-               pixels[i + 3], pixels[i + 4], pixels[i + 5]);
+  size_t num_pixels = image.width * image.height * 3;
+  for (size_t i = 0, j = 0; i < num_pixels; i += 6, j += 4) {
+    YUVtoRGB(image.data[j + 0], image.data[j + 1], image.data[j + 3],
+             pixels[i + 0], pixels[i + 1], pixels[i + 2]);
+
+    YUVtoRGB(image.data[j + 2], image.data[j + 1], image.data[j + 3],
+             pixels[i + 3], pixels[i + 4], pixels[i + 5]);
+  }
+
+  Gtk::DrawingArea* area;
+  builder_->get_widget("raw_area", area);
+  raw_pixbuf_ = raw_pixbuf_->scale_simple(area->get_width(),
+                                          area->get_height(),
+                                          Gdk::INTERP_BILINEAR);
+}
+
+void View::SetSegmentedImage(const sensor_msgs::Image& image) {
+  seg_pixbuf_ = Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB, false, 8,
+                                    image.width, image.height);
+  guint8* pixels = seg_pixbuf_->get_pixels();
+
+  size_t num_pixels = image.width * image.height;
+  for (size_t i = 0, j = 0; i < num_pixels; ++i, j += 3) {
+    switch (image.data[i]) {
+      case Nothing: {
+        // Gray
+        pixels[j]     = 128;
+        pixels[j + 1] = 128;
+        pixels[j + 2] = 128;
+        break;
+      }
+      case Ball: {
+        // Orange
+        pixels[j]     = 255;
+        pixels[j + 1] = 128;
+        pixels[j + 2] = 0;
+        break;
+      }
+      case GoalAndLines: {
+        pixels[j]     = 255;
+        pixels[j + 1] = 255;
+        pixels[j + 2] = 255;
+        break;
+      }
+      case Field: {
+        pixels[j]     = 64;
+        pixels[j + 1] = 255;
+        pixels[j + 2] = 64;
+        break;
+      }
+      case TeamRed: {
+        pixels[j]     = 255;
+        pixels[j + 1] = 0;
+        pixels[j + 2] = 0;
+        break;
+      }
+      case TeamBlue: {
+        pixels[j]     = 0;
+        pixels[j + 1] = 0;
+        pixels[j + 2] = 255;
+        break;
+      }
     }
   }
+
+  Gtk::DrawingArea* area;
+  builder_->get_widget("segmented_area", area);
+  seg_pixbuf_ = seg_pixbuf_->scale_simple(area->get_width(),
+                                          area->get_height(),
+                                          Gdk::INTERP_BILINEAR);
 }
 
 void View::RedrawArea(std::string name) {
@@ -94,7 +150,6 @@ void View::ConnectDrawingArea(std::string name) {
       sigc::mem_fun(*this,
                     &View::OnDrawImage),
       name));
-
 }
 
 void View::YUVtoRGB(uint8_t y, uint8_t u, uint8_t v,
@@ -112,12 +167,30 @@ void View::YUVtoRGB(uint8_t y, uint8_t u, uint8_t v,
 }
 
 void View::OnToolbarButtonClicked(std::string name) {
-  ROS_INFO_STREAM("Clicked:" << name);
+  if (name == "grey") {
+    current_class_ = Nothing;
+  } else if (name == "orange") {
+    current_class_ = Ball;
+  } else if (name == "white") {
+    current_class_ = GoalAndLines;
+  } else if (name == "green") {
+    current_class_ = Field;
+  } else if (name == "red") {
+    current_class_ = TeamRed;
+  } else if (name == "blue") {
+    current_class_ = TeamBlue;
+  }
 }
 
 bool View::OnButtonPressEvent(GdkEventButton* event,
                               std::string name) {
-  ROS_INFO("Click on %s @ [%lf, %lf]", name.c_str(), event->x, event->y);
+  Gtk::DrawingArea* area;
+  builder_->get_widget(name + "_area", area);
+  // Right mouse click always clears
+  PixelClass pixel_class = (event->button == 3) ? Nothing : current_class_;
+  controller_->OnNewPixelClass(event->x / area->get_width(),
+                               event->y / area->get_height(),
+                               pixel_class);
   return true;
 }
 

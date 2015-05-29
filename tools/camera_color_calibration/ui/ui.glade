@@ -183,6 +183,10 @@
               <object class="GtkAspectFrame" id="aspectframe1">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="margin_left">10</property>
+                <property name="margin_right">5</property>
+                <property name="margin_top">5</property>
+                <property name="margin_bottom">5</property>
                 <property name="label_xalign">0</property>
                 <property name="shadow_type">none</property>
                 <property name="ratio">1.25</property>
@@ -192,10 +196,6 @@
                     <property name="height_request">480</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="margin_left">10</property>
-                    <property name="margin_right">5</property>
-                    <property name="margin_top">5</property>
-                    <property name="margin_bottom">5</property>
                   </object>
                 </child>
               </object>
@@ -210,6 +210,10 @@
               <object class="GtkAspectFrame" id="aspectframe2">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="margin_left">5</property>
+                <property name="margin_right">10</property>
+                <property name="margin_top">5</property>
+                <property name="margin_bottom">5</property>
                 <property name="label_xalign">0</property>
                 <property name="shadow_type">none</property>
                 <property name="ratio">1.25</property>
@@ -219,10 +223,6 @@
                     <property name="height_request">480</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="margin_left">10</property>
-                    <property name="margin_right">5</property>
-                    <property name="margin_top">5</property>
-                    <property name="margin_bottom">5</property>
                   </object>
                 </child>
               </object>
