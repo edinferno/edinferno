@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 packages=($(ls ./edante/))
 white_list=$(printf "%s;" "${packages[@]}")
 
