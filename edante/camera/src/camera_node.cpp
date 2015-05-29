@@ -27,10 +27,6 @@ const char* CameraNode::table_file_name_ = "/home/nao/config/camera/table.c64";
 // NaoQi module entry point
 extern "C" {
   int _createModule(boost::shared_ptr<AL::ALBroker> broker) {
-    // Check if the master is alive
-    if (!ros::master::check())
-      return 1;
-
     // init broker with the main broker instance
     // from the parent executable
     AL::ALBrokerManager::setInstance(broker->fBrokerManager.lock());
@@ -56,13 +52,12 @@ CameraNode::CameraNode(boost::shared_ptr<AL::ALBroker> broker,
 }
 
 CameraNode::~CameraNode() {
-  // TODO(svepe): Figure out when NaoQi calls _closeModule
-  // delete active_rate_;
-  // delete bot_cam_;
-  // delete top_cam_;
-  // delete it_;
-  // delete nh_;
-  // delete camera_proxy_;
+  delete active_rate_;
+  delete bot_cam_;
+  delete top_cam_;
+  delete it_;
+  delete nh_;
+  delete camera_proxy_;
 }
 
 void CameraNode::Init() {
