@@ -1,5 +1,5 @@
 #!/bin/sh
-packages=($(ls ./tools/))
+packages=($(ls ./edante/))
 white_list=$(printf "%s;" "${packages[@]}")
 
 cd ./../..
