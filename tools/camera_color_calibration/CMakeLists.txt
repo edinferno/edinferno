@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   std_msgs
   roslib
+  image_transport
 )
 
 ## System dependencies are found with CMake's conventions
@@ -91,11 +92,13 @@ catkin_package(
 ###########
 ## Build ##
 ###########
+set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall" )
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
+  include
   ${catkin_INCLUDE_DIRS}
   ${gtkmm_INCLUDE_DIRS}
 )
@@ -106,7 +109,11 @@ include_directories(
 # )
 
 ## Declare a cpp executable
-add_executable(camera_color_calibration src/camera_color_calibration.cpp)
+add_executable(camera_color_calibration
+  src/camera_color_calibration.cpp
+  src/model.cpp
+  src/view.cpp
+  src/controller.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes

@@ -24,6 +24,10 @@ bool is_closing;
 // NaoQi module entry point
 extern "C" {
   int _createModule(boost::shared_ptr<AL::ALBroker> broker) {
+    // Check if the master is alive
+    if (!ros::master::check())
+      return 1;
+
     // init broker with the main broker instance
     // from the parent executable
     AL::ALBrokerManager::setInstance(broker->fBrokerManager.lock());
@@ -75,13 +79,13 @@ void CameraNode::Init() {
 
   // Advertise services
   set_active_camera_server_ = nh_->advertiseService("set_active_camera",
-                              &CameraNode::set_active_camera, this);
+                                                    &CameraNode::set_active_camera, this);
   set_resolution_server_ = nh_->advertiseService("set_resolution",
-                           &CameraNode::set_resolution, this);
+                                                 &CameraNode::set_resolution, this);
   set_frame_rate_server_ = nh_->advertiseService("set_frame_rate",
-                           &CameraNode::set_frame_rate, this);
+                                                 &CameraNode::set_frame_rate, this);
   set_color_space_server_ = nh_->advertiseService("set_color_space",
-                            &CameraNode::set_color_space, this);
+                                                  &CameraNode::set_color_space, this);
   // TODO(svepe): Add a service to control the rest of the camera params
 
   // Create both cameras
@@ -97,8 +101,8 @@ void CameraNode::Init() {
 
   // Subscribe to the active Nao camera
   module_name_ = camera_proxy_->subscribeCamera(module_name_,
-                 active_cam_->id(), active_resolution_,
-                 active_color_space_, active_fps_);
+                                                active_cam_->id(), active_resolution_,
+                                                active_color_space_, active_fps_);
 
   // Update cached information
   Update();
