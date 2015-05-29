@@ -59,6 +59,7 @@ add_service_files(
   SetColorSpace.srv
   SetFrameRate.srv
   SetResolution.srv
+  SetColorTable.srv
 )
 
 ## Generate actions in the 'action' folder

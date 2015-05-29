@@ -28,9 +28,18 @@
 #include "camera/SetColorSpace.h"
 #include "camera/SetFrameRate.h"
 #include "camera/SetResolution.h"
+#include "camera/SetColorTable.h"
 
 #include "camera/camera.hpp"
 
+enum PixelClass {
+  Nothing,
+  Ball,
+  GoalAndLines,
+  Field,
+  TeamRed,
+  TeamBlue
+};
 
 class CameraNode : public AL::ALModule {
  public:
@@ -84,6 +93,13 @@ class CameraNode : public AL::ALModule {
   ros::ServiceServer set_resolution_server_;
   ros::ServiceServer set_frame_rate_server_;
   ros::ServiceServer set_color_space_server_;
+  ros::ServiceServer set_color_table_server_;
+
+  // Color table
+  static const char* table_file_name_;
+  static const size_t kTableSize = 64;
+  static const size_t kTableLen = kTableSize * kTableSize * kTableSize;
+  PixelClass table_[kTableSize][kTableSize][kTableSize];
 
 
   void Init();
@@ -102,7 +118,8 @@ class CameraNode : public AL::ALModule {
                       camera::SetFrameRate::Response& res);
   bool set_color_space(camera::SetColorSpace::Request&  req,
                        camera::SetColorSpace::Response& res);
-
+  bool set_color_table(camera::SetColorTable::Request&  req,
+                       camera::SetColorTable::Response& res);
 };
 
 #endif

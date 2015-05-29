@@ -6,6 +6,8 @@
 */
 #include "camera/camera_node.hpp"
 
+#include <fstream>
+
 #include <alcommon/albroker.h>
 #include <alcommon/albrokermanager.h>
 #include <alvision/alimage.h>
@@ -20,6 +22,7 @@ using std::auto_ptr;
 boost::thread* module_thread;
 bool is_closing;
 
+const char* CameraNode::table_file_name_ = "/home/nao/config/camera/table.c64";
 
 // NaoQi module entry point
 extern "C" {
@@ -78,14 +81,26 @@ void CameraNode::Init() {
   image_pub_ = it_->advertiseCamera("image", 1);
 
   // Advertise services
-  set_active_camera_server_ = nh_->advertiseService("set_active_camera",
-                                                    &CameraNode::set_active_camera, this);
-  set_resolution_server_ = nh_->advertiseService("set_resolution",
-                                                 &CameraNode::set_resolution, this);
-  set_frame_rate_server_ = nh_->advertiseService("set_frame_rate",
-                                                 &CameraNode::set_frame_rate, this);
-  set_color_space_server_ = nh_->advertiseService("set_color_space",
-                                                  &CameraNode::set_color_space, this);
+  set_active_camera_server_ = nh_->advertiseService(
+                                "set_active_camera",
+                                &CameraNode::set_active_camera,
+                                this);
+  set_resolution_server_ = nh_->advertiseService(
+                             "set_resolution",
+                             &CameraNode::set_resolution,
+                             this);
+  set_frame_rate_server_ = nh_->advertiseService(
+                             "set_frame_rate",
+                             &CameraNode::set_frame_rate,
+                             this);
+  set_color_space_server_ = nh_->advertiseService(
+                              "set_color_space",
+                              &CameraNode::set_color_space,
+                              this);
+  set_color_table_server_ = nh_->advertiseService(
+                              "set_color_table",
+                              &CameraNode::set_color_table,
+                              this);
   // TODO(svepe): Add a service to control the rest of the camera params
 
   // Create both cameras
@@ -100,9 +115,10 @@ void CameraNode::Init() {
   active_rate_ = new ros::Rate(active_fps_);
 
   // Subscribe to the active Nao camera
-  module_name_ = camera_proxy_->subscribeCamera(module_name_,
-                                                active_cam_->id(), active_resolution_,
-                                                active_color_space_, active_fps_);
+  module_name_ = camera_proxy_->subscribeCamera(
+                   module_name_,
+                   active_cam_->id(), active_resolution_,
+                   active_color_space_, active_fps_);
 
   // Update cached information
   Update();
@@ -320,4 +336,18 @@ bool CameraNode::set_color_space(camera::SetColorSpace::Request&  req,
   }
 
   return true;
+}
+
+bool CameraNode::set_color_table(camera::SetColorTable::Request&  req,
+                                 camera::SetColorTable::Response& res) {
+  std::ofstream table_file;
+  table_file.open(table_file_name_, std::ios::binary);
+
+  if (!table_file.is_open()) {
+    res.result = false;
+    return true;
+  }
+
+  table_file.write(reinterpret_cast<char*>(req.table.data()), req.table.size());
+  table_file.close();
 }
