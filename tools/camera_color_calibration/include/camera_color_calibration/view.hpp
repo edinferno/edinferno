@@ -30,11 +30,20 @@ class View {
 
  private:
   Controller* controller_;
+  // Application
   Glib::RefPtr<Gtk::Application> app_;
+
+  // UI window
   Glib::RefPtr<Gtk::Builder> builder_;
   Gtk::Window* main_window_;
+
+  // Drawing buffers
   Glib::RefPtr<Gdk::Pixbuf> raw_pixbuf_;
   Glib::RefPtr<Gdk::Pixbuf> seg_pixbuf_;
+
+  // Statusbar
+  Gtk::Statusbar* statusbar_;
+  int context_id_;
 
   PixelClass current_class_;
 

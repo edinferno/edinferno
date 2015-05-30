@@ -29,7 +29,7 @@ void Model::Build(int argc, char** argv) {
   image_sub_ = it_->subscribe("image", 1, &Model::ImageCallback, this);
 }
 
-void Model::SendTable() {
+bool Model::SendTable() {
   ros::ServiceClient client =
     nh_->serviceClient<camera::SetColorTable>("set_color_table");
   camera::SetColorTable srv;
@@ -48,11 +48,10 @@ void Model::SendTable() {
   }
 
   // Send the serialised color table to the robot
-  client.call(srv);
+  return  client.call(srv);
 }
 
 void Model::AddNewPixelClass(double x, double y, PixelClass pixel_class) {
-  ROS_INFO_STREAM("Class " << pixel_class << " @ [" << x << ", " << y << "]");
   int y_px = y * (raw_image_.height - 1);
   int x_px = x * (raw_image_.width - 1);
   int pixel_index = 2 * (y_px * raw_image_.width + x_px);

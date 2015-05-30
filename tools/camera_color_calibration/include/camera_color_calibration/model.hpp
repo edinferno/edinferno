@@ -23,7 +23,7 @@ class Model {
   explicit Model(Controller* controller);
   void Build(int argc, char** argv);
   void AddNewPixelClass(double x, double y, PixelClass pixel_class);
-  void SendTable();
+  bool SendTable();
 
  private:
   Controller* controller_;
