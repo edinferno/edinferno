@@ -75,6 +75,9 @@ void CameraNode::Init() {
   // Advertise the camera
   image_pub_ = it_->advertiseCamera("image", 1);
 
+  segmented_image_pub_ = it_->advertiseCamera("segmented_image", 1);
+  segmented_rgb_image_pub_ = it_->advertise("segmented_rgb_image", 1);
+
   // Advertise services
   set_active_camera_server_ = nh_->advertiseService(
                                 "set_active_camera",
@@ -110,7 +113,7 @@ void CameraNode::Init() {
   active_cam_ = top_cam_;
   active_resolution_ = AL::kVGA;
   active_color_space_ = AL::kYUV422ColorSpace;
-  active_fps_ = 30;
+  active_fps_ = 15;
   active_rate_ = new ros::Rate(active_fps_);
 
   // Subscribe to the active Nao camera
@@ -178,6 +181,22 @@ void CameraNode::Spin() {
     // Publish the image with cam_info
     image_pub_.publish(image_, active_cam_info_);
 
+    // Segment the image and publish it
+    if (segmented_image_pub_.getNumSubscribers() > 0) {
+      ROS_INFO("SEG");
+      SegmentImage(image_, segmented_image_);
+      segmented_image_.header.stamp = image_.header.stamp;
+      segmented_image_pub_.publish(segmented_image_, active_cam_info_);
+    }
+
+    // Publish segmented RGB image if necessary
+    if (segmented_rgb_image_pub_.getNumSubscribers() > 0) {
+      ROS_INFO("CLR");
+      ColorSegmentedImage(segmented_image_, segmented_rgb_image_);
+      segmented_rgb_image_.header.stamp = image_.header.stamp;
+      segmented_rgb_image_pub_.publish(segmented_rgb_image_);
+    }
+
     // Release the ALImage
     camera_proxy_->releaseImage(module_name_);
 
@@ -189,6 +208,71 @@ void CameraNode::Spin() {
   camera_proxy_->unsubscribe(module_name_);
 }
 
+void CameraNode::SegmentImage(const sensor_msgs::Image& raw,
+                              sensor_msgs::Image& seg) {
+  for (size_t i = 0, j = 0; i < seg.data.size(); i += 2, j += 4) {
+    // First pixel of the YUY'V pair
+    uint8_t y = raw.data[j + 0] / 4;
+    uint8_t u = raw.data[j + 1] / 4;
+    uint8_t v = raw.data[j + 3] / 4;
+    seg.data[i] = table_[y][u][v];
+    // Second pixel of the YUY'V pair
+    y = raw.data[j + 2] / 4;
+    seg.data[i + 1] = table_[y][u][v];
+  }
+}
+
+void CameraNode::ColorSegmentedImage(const sensor_msgs::Image& seg,
+                                     sensor_msgs::Image& rgb) {
+  // Popoulate the new image buffer
+  for (size_t i = 0, j = 0; i < seg.data.size(); ++i, j += 3) {
+    // Choose color based on the pixel class
+    switch (seg.data[i]) {
+      case Nothing: {
+        // Gray
+        rgb.data[j]     = 128;
+        rgb.data[j + 1] = 128;
+        rgb.data[j + 2] = 128;
+        break;
+      }
+      case Ball: {
+        // Orange
+        rgb.data[j]     = 255;
+        rgb.data[j + 1] = 128;
+        rgb.data[j + 2] = 0;
+        break;
+      }
+      case GoalAndLines: {
+        // White
+        rgb.data[j]     = 255;
+        rgb.data[j + 1] = 255;
+        rgb.data[j + 2] = 255;
+        break;
+      }
+      case Field: {
+        // Field
+        rgb.data[j]     = 64;
+        rgb.data[j + 1] = 255;
+        rgb.data[j + 2] = 64;
+        break;
+      }
+      case TeamRed: {
+        // Red
+        rgb.data[j]     = 255;
+        rgb.data[j + 1] = 0;
+        rgb.data[j + 2] = 0;
+        break;
+      }
+      case TeamBlue: {
+        // Blue
+        rgb.data[j]     = 0;
+        rgb.data[j + 1] = 0;
+        rgb.data[j + 2] = 255;
+        break;
+      }
+    }
+  }
+}
 void CameraNode::Update() {
   UpdateImage();
   UpdateCameraInfo();
@@ -247,6 +331,25 @@ void CameraNode::UpdateImage() {
   image_.is_bigendian = false;
   image_.step = image_.width * pixel_size;
   image_.data.resize(image_.height * image_.step);
+
+  // Allocate segmented image
+  segmented_image_.header.frame_id = image_.header.frame_id;
+  segmented_image_.width = image_.width;
+  segmented_image_.height = image_.height;
+  segmented_image_.encoding = "mono8";
+  segmented_image_.is_bigendian = image_.is_bigendian;
+  segmented_image_.step = segmented_image_.width;
+  segmented_image_.data.resize(segmented_image_.height * segmented_image_.step);
+
+  // Allocate segmented RGB image
+  segmented_rgb_image_.header.frame_id = image_.header.frame_id;
+  segmented_rgb_image_.width = image_.width;
+  segmented_rgb_image_.height = image_.height;
+  segmented_rgb_image_.encoding = "rgb8";
+  segmented_rgb_image_.is_bigendian = image_.is_bigendian;
+  segmented_rgb_image_.step = 3 * segmented_rgb_image_.width;
+  segmented_rgb_image_.data.resize(segmented_rgb_image_.height *
+                                   segmented_rgb_image_.step);
 }
 
 void CameraNode::UpdateCameraInfo() {
@@ -385,8 +488,6 @@ bool CameraNode::set_color_table(camera::SetColorTable::Request&  req,
     res.result = false;
     return true;
   }
-
-  ROS_INFO("%d %d", req.table[0], req.table[1]);
 
   int len = sizeof(uint32_t) * req.table.size();
   table_file.write(reinterpret_cast<char*>(req.table.data()), len);

@@ -32,14 +32,14 @@
 #include "camera/GetColorTable.h"
 
 #include "camera/camera.hpp"
-
+// Remember to change the enum in the camera_color_calibration.hpp
 enum PixelClass {
-  Nothing,
-  Ball,
-  GoalAndLines,
-  Field,
-  TeamRed,
-  TeamBlue
+  Nothing = 0,
+  Ball = 255,
+  GoalAndLines = 192,
+  Field = 32,
+  TeamRed = 96,
+  TeamBlue = 128
 };
 
 class CameraNode : public AL::ALModule {
@@ -55,9 +55,13 @@ class CameraNode : public AL::ALModule {
   ros::NodeHandle* nh_;
   image_transport::ImageTransport* it_;
   image_transport::CameraPublisher image_pub_;
+  image_transport::CameraPublisher segmented_image_pub_;
+  image_transport::Publisher segmented_rgb_image_pub_;
 
   // Message structs
   sensor_msgs::Image image_;
+  sensor_msgs::Image segmented_image_;
+  sensor_msgs::Image segmented_rgb_image_;
 
   // NaoQi related members
   AL::ALVideoDeviceProxy* camera_proxy_;
@@ -107,6 +111,10 @@ class CameraNode : public AL::ALModule {
   void Init();
   void LoadColorTable();
   void Spin();
+
+  void SegmentImage(const sensor_msgs::Image& raw, sensor_msgs::Image& seg);
+  void ColorSegmentedImage(const sensor_msgs::Image& seg,
+                           sensor_msgs::Image& rgb);
 
   void Update();
   void UpdateImage();

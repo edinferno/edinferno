@@ -9,12 +9,12 @@
 #define CAMERA_COLOR_CALIBRATION_HPP
 
 enum PixelClass {
-  Nothing,
-  Ball,
-  GoalAndLines,
-  Field,
-  TeamRed,
-  TeamBlue
+  Nothing = 0,
+  Ball = 255,
+  GoalAndLines = 192,
+  Field = 32,
+  TeamRed = 96,
+  TeamBlue = 128
 };
 
 #endif
