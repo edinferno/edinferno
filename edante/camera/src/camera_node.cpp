@@ -190,6 +190,9 @@ void CameraNode::Spin() {
 
     // Publish segmented RGB image if necessary
     if (segmented_rgb_image_pub_.getNumSubscribers() > 0) {
+      if (segmented_image_pub_.getNumSubscribers() == 0) {
+        SegmentImage(image_, segmented_image_);
+      }
       ColorSegmentedImage(segmented_image_, segmented_rgb_image_);
       segmented_rgb_image_.header.stamp = image_.header.stamp;
       segmented_rgb_image_pub_.publish(segmented_rgb_image_);
@@ -210,12 +213,12 @@ void CameraNode::SegmentImage(const sensor_msgs::Image& raw,
                               sensor_msgs::Image& seg) {
   for (size_t i = 0, j = 0; i < seg.data.size(); i += 2, j += 4) {
     // First pixel of the YUY'V pair
-    uint8_t y = raw.data[j + 0] / 4;
-    uint8_t u = raw.data[j + 1] / 4;
-    uint8_t v = raw.data[j + 3] / 4;
+    uint8_t y = raw.data[j + 0] >> 2;
+    uint8_t u = raw.data[j + 1] >> 2;
+    uint8_t v = raw.data[j + 3] >> 2;
     seg.data[i] = table_[y][u][v];
     // Second pixel of the YUY'V pair
-    y = raw.data[j + 2] / 4;
+    y = raw.data[j + 2] >> 2;
     seg.data[i + 1] = table_[y][u][v];
   }
 }
