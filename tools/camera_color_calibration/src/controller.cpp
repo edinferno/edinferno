@@ -32,6 +32,10 @@ bool Controller::SpinOnce() {
 void Controller::OnNewPixelClass(double x, double y, PixelClass pixel_class) {
   model_->AddNewPixelClass(x, y, pixel_class);
 }
+void Controller::OnSendTable() {
+  model_->SendTable();
+}
+
 void Controller::OnNewRawImage(const sensor_msgs::Image& msg) {
   view_->SetRawImage(msg);
   view_->RedrawArea("raw");

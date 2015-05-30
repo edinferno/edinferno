@@ -38,6 +38,7 @@ class View {
 
   PixelClass current_class_;
 
+  void ConnectRadioToolButton(std::string name);
   void ConnectToolButton(std::string name);
   void ConnectDrawingArea(std::string name);
 

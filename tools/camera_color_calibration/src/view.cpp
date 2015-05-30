@@ -26,12 +26,13 @@ void View::Build(int argc, char** argv,
   builder_->add_from_file(filename);
   builder_->get_widget("main_window", main_window_);
 
-  ConnectToolButton("grey");
-  ConnectToolButton("orange");
-  ConnectToolButton("white");
-  ConnectToolButton("green");
-  ConnectToolButton("red");
-  ConnectToolButton("blue");
+  ConnectRadioToolButton("grey");
+  ConnectRadioToolButton("orange");
+  ConnectRadioToolButton("white");
+  ConnectRadioToolButton("green");
+  ConnectRadioToolButton("red");
+  ConnectRadioToolButton("blue");
+  ConnectToolButton("send");
 
   ConnectDrawingArea("raw");
   ConnectDrawingArea("segmented");
@@ -125,10 +126,20 @@ void View::RedrawArea(std::string name) {
   area->queue_draw();
 }
 
-void View::ConnectToolButton(std::string name) {
+void View::ConnectRadioToolButton(std::string name) {
   Gtk::RadioToolButton* tool_button;
   builder_->get_widget(name + "_tool_button", tool_button);
   tool_button->signal_toggled().connect(
+    sigc::bind<std::string>(
+      sigc::mem_fun(*this,
+                    &View::OnToolbarButtonClicked),
+      name));
+}
+
+void View::ConnectToolButton(std::string name) {
+  Gtk::ToolButton* tool_button;
+  builder_->get_widget(name + "_tool_button", tool_button);
+  tool_button->signal_clicked().connect(
     sigc::bind<std::string>(
       sigc::mem_fun(*this,
                     &View::OnToolbarButtonClicked),
@@ -179,6 +190,8 @@ void View::OnToolbarButtonClicked(std::string name) {
     current_class_ = TeamRed;
   } else if (name == "blue") {
     current_class_ = TeamBlue;
+  } else if (name == "send") {
+    controller_->OnSendTable();
   }
 }
 

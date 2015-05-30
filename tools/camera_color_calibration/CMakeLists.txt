@@ -10,6 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   roslib
   image_transport
+  camera
 )
 
 ## System dependencies are found with CMake's conventions

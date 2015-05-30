@@ -345,4 +345,7 @@ bool CameraNode::set_color_table(camera::SetColorTable::Request&  req,
 
   table_file.write(reinterpret_cast<char*>(req.table.data()), req.table.size());
   table_file.close();
+
+  res.result = true;
+  return true;
 }

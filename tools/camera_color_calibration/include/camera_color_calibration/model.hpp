@@ -23,6 +23,7 @@ class Model {
   explicit Model(Controller* controller);
   void Build(int argc, char** argv);
   void AddNewPixelClass(double x, double y, PixelClass pixel_class);
+  void SendTable();
 
  private:
   Controller* controller_;
@@ -33,8 +34,8 @@ class Model {
   sensor_msgs::Image raw_image_;
   sensor_msgs::Image seg_image_;
   // Color table
-  static const int kTableSize = 64;
-  static const int kTableLen = kTableSize * kTableSize * kTableSize;
+  static const size_t kTableSize = 64;
+  static const size_t kTableLen = kTableSize * kTableSize * kTableSize;
   PixelClass table_[kTableSize][kTableSize][kTableSize];
 
   void SegmentImage(const sensor_msgs::Image& raw,
@@ -42,6 +43,5 @@ class Model {
                     PixelClass table[kTableSize][kTableSize][kTableSize]);
 
   void ImageCallback(const sensor_msgs::ImageConstPtr& msg);
-
 };
 #endif

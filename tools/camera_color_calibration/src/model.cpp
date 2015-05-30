@@ -9,6 +9,8 @@
 #include "camera_color_calibration/model.hpp"
 #include "camera_color_calibration/controller.hpp"
 
+#include "camera/SetColorTable.h"
+
 Model::Model(Controller* controller) {
   controller_ = controller;
 }
@@ -25,6 +27,61 @@ void Model::Build(int argc, char** argv) {
 
   // Subscribe to camera images
   image_sub_ = it_->subscribe("image", 1, &Model::ImageCallback, this);
+}
+
+void Model::SendTable() {
+  ros::ServiceClient client =
+    nh_->serviceClient<camera::SetColorTable>("set_color_table");
+  camera::SetColorTable srv;
+
+  PixelClass* table_ptr = reinterpret_cast<PixelClass*>(table_);
+  for (size_t i = 0; i < kTableLen; ++i) {
+    PixelClass c = table_ptr[i];
+    uint len = 1;
+    while (table_ptr[i + len] == c) {
+      ++len;
+      if (i + len == kTableLen) break;
+    }
+    i += len - 1;
+    srv.request.table.push_back(len);
+    srv.request.table.push_back(c);
+  }
+
+  // Send the serialised color table to the robot
+  client.call(srv);
+}
+
+void Model::AddNewPixelClass(double x, double y, PixelClass pixel_class) {
+  ROS_INFO_STREAM("Class " << pixel_class << " @ [" << x << ", " << y << "]");
+  int y_px = y * (raw_image_.height - 1);
+  int x_px = x * (raw_image_.width - 1);
+  int pixel_index = 2 * (y_px * raw_image_.width + x_px);
+
+  uint y_val, u_val, v_val;
+  y_val = raw_image_.data[pixel_index] / 4;
+  if (pixel_index % 4 == 0) {
+    u_val = raw_image_.data[pixel_index + 1] / 4;
+    v_val = raw_image_.data[pixel_index + 3] / 4;
+  } else if (pixel_index % 4 == 2) {
+    u_val = raw_image_.data[pixel_index - 1] / 4;
+    v_val = raw_image_.data[pixel_index + 1] / 4;
+  }
+
+  const unsigned int expand = 4;
+  uint y_min = (y_val - expand < 0) ? 0 : y_val - expand;
+  uint y_max = (y_val + expand > kTableSize) ? kTableSize : y_val + expand;
+  uint u_min = (u_val - expand < 0) ? 0 : u_val - expand;
+  uint u_max = (u_val + expand > kTableSize) ? kTableSize : u_val + expand;
+  uint v_min = (v_val - expand < 0) ? 0 : v_val - expand;
+  uint v_max = (v_val + expand > kTableSize) ? kTableSize : v_val + expand;
+
+  for (y_val = y_min; y_val < y_max; ++y_val) {
+    for (u_val = u_min; u_val < u_max; ++u_val) {
+      for (v_val = v_min; v_val < v_max; ++v_val) {
+        table_[y_val][u_val][v_val] = pixel_class;
+      }
+    }
+  }
 }
 
 void Model::SegmentImage(const sensor_msgs::Image& raw,
@@ -49,39 +106,6 @@ void Model::SegmentImage(const sensor_msgs::Image& raw,
     // Second pixel of the YUY'V pair
     y = raw.data[j + 2] / 4;
     seg.data[i + 1] = table[y][u][v];
-  }
-}
-
-void Model::AddNewPixelClass(double x, double y, PixelClass pixel_class) {
-  ROS_INFO_STREAM("Class " << pixel_class << " @ [" << x << ", " << y << "]");
-  int y_px = y * (raw_image_.height - 1);
-  int x_px = x * (raw_image_.width - 1);
-  int pixel_index = 2 * (y_px * raw_image_.width + x_px);
-
-  int y_val, u_val, v_val;
-  y_val = raw_image_.data[pixel_index] / 4;
-  if (pixel_index % 4 == 0) {
-    u_val = raw_image_.data[pixel_index + 1] / 4;
-    v_val = raw_image_.data[pixel_index + 3] / 4;
-  } else if (pixel_index % 4 == 2) {
-    u_val = raw_image_.data[pixel_index - 1] / 4;
-    v_val = raw_image_.data[pixel_index + 1] / 4;
-  }
-
-  const int expand = 4;
-  int y_min = (y_val - expand < 0) ? 0 : y_val - expand;
-  int y_max = (y_val + expand > kTableSize) ? kTableSize : y_val + expand;
-  int u_min = (u_val - expand < 0) ? 0 : u_val - expand;
-  int u_max = (u_val + expand > kTableSize) ? kTableSize : u_val + expand;
-  int v_min = (v_val - expand < 0) ? 0 : v_val - expand;
-  int v_max = (v_val + expand > kTableSize) ? kTableSize : v_val + expand;
-
-  for (y_val = y_min; y_val < y_max; ++y_val) {
-    for (u_val = u_min; u_val < u_max; ++u_val) {
-      for (v_val = v_min; v_val < v_max; ++v_val) {
-        table_[y_val][u_val][v_val] = pixel_class;
-      }
-    }
   }
 }
 
