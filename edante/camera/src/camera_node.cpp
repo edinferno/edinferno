@@ -122,6 +122,41 @@ void CameraNode::Init() {
   module_thread = new boost::thread(boost::bind(&CameraNode::Spin, this));
 }
 
+void CameraNode::LoadColorTable() {
+  std::ifstream table_file;
+  table_file.open(table_file_name_, std::ios::binary);
+
+  if (!table_file.is_open()) {
+    ROS_ERROR("Unable to open color table file.");
+    return;
+  }
+
+  PixelClass* table_ptr = reinterpret_cast<PixelClass*>(table_);
+  size_t table_pos = 0;
+  do {
+    // Read the sequence length
+    int len;
+    table_file >> len;
+
+    // Read the class of the sequence
+    int current_class;
+    table_file >> current_class;
+
+    ROS_INFO("%d %d", len, current_class);
+    break;
+    if (table_pos + len > kTableLen) {
+      ROS_ERROR("Unable to load color table.");
+      return;
+    }
+
+    for (int i = table_pos; i < table_pos + len; ++i) {
+      table_ptr[i] = static_cast<PixelClass>(current_class);
+    }
+
+    table_pos += len;
+  } while (table_pos < kTableLen);
+}
+
 void CameraNode::Spin() {
   AL::ALImage* alimage;
   while (!is_closing) {
@@ -144,6 +179,8 @@ void CameraNode::Spin() {
     ros::spinOnce();
     active_rate_->sleep();
   }
+
+  camera_proxy_->unsubscribe(module_name_);
 }
 
 void CameraNode::Update() {
@@ -343,8 +380,12 @@ bool CameraNode::set_color_table(camera::SetColorTable::Request&  req,
     return true;
   }
 
+  ROS_INFO("%d %d", req.table[0], req.table[1]);
+
   table_file.write(reinterpret_cast<char*>(req.table.data()), req.table.size());
   table_file.close();
+
+  LoadColorTable();
 
   res.result = true;
   return true;

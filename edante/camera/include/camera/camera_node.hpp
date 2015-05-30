@@ -103,6 +103,7 @@ class CameraNode : public AL::ALModule {
 
 
   void Init();
+  void LoadColorTable();
   void Spin();
 
   void Update();
