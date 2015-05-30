@@ -10,6 +10,7 @@
 #include "camera_color_calibration/controller.hpp"
 
 #include "camera/SetColorTable.h"
+#include "camera/GetColorTable.h"
 
 Model::Model(Controller* controller) {
   controller_ = controller;
@@ -27,6 +28,42 @@ void Model::Build(int argc, char** argv) {
 
   // Subscribe to camera images
   image_sub_ = it_->subscribe("image", 1, &Model::ImageCallback, this);
+
+  LoadTable();
+}
+
+bool Model::LoadTable() {
+  ros::ServiceClient client =
+    nh_->serviceClient<camera::GetColorTable>("get_color_table");
+  camera::GetColorTable srv;
+  if (!client.call(srv)) {
+    ROS_ERROR("Unable to receive color table.");
+    return false;
+  }
+
+  PixelClass* table_ptr = reinterpret_cast<PixelClass*>(table_);
+  size_t table_pos = 0, msg_pos = 0;
+  do {
+    // Read the sequence length
+    uint32_t len = srv.response.table[msg_pos];
+    ++msg_pos;
+    // Read the class of the sequence
+    int current_class = srv.response.table[msg_pos];
+    ++msg_pos;
+
+    if (table_pos + len > kTableLen) {
+      ROS_ERROR("Unable to load color table.");
+      return false;
+    }
+
+    for (size_t i = table_pos; i < table_pos + len; ++i) {
+      table_ptr[i] = static_cast<PixelClass>(current_class);
+    }
+
+    table_pos += len;
+  } while (table_pos < kTableLen);
+
+  return false;
 }
 
 bool Model::SendTable() {
