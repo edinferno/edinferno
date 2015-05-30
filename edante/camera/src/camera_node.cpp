@@ -183,7 +183,6 @@ void CameraNode::Spin() {
 
     // Segment the image and publish it
     if (segmented_image_pub_.getNumSubscribers() > 0) {
-      ROS_INFO("SEG");
       SegmentImage(image_, segmented_image_);
       segmented_image_.header.stamp = image_.header.stamp;
       segmented_image_pub_.publish(segmented_image_, active_cam_info_);
@@ -191,7 +190,6 @@ void CameraNode::Spin() {
 
     // Publish segmented RGB image if necessary
     if (segmented_rgb_image_pub_.getNumSubscribers() > 0) {
-      ROS_INFO("CLR");
       ColorSegmentedImage(segmented_image_, segmented_rgb_image_);
       segmented_rgb_image_.header.stamp = image_.header.stamp;
       segmented_rgb_image_pub_.publish(segmented_rgb_image_);
