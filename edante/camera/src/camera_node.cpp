@@ -96,6 +96,10 @@ void CameraNode::Init() {
                               "set_color_table",
                               &CameraNode::set_color_table,
                               this);
+  get_color_table_server_ = nh_->advertiseService(
+                              "get_color_table",
+                              &CameraNode::get_color_table,
+                              this);
   // TODO(svepe): Add a service to control the rest of the camera params
 
   // Create both cameras
@@ -118,6 +122,9 @@ void CameraNode::Init() {
   // Update cached information
   Update();
 
+  // Read the color table
+  LoadColorTable();
+
   // Spawn the thread for the node
   module_thread = new boost::thread(boost::bind(&CameraNode::Spin, this));
 }
@@ -135,15 +142,14 @@ void CameraNode::LoadColorTable() {
   size_t table_pos = 0;
   do {
     // Read the sequence length
-    int len;
-    table_file >> len;
+    uint32_t len;
+    table_file.read(reinterpret_cast<char*>(&len), sizeof(len));
 
     // Read the class of the sequence
     int current_class;
-    table_file >> current_class;
+    table_file.read(reinterpret_cast<char*>(&current_class),
+                    sizeof(current_class));
 
-    ROS_INFO("%d %d", len, current_class);
-    break;
     if (table_pos + len > kTableLen) {
       ROS_ERROR("Unable to load color table.");
       return;
@@ -382,11 +388,29 @@ bool CameraNode::set_color_table(camera::SetColorTable::Request&  req,
 
   ROS_INFO("%d %d", req.table[0], req.table[1]);
 
-  table_file.write(reinterpret_cast<char*>(req.table.data()), req.table.size());
+  int len = sizeof(uint32_t) * req.table.size();
+  table_file.write(reinterpret_cast<char*>(req.table.data()), len);
   table_file.close();
 
   LoadColorTable();
 
   res.result = true;
+  return true;
+}
+
+bool CameraNode::get_color_table(camera::GetColorTable::Request&  req,
+                                 camera::GetColorTable::Response& res) {
+  PixelClass* table_ptr = reinterpret_cast<PixelClass*>(table_);
+  for (size_t i = 0; i < kTableLen; ++i) {
+    PixelClass c = table_ptr[i];
+    size_t len = 1;
+    while (table_ptr[i + len] == c) {
+      ++len;
+      if (i + len == kTableLen) break;
+    }
+    i += len - 1;
+    res.table.push_back(len);
+    res.table.push_back(c);
+  }
   return true;
 }

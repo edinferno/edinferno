@@ -29,6 +29,7 @@
 #include "camera/SetFrameRate.h"
 #include "camera/SetResolution.h"
 #include "camera/SetColorTable.h"
+#include "camera/GetColorTable.h"
 
 #include "camera/camera.hpp"
 
@@ -94,6 +95,7 @@ class CameraNode : public AL::ALModule {
   ros::ServiceServer set_frame_rate_server_;
   ros::ServiceServer set_color_space_server_;
   ros::ServiceServer set_color_table_server_;
+  ros::ServiceServer get_color_table_server_;
 
   // Color table
   static const char* table_file_name_;
@@ -121,6 +123,8 @@ class CameraNode : public AL::ALModule {
                        camera::SetColorSpace::Response& res);
   bool set_color_table(camera::SetColorTable::Request&  req,
                        camera::SetColorTable::Response& res);
+  bool get_color_table(camera::GetColorTable::Request&  req,
+                       camera::GetColorTable::Response& res);
 };
 
 #endif

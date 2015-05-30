@@ -37,7 +37,7 @@ bool Model::SendTable() {
   PixelClass* table_ptr = reinterpret_cast<PixelClass*>(table_);
   for (size_t i = 0; i < kTableLen; ++i) {
     PixelClass c = table_ptr[i];
-    uint len = 1;
+    size_t len = 1;
     while (table_ptr[i + len] == c) {
       ++len;
       if (i + len == kTableLen) break;
