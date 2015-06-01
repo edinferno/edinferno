@@ -44,12 +44,12 @@ extern "C" {
   }
 }
 /**
-   * @brief Constructor
-   * @details Initialises and starts the camera node.
-   *
-   * @param broker Broker used for creating the module.
-   * @param module_name The name of the module.
-   */
+ * @brief Constructor
+ * @details Initialises and starts the camera node.
+ *
+ * @param broker Broker used for creating the module.
+ * @param module_name The name of the module.
+ */
 CameraNode::CameraNode(boost::shared_ptr<AL::ALBroker> broker,
                        const std::string& module_name) :
   AL::ALModule(broker, module_name),
@@ -58,9 +58,9 @@ CameraNode::CameraNode(boost::shared_ptr<AL::ALBroker> broker,
   Init();
 }
 /**
-  * @brief Destructor
-  * @details Stops the module thread and releases memory.
-  */
+ * @brief Destructor
+ * @details Stops the module thread and releases memory.
+ */
 CameraNode::~CameraNode() {
   // Stop the spinning thread
   is_module_closing_ = true;
@@ -154,11 +154,11 @@ void CameraNode::Init() {
   is_module_closing_ = false;
 }
 /**
-   * @brief Loads the color table from a file.
-   * @details Loads the color table from a file into the table array.
-   *          The location of the file is stored in table_file_name_.
-   *          Currently it is set to /home/nao/config/camera/table.c64
-   */
+ * @brief Loads the color table from a file.
+ * @details Loads the color table from a file into the table array.
+ *          The location of the file is stored in table_file_name_.
+ *          Currently it is set to /home/nao/config/camera/table.c64
+ */
 void CameraNode::LoadColorTable() {
   std::ifstream table_file;
   table_file.open(table_file_name_, std::ios::binary);
@@ -196,10 +196,10 @@ void CameraNode::LoadColorTable() {
   } while (table_pos < kTableLen);
 }
 /**
-   * @brief Worker function of the module
-   * @details The function reads images from the camera, applies segmentation
-   *          and then publishes them over ROS. It runs on a separate thread.
-   */
+ * @brief Worker function of the module
+ * @details The function reads images from the camera, applies segmentation
+ *          and then publishes them over ROS. It runs on a separate thread.
+ */
 void CameraNode::Spin() {
   AL::ALImage* alimage;
   while (!is_module_closing_) {
@@ -243,13 +243,13 @@ void CameraNode::Spin() {
   camera_proxy_->unsubscribe(module_name_);
 }
 /**
-   * @brief Segments the image using the color look up table
-   * @details The 3 color channels of a pixel are used as indecies to the color
-   *          lookup table in order to classify them.
-   * @param raw A YUV442 encoded input image.
-   * @param seg The segmented image in MONO8 encoding. The values are determined
-   *            by the PixelClass enumeration.
-   */
+ * @brief Segments the image using the color look up table
+ * @details The 3 color channels of a pixel are used as indecies to the color
+ *          lookup table in order to classify them.
+ * @param raw A YUV442 encoded input image.
+ * @param seg The segmented image in MONO8 encoding. The values are determined
+ *            by the PixelClass enumeration.
+ */
 void CameraNode::SegmentImage(const sensor_msgs::Image& raw,
                               sensor_msgs::Image& seg) {
   for (size_t i = 0, j = 0; i < seg.data.size(); i += 2, j += 4) {
