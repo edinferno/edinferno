@@ -6,6 +6,12 @@
 */
 #include <ros/ros.h>
 
-int main(int argc, char const* argv[]) {
+#include "vision/vision_node.hpp"
+
+int main(int argc, char* argv[]) {
+  ros::init(argc, argv, "vision_node");
+
+  VisionNode vision_node;
+  vision_node.Spin();
   return 0;
 }

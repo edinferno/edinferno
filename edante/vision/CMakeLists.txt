@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   image_geometry
   image_transport
+  std_msgs
   sensor_msgs
   geometry_msgs
   message_generation
@@ -118,12 +119,13 @@ add_executable(vision
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(vision_node vision_generate_messages_cpp)
+add_dependencies(vision vision_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(vision_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(vision
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+)
 
 #############
 ## Install ##

@@ -32,16 +32,8 @@
 #include "camera/GetColorTable.h"
 
 #include "camera/camera.hpp"
+#include "camera/color_table.hpp"
 
-// If you change the enum, remember to update camera_color_calibration.hpp
-enum PixelClass {
-  Nothing = 0,
-  Ball = 255,
-  GoalAndLines = 192,
-  Field = 32,
-  TeamRed = 96,
-  TeamBlue = 128
-};
 /**
  * @brief Exposes the Nao camera to ROS using the standard tool of
  *        the ROS image toolchain.
