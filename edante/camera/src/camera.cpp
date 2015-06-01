@@ -9,7 +9,13 @@
 
 
 #include <sensor_msgs/image_encodings.h>
-
+/**
+ * @brief Constructor
+ *
+ * @param nh The ROS node hande used by the camera
+ * @param id ID of the camera - AL::kTopCamera or AL::kBottomCamera
+ * @param name Name of camera e.g. "top"
+ */
 Camera::Camera(ros::NodeHandle& nh, int id, const char* name) :
   nh_(nh, name),
   id_(id),
@@ -19,16 +25,20 @@ Camera::Camera(ros::NodeHandle& nh, int id, const char* name) :
   Init();
 }
 
+/**
+ * @brief Destructor
+ */
 Camera::~Camera() {
-  // TODO(svepe): Figure out when NaoQi calls _closeModule
-  // delete cam_info_manager_;
+  delete cam_info_manager_;
 }
 
+/**
+ * @brief Initialises the camera and reads the camera info.
+ */
 void Camera::Init() {
   cam_info_manager_ = new camera_info_manager::CameraInfoManager(nh_, name_);
-
+  // Check if the calibration file exists
   if (!cam_info_manager_->loadCameraInfo(cam_info_url_)) {
     ROS_FATAL("Unable to load %s", cam_info_url_.c_str());
   }
-  cam_info_ = cam_info_manager_->getCameraInfo();
 }

@@ -13,36 +13,43 @@
 #include <alvision/alimage.h>
 #include <alvision/alvisiondefinitions.h>
 
-#include <boost/thread.hpp>
-
 #include <sensor_msgs/image_encodings.h>
-
-using std::auto_ptr;
-
-boost::thread* module_thread;
-bool is_closing;
 
 const char* CameraNode::table_file_name_ = "/home/nao/config/camera/table.c64";
 
 // NaoQi module entry point
 extern "C" {
+  /**
+   * @brief This function is called from NaoQi when the module is created.
+   *
+   * @param broker The local NaoQi broker
+   * @return Returns 0 on successful creation.
+   */
   int _createModule(boost::shared_ptr<AL::ALBroker> broker) {
-    // init broker with the main broker instance
-    // from the parent executable
+    // Init broker with the main broker instance from the parent executable
     AL::ALBrokerManager::setInstance(broker->fBrokerManager.lock());
     AL::ALBrokerManager::getInstance()->addBroker(broker);
-    // create module instances
-    is_closing = false;
+    // Create module instance
     AL::ALModule::createModule<CameraNode>(broker, "CameraNode");
     return 0;
   }
+  /**
+   * @brief This function is called from NaoQi when the module is to be closed.
+   * @details For some reason this function is not called when NaoQi
+   *          is interrupted with Ctrl^C.
+   * @return Return 0 on successful closing.
+   */
   int _closeModule() {
-    is_closing = true;
-    module_thread->join();
     return 0;
   }
 }
-
+/**
+   * @brief Constructor
+   * @details Initialises and starts the camera node.
+   *
+   * @param broker Broker used for creating the module.
+   * @param module_name The name of the module.
+   */
 CameraNode::CameraNode(boost::shared_ptr<AL::ALBroker> broker,
                        const std::string& module_name) :
   AL::ALModule(broker, module_name),
@@ -50,8 +57,16 @@ CameraNode::CameraNode(boost::shared_ptr<AL::ALBroker> broker,
   camera_proxy_(new AL::ALVideoDeviceProxy(broker)) {
   Init();
 }
-
+/**
+  * @brief Destructor
+  * @details Stops the module thread and releases memory.
+  */
 CameraNode::~CameraNode() {
+  // Stop the spinning thread
+  is_module_closing_ = true;
+  module_thread_->join();
+
+  // Delete allocated memory
   delete active_rate_;
   delete bot_cam_;
   delete top_cam_;
@@ -60,6 +75,13 @@ CameraNode::~CameraNode() {
   delete camera_proxy_;
 }
 
+/**
+ * @brief Initialised the module
+ * @details The function initialises all components of the modue.
+ *          It initialises ROS and advertises the supported services and
+ *          topics. Allocates memory for the current images and eventually
+ *          starts the spinning thread.
+ */
 void CameraNode::Init() {
   // Initialise ROS
   int argc = 0;
@@ -121,7 +143,6 @@ void CameraNode::Init() {
                    module_name_,
                    active_cam_->id(), active_resolution_,
                    active_color_space_, active_fps_);
-
   // Update cached information
   Update();
 
@@ -129,9 +150,15 @@ void CameraNode::Init() {
   LoadColorTable();
 
   // Spawn the thread for the node
-  module_thread = new boost::thread(boost::bind(&CameraNode::Spin, this));
+  module_thread_ = new boost::thread(boost::bind(&CameraNode::Spin, this));
+  is_module_closing_ = false;
 }
-
+/**
+   * @brief Loads the color table from a file.
+   * @details Loads the color table from a file into the table array.
+   *          The location of the file is stored in table_file_name_.
+   *          Currently it is set to /home/nao/config/camera/table.c64
+   */
 void CameraNode::LoadColorTable() {
   std::ifstream table_file;
   table_file.open(table_file_name_, std::ios::binary);
@@ -153,22 +180,29 @@ void CameraNode::LoadColorTable() {
     table_file.read(reinterpret_cast<char*>(&current_class),
                     sizeof(current_class));
 
+    // The end of the sequence cannot be out of the table.
     if (table_pos + len > kTableLen) {
       ROS_ERROR("Unable to load color table.");
       return;
     }
 
-    for (int i = table_pos; i < table_pos + len; ++i) {
+    // Populate the color table array
+    for (size_t i = table_pos; i < table_pos + len; ++i) {
       table_ptr[i] = static_cast<PixelClass>(current_class);
     }
 
+    // Move to the next segment in the color table
     table_pos += len;
   } while (table_pos < kTableLen);
 }
-
+/**
+   * @brief Worker function of the module
+   * @details The function reads images from the camera, applies segmentation
+   *          and then publishes them over ROS. It runs on a separate thread.
+   */
 void CameraNode::Spin() {
   AL::ALImage* alimage;
-  while (!is_closing) {
+  while (!is_module_closing_) {
     // Read the camera frame
     alimage = (AL::ALImage*)(camera_proxy_->getImageLocal(module_name_));
     // Copy the image into the pre-allocated message
@@ -208,7 +242,14 @@ void CameraNode::Spin() {
 
   camera_proxy_->unsubscribe(module_name_);
 }
-
+/**
+   * @brief Segments the image using the color look up table
+   * @details The 3 color channels of a pixel are used as indecies to the color
+   *          lookup table in order to classify them.
+   * @param raw A YUV442 encoded input image.
+   * @param seg The segmented image in MONO8 encoding. The values are determined
+   *            by the PixelClass enumeration.
+   */
 void CameraNode::SegmentImage(const sensor_msgs::Image& raw,
                               sensor_msgs::Image& seg) {
   for (size_t i = 0, j = 0; i < seg.data.size(); i += 2, j += 4) {
@@ -222,7 +263,13 @@ void CameraNode::SegmentImage(const sensor_msgs::Image& raw,
     seg.data[i + 1] = table_[y][u][v];
   }
 }
-
+/**
+ * @brief Color the segmented image for visualisation only.
+ * @details Each pixel is colored according to its class.
+ *
+ * @param seg The input segmented image. It should be in MONO8 encoding.
+ * @param rgb The output color image.
+ */
 void CameraNode::ColorSegmentedImage(const sensor_msgs::Image& seg,
                                      sensor_msgs::Image& rgb) {
   // Popoulate the new image buffer
@@ -274,11 +321,16 @@ void CameraNode::ColorSegmentedImage(const sensor_msgs::Image& seg,
     }
   }
 }
+/**
+ * @brief Updates the manually allocated images and camera_info.
+ */
 void CameraNode::Update() {
   UpdateImage();
   UpdateCameraInfo();
 }
-
+/**
+ * @brief Updates the allocated images to reflect the currently active camera settings.
+ */
 void CameraNode::UpdateImage() {
   // Set the image frame_id
   image_.header.frame_id = active_cam_->frame_id();
@@ -303,28 +355,25 @@ void CameraNode::UpdateImage() {
       break;
   }
 
-  int pixel_size;
+  int pixel_size = 3;
   // Set the image encoding
   switch (active_color_space_) {
     case AL::kYUV422ColorSpace:
       image_.encoding = "yuv422";
+      // Adjust pixel size
       pixel_size = 2;
       break;
     case AL::kYUVColorSpace:
       image_.encoding = "yuv8";
-      pixel_size = 3;
       break;
     case AL::kRGBColorSpace:
       image_.encoding = "rgb8";
-      pixel_size = 3;
       break;
     case AL::kHSYColorSpace:
       image_.encoding = "hsy8";
-      pixel_size = 3;
       break;
     case AL::kBGRColorSpace:
       image_.encoding = "bgr8";
-      pixel_size = 3;
       break;
   }
 
@@ -352,7 +401,9 @@ void CameraNode::UpdateImage() {
   segmented_rgb_image_.data.resize(segmented_rgb_image_.height *
                                    segmented_rgb_image_.step);
 }
-
+/**
+ * @brief Updates the currently active camera_info to reflect the active camera settings.
+ */
 void CameraNode::UpdateCameraInfo() {
   active_cam_info_ = active_cam_->cam_info();
   active_cam_info_.header.frame_id = image_.header.frame_id;
@@ -366,7 +417,14 @@ void CameraNode::UpdateCameraInfo() {
     active_cam_info_.height = image_.height;
   }
 }
-
+/**
+ * @brief Set the currently active camera (top or bottom).
+ *
+ * @param req Service request.
+ * @param res Service response.
+ *
+ * @return Return true on successful completion.
+ */
 bool CameraNode::set_active_camera(camera::SetActiveCamera::Request&  req,
                                    camera::SetActiveCamera::Response& res) {
   int new_active_cam_id;
@@ -398,7 +456,14 @@ bool CameraNode::set_active_camera(camera::SetActiveCamera::Request&  req,
 
   return true;
 }
-
+/**
+ * @brief Set the currently active resolution.
+ *
+ * @param req Service request.
+ * @param res Service response.
+ *
+ * @return Return true on successful completion.
+ */
 bool CameraNode::set_resolution(camera::SetResolution::Request&  req,
                                 camera::SetResolution::Response& res) {
   int new_resolution;
@@ -429,7 +494,14 @@ bool CameraNode::set_resolution(camera::SetResolution::Request&  req,
 
   return true;
 }
-
+/**
+* @brief Set the currently active frame rate.
+*
+* @param req Service request.
+* @param res Service response.
+*
+* @return Return true on successful completion.
+*/
 bool CameraNode::set_frame_rate(camera::SetFrameRate::Request&  req,
                                 camera::SetFrameRate::Response& res) {
   if (req.frame_rate < 1 || req.frame_rate > 30) {
@@ -444,8 +516,17 @@ bool CameraNode::set_frame_rate(camera::SetFrameRate::Request&  req,
     delete active_rate_;
     active_rate_ = new ros::Rate(active_fps_);
   }
-}
 
+  return true;
+}
+/**
+* @brief Set the color space in which images are captured.
+*
+* @param req Service request.
+* @param res Service response.
+*
+* @return Return true on successful completion.
+*/
 bool CameraNode::set_color_space(camera::SetColorSpace::Request&  req,
                                  camera::SetColorSpace::Response& res) {
   int new_color_space;
@@ -479,7 +560,18 @@ bool CameraNode::set_color_space(camera::SetColorSpace::Request&  req,
 
   return true;
 }
-
+/**
+ * @brief Set the color table to be used.
+ * @details The service receives a serialised color table and stores
+ *          it to a file. The filename is stored in table_file_name_
+ *          and currently is /home/nao/config/camera/table.c64
+ *          Once the file is created, the table is loaded from there.
+ *
+ * @param req Service request.
+ * @param res Service response.
+ *
+ * @return Return true on successful completion.
+ */
 bool CameraNode::set_color_table(camera::SetColorTable::Request&  req,
                                  camera::SetColorTable::Response& res) {
   std::ofstream table_file;
@@ -499,7 +591,15 @@ bool CameraNode::set_color_table(camera::SetColorTable::Request&  req,
   res.result = true;
   return true;
 }
-
+/**
+ * @brief Returns the currently used color table.
+ * @details The current color table is serialised and sent back.
+ *
+ * @param req Service request.
+ * @param res Service response.
+ *
+ * @return Return true on successful completion.
+ */
 bool CameraNode::get_color_table(camera::GetColorTable::Request&  req,
                                  camera::GetColorTable::Response& res) {
   PixelClass* table_ptr = reinterpret_cast<PixelClass*>(table_);
