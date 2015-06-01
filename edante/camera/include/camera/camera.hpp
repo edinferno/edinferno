@@ -27,7 +27,7 @@ class Camera {
    * @brief Constructor
    *
    * @param nh The ROS node hande used by the camera
-   * @param id ID of the camera - AL::kTopCamera or AL::kBottomCamera
+   * @param id ID of the camera (AL::kTopCamera or AL::kBottomCamera)
    * @param name Name of camera e.g. "top"
    */
   Camera(ros::NodeHandle& nh, int id, const char* name);

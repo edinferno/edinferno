@@ -254,6 +254,8 @@ void CameraNode::SegmentImage(const sensor_msgs::Image& raw,
                               sensor_msgs::Image& seg) {
   for (size_t i = 0, j = 0; i < seg.data.size(); i += 2, j += 4) {
     // First pixel of the YUY'V pair
+    // Divde by 4, i.e. shift right by two since the size
+    // of each dimension of our lookup color table is 64.
     uint8_t y = raw.data[j + 0] >> 2;
     uint8_t u = raw.data[j + 1] >> 2;
     uint8_t v = raw.data[j + 3] >> 2;
