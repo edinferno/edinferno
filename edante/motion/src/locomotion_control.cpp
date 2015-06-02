@@ -2,7 +2,7 @@
  * @file      locomotion_control.cpp
  * @brief     ROS wrapper for NaoQI locomotion control methods
  * @author    Alejandro Bordallo <alex.bordallo@ed.ac.uk>
- * @date      2015-06-02
+ * @date      2015-05-18
  * @copyright (MIT) 2015 Edinferno
  */
 
