@@ -1,9 +1,10 @@
-/*
-* @Copyright: Copyright[2015]<Alejandro Bordallo>
-* @Date:      2015-05-18
-* @Email:     alex.bordallo@ed.ac.uk
-* @Desc:      ROS wrapper for NaoQI motion task methods
-*/
+/**
+ * @file      motion_task.cpp
+ * @brief     ROS wrapper for NaoQI motion task methods
+ * @author    Alejandro Bordallo <alex.bordallo@ed.ac.uk>
+ * @date      2015-05-20
+ * @copyright (MIT) 2015 Edinferno
+ */
 
 #include "motion_task.h"
 

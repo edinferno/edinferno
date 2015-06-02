@@ -1,9 +1,10 @@
-/*
-* @Copyright: Copyright[2015]<Alejandro Bordallo>
-* @Date:      2015-05-17
-* @Email:     alex.bordallo@ed.ac.uk
-* @Desc:      Joystick remote control node
-*/
+/**
+ * @file      joy_remote.cpp
+ * @brief     Joystick remote control node
+ * @author    Alejandro Bordallo <alex.bordallo@ed.ac.uk>
+ * @date      2015-05-22
+ * @copyright (MIT) 2015 Edinferno
+ */
 
 #include "joy_remote.h"
 

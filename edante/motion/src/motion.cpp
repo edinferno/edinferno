@@ -1,9 +1,10 @@
-/*
-* @Copyright: Copyright[2015]<Alejandro Bordallo>
-* @Date:      2015-05-18
-* @Email:     alex.bordallo@ed.ac.uk
-* @Desc:      Main motion node
-*/
+/**
+ * @file      motion.cpp
+ * @brief     Main motion node
+ * @author    Alejandro Bordallo <alex.bordallo@ed.ac.uk>
+ * @date      2015-05-20
+ * @copyright (MIT) 2015 Edinferno
+ */
 
 #include <ros/ros.h>
 

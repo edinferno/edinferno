@@ -1,9 +1,10 @@
-/*
-* @Copyright: Copyright[2015]<Alejandro Bordallo>
-* @Date:      2015-05-10
-* @Email:     alex.bordallo@ed.ac.uk
-* @Desc:      ROS wrapper for NaoQI ALRobotPosture
-*/
+/**
+ * @file      robot_posture.cpp
+ * @brief     ROS wrapper for NaoQI ALRobotPosture
+ * @author    Alejandro Bordallo <alex.bordallo@ed.ac.uk>
+ * @date      2015-05-22
+ * @copyright (MIT) 2015 Edinferno
+ */
 
 #include "robot_posture.h"
 

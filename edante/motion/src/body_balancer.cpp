@@ -1,9 +1,10 @@
-/*
-* @Copyright: Copyright[2015]<Alejandro Bordallo>
-* @Date:      2015-05-10
-* @Email:     alex.bordallo@ed.ac.uk
-* @Desc:      ROS wrapper for NaoQI Whole Body Balancer
-*/
+/**
+ * @file      body_balancer.cpp
+ * @brief     ROS wrapper for NaoQI Whole Body Balancer
+ * @author    Alejandro Bordallo <alex.bordallo@ed.ac.uk>
+ * @date      2015-05-21
+ * @copyright (MIT) 2015 Edinferno
+ */
 
 #include "body_balancer.h"
 

@@ -1,9 +1,10 @@
-/*
-* @Copyright: Copyright[2015]<Alejandro Bordallo>
-* @Date:      2015-05-18
-* @Email:     alex.bordallo@ed.ac.uk
-* @Desc:      Debug test file for testing complex services
-*/
+/**
+ * @file      srv_test.cpp
+ * @brief     Debug test file for testing complex services
+ * @author    Alejandro Bordallo <alex.bordallo@ed.ac.uk>
+ * @date      2015-05-19
+ * @copyright (MIT) 2015 Edinferno
+ */
 
 #include <ros/ros.h>
 // #include "joint_control.h"

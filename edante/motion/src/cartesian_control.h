@@ -1,9 +1,10 @@
-/*
-* @Copyright: Copyright[2015]<Alejandro Bordallo>
-* @Date:      2015-05-18
-* @Email:     alex.bordallo@ed.ac.uk
-* @Desc:      ROS wrapper for NaoQI cartesian control methods
-*/
+/**
+ * @file      cartesian_control.h
+ * @brief     ROS wrapper for NaoQI cartesian control methods
+ * @author    Alejandro Bordallo <alex.bordallo@ed.ac.uk>
+ * @date      2015-05-20
+ * @copyright (MIT) 2015 Edinferno
+ */
 
 #ifndef CARTESIAN_CONTROL_H_
 #define CARTESIAN_CONTROL_H_
