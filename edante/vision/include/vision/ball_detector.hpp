@@ -19,22 +19,27 @@
 
 #include "vision/BallDetection.h"
 
+
 class BallDetector {
  public:
   explicit BallDetector(ros::NodeHandle& nh);
   void ProcessImage(const sensor_msgs::ImageConstPtr& image,
                     const sensor_msgs::CameraInfoConstPtr& cam_info);
  private:
+  // Ball radius in meters
+  static const double kBallRadius;
+
   cv::Mat image_;
   std::vector< std::vector<cv::Point> > contours_;
   vision::BallDetection ball_detection_;
   ros::Publisher ball_detection_pub_;
   image_geometry::PinholeCameraModel cam_model_;
+  ros::ServiceClient transform_client_;
 
   void GetMat(const sensor_msgs::ImageConstPtr& image, cv::Mat& mat);
   void ThresholdImage(cv::Mat& image);
-  void FindBall(cv::Mat& image, vision::BallDetection& ball_detection);
-  void EstimatePos3D(const sensor_msgs::CameraInfoConstPtr& cam_info,
-                     vision::BallDetection& ball_detection);
+  void FindBall(cv::Mat& image, vision::BallDetection& ball);
+  void EstimateBallPos3D(const sensor_msgs::CameraInfoConstPtr& cam_info,
+                         vision::BallDetection& ball);
 };
 #endif

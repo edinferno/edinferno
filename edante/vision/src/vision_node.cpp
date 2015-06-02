@@ -24,6 +24,7 @@ void VisionNode::Spin() {
     rate.sleep();
   }
 }
+
 void VisionNode::CameraCallback(
   const sensor_msgs::ImageConstPtr& image,
   const sensor_msgs::CameraInfoConstPtr& cam_info) {
