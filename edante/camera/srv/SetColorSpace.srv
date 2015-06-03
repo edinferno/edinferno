@@ -1,0 +1,9 @@
+# Index of the desired color space
+# 0   AL::kYUV422ColorSpace  0xY’Y’VVYYUU - native format (2 pixels)
+# 1   AL::kYUVColorSpace     0xVVUUYY
+# 2   AL::kRGBColorSpace     0xBBGGRR
+# 3   AL::kHSYColorSpace     0xYYSSHH
+# 4   AL::kBGRColorSpace     0xRRGGBB
+uint8 color_space
+---
+bool result

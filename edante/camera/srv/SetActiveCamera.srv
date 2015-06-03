@@ -1,0 +1,6 @@
+# Index of the desired camera
+# 0   AL::kTopCamera
+# 1   AL::kBottomCamera
+uint8 active_camera
+---
+bool result
