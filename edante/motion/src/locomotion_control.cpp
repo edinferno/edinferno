@@ -1,9 +1,10 @@
-/*
-* @Copyright: Copyright[2015]<Alejandro Bordallo>
-* @Date:      2015-05-18
-* @Email:     alex.bordallo@ed.ac.uk
-* @Desc:      ROS wrapper for NaoQI locomotion control methods
-*/
+/**
+ * @file      locomotion_control.cpp
+ * @brief     ROS wrapper for NaoQI locomotion control methods
+ * @author    Alejandro Bordallo <alex.bordallo@ed.ac.uk>
+ * @date      2015-05-18
+ * @copyright (MIT) 2015 Edinferno
+ */
 
 #include "locomotion_control.h"
 
@@ -14,6 +15,13 @@
 
 #include <qi/log.hpp>
 
+/**
+ * @brief Locomotion class constructor
+ * @details Called when Locomotion class is instantiated. Inheritance: **ALModule**
+ *
+ * @param broker ALBroker from class instantiation
+ * @param name Name of class instantiation
+ */
 LocomotionControl::LocomotionControl(
   boost::shared_ptr<AL::ALBroker> broker,
   const std::string& name): AL::ALModule(broker, name),
@@ -22,6 +30,9 @@ LocomotionControl::LocomotionControl(
   // setModuleDescription("Locomotion control module.");
 }
 
+/**
+ * @brief Empty Locomotion destructor
+ */
 LocomotionControl::~LocomotionControl() {
 }
 
@@ -34,6 +45,12 @@ void LocomotionControl::init() {
   }
 }
 
+/**
+ * @brief ROS setup function
+ * @details Uses the passed ROS NodeHandle to advertise all LocomotionControl services/publisher.
+ *
+ * @param nh ROS NodeHandle, passed by Motion
+ */
 void LocomotionControl::rosSetup(ros::NodeHandle* nh) {
   nh_ = nh;
   INFO("Setting up Locomotion Control publishers" << std::endl);
@@ -78,6 +95,17 @@ void LocomotionControl::rosSetup(ros::NodeHandle* nh) {
   this->checkMoveActive();
 }
 
+/**
+ * @brief Makes the robot move at the given velocity.
+ * @details Expressed in `FRAME_ROBOT`, it takes an optional MoveConfiguration
+ * \n [NAOqi function](http://doc.aldebaran.com/1-14/naoqi/motion/control-walk-api.html#ALMotionProxy::move__floatCR.floatCR.floatCR)
+ *
+ * @param req.velocity            **motion::Velocity**
+ * @param req.move_configuration  **motion::MoveConfiguration**
+ * @param res.res bool            **std_msgs::Bool**
+ *
+ * @return _true_ if service completed successfully
+ */
 bool LocomotionControl::move(motion::Move::Request &req,
                              motion::Move::Response &res) {
   // Check for size of move_configuration
@@ -109,6 +137,18 @@ bool LocomotionControl::move(motion::Move::Request &req,
   return true;
 }
 
+/**
+ * @brief Makes NAO move to the given pose in the ground plane.
+ * @details Relative to `FRAME_ROBOT`, it takes optional single/multiple control
+ * points and optional single/multiple move configurations.
+ * \n [NAOqi function](http://doc.aldebaran.com/1-14/naoqi/motion/control-walk-api.html#ALMotionProxy::moveTo__floatCR.floatCR.floatCR)
+ *
+ * @param req.control_points      **motion::Position**
+ * @param req.move_configuration  **motion::MoveConfiguration**
+ * @param res.res bool            **std_msgs::Bool**
+ *
+ * @return _true_ if service completed successfully
+ */
 bool LocomotionControl::moveTo(motion::MoveTo::Request &req,
                                motion::MoveTo::Response &res) {
   //  Check for multiple positions
@@ -156,6 +196,17 @@ bool LocomotionControl::moveTo(motion::MoveTo::Request &req,
   return true;
 }
 
+/**
+ * @brief Makes the robot move at the given normalized velocity.
+ * @details Relative to `FRAME_ROBOT`, it takes an optional move configuration.
+ * \n [NAOqi function](http://doc.aldebaran.com/1-14/naoqi/motion/control-walk-api.html#ALMotionProxy::moveToward__floatCR.floatCR.floatCR)
+ *
+ * @param req.norm_velocity       **motion::Velocity**
+ * @param req.move_configuration  **motion::MoveConfiguration**
+ * @param res.res                 **std_msgs::Bool**
+ *
+ * @return _true_ if service completed successfully
+ */
 bool LocomotionControl::moveToward(motion::MoveToward::Request &req,
                                    motion::MoveToward::Response &res) {
   // Check for size of move_configuration
@@ -187,6 +238,16 @@ bool LocomotionControl::moveToward(motion::MoveToward::Request &req,
   return true;
 }
 
+/**
+ * @brief Initializes the move process.
+ * @details Checks the robot pose and takes a right posture. This is blocking called.
+ * \n [NAOqi function](http://doc.aldebaran.com/1-14/naoqi/motion/control-walk-api.html#ALMotionProxy::moveInit)
+ *
+ * @param req **std_srvs::Empty**
+ * @param res **std_srvs::Empty**
+ *
+ * @return _true_ if service completed successfully
+ */
 bool LocomotionControl::moveInit(std_srvs::Empty::Request &req,
                                  std_srvs::Empty::Response &res) {
   mProxy_.post.moveInit();
@@ -194,6 +255,16 @@ bool LocomotionControl::moveInit(std_srvs::Empty::Request &req,
   return true;
 }
 
+/**
+ * @brief Waits until the MoveTask is finished.
+ * @details This method can be used to block your script/code execution until the move task is totally finished.
+ * \n [NAOqi function](http://doc.aldebaran.com/1-14/naoqi/motion/control-walk-api.html#ALMotionProxy::waitUntilMoveIsFinished)
+ *
+ * @param req **std_srvs::Empty**
+ * @param res **std_srvs::Empty**
+ *
+ * @return _true_ if service completed successfully
+ */
 bool LocomotionControl::waitUntilMoveIsFinished(
   std_srvs::Empty::Request &req,
   std_srvs::Empty::Response &res) {
@@ -202,6 +273,16 @@ bool LocomotionControl::waitUntilMoveIsFinished(
   return true;
 }
 
+/**
+ * @brief Stops Move task at next double support.
+ * @details This method will end the move task less brutally than killMove but quicker than `move(0.0, 0.0, 0.0)`.
+ * \n [NAOqi function](http://doc.aldebaran.com/1-14/naoqi/motion/control-walk-api.html#ALMotionProxy::stopMove)
+ *
+ * @param req **std_srvs::Empty**
+ * @param res **std_srvs::Empty**
+ *
+ * @return _true_ if service completed successfully
+ */
 bool LocomotionControl::stopMove(std_srvs::Empty::Request &req,
                                  std_srvs::Empty::Response &res) {
   mProxy_.stopMove();
@@ -209,6 +290,16 @@ bool LocomotionControl::stopMove(std_srvs::Empty::Request &req,
   return true;
 }
 
+/**
+ * @brief Returns the move config.
+ * @details Move configuration: `(“MaxStepX”, “MaxStepY”, “MaxStepTheta”, “MaxStepFrequency”, “StepHeight”, “TorsoWx”, “TorsoWy”)`
+ * \n [NAOqi function](http://doc.aldebaran.com/1-14/naoqi/motion/control-walk-api.html#ALMotionProxy::getMoveConfig__ssCR)
+ *
+ * @param req.config              **std_msgs::string**
+ * @param res.move_configuration  **motion::MoveConfiguration**
+ *
+ * @return _true_ if service completed successfully
+ */
 bool LocomotionControl::getMoveConfig(motion::GetMoveConfig::Request &req,
                                       motion::GetMoveConfig::Response &res) {
   AL::ALValue move_configuration;
@@ -224,30 +315,81 @@ bool LocomotionControl::getMoveConfig(motion::GetMoveConfig::Request &req,
   return true;
 }
 
+/**
+ * @brief Gets the World Absolute Robot Position.
+ * @details Returns a vector containing the World Absolute Robot Position. `(Absolute Position X, Absolute Position Y, Absolute Angle Theta (Wz))`
+ * \n [NAOqi function](http://doc.aldebaran.com/1-14/naoqi/motion/control-walk-api.html#ALMotionProxy::getRobotPosition__bCR)
+ *
+ * @param req.use_sensors **std_msgs::Bool** – If _true_, use the MRE sensor values
+ * @param res.position  **motion::position**
+ *
+ * @return _true_ if service completed successfully
+ */
 bool LocomotionControl::getRobotPosition(
   motion::GetRobotPosition::Request &req,
   motion::GetRobotPosition::Response &res) {
-  res.positions = mProxy_.getRobotPosition(req.use_sensors);
+  std::vector<float> pose = mProxy_.getRobotPosition(req.use_sensors);
+  res.position.x = pose[0];
+  res.position.y = pose[1];
+  res.position.theta = pose[2];
   this->checkMoveActive();
   return true;
 }
 
+/**
+ * @brief Gets the World Absolute next Robot Position.
+ * @details When no walk process active, getNextRobotPosition() = getRobotPosition().
+ * Else getNextRobotPosition() returns the position of the robot after the unchangeable foot steps.
+ * \n Returns a vector containing the World Absolute next Robot position. `(Absolute Position X, Absolute Position Y, Absolute Angle Theta (Wz))`
+ * \n [NAOqi function](http://doc.aldebaran.com/1-14/naoqi/motion/control-walk-api.html#ALMotionProxy::getNextRobotPosition)
+ *
+ * @param req                 **None**
+ * @param res.next_position   **motion::Position**
+ *
+ * @return _true_ if service completed successfully
+ */
 bool LocomotionControl::getNextRobotPosition(
   motion::GetNextRobotPosition::Request &req,
   motion::GetNextRobotPosition::Response &res) {
-  res.positions = mProxy_.getNextRobotPosition();
+  std::vector<float> pose = mProxy_.getNextRobotPosition();
+  res.next_position.x = pose[0];
+  res.next_position.y = pose[1];
+  res.next_position.theta = pose[2];
   this->checkMoveActive();
   return true;
 }
 
+/**
+ * @brief Gets the World Absolute Robot Velocity.
+ * @details Returns a vector containing the World Absolute Robot Velocity. `(Absolute Velocity Translation X [m.s-1], Absolute Velocity Translation Y[m.s-1], Absolute Velocity Rotation WZ [rd.s-1])`
+ * \n [NAOqi function](http://doc.aldebaran.com/1-14/naoqi/motion/control-walk-api.html#ALMotionProxy::getRobotVelocity)
+ *
+ * @param req [description]
+ * @param res [description]
+ *
+ * @return _true_ if service completed successfully
+ */
 bool LocomotionControl::getRobotVelocity(
   motion::GetRobotVelocity::Request &req,
   motion::GetRobotVelocity::Response &res) {
-  res.velocity = mProxy_.getRobotVelocity();
+  std::vector<float> velocity = mProxy_.getRobotVelocity();
+  res.velocity.x = velocity[0];
+  res.velocity.y = velocity[1];
+  res.velocity.theta = velocity[2];
   this->checkMoveActive();
   return true;
 }
 
+/**
+ * @brief Returns if Arms Motions are enabled during the Walk Process.
+ * @details If _true_ Arms motions are controlled by the Walk Task.
+ * \n [NAOqi function](http://doc.aldebaran.com/1-14/naoqi/motion/control-walk-api.html#ALMotionProxy::getWalkArmsEnabled)
+ *
+ * @param req             **None**
+ * @param res.arm_motions **std_msgs::Bool[]**
+ *
+ * @return _true_ if service completed successfully
+ */
 bool LocomotionControl::getWalkArmsEnabled(
   motion::GetWalkArmsEnabled::Request &req,
   motion::GetWalkArmsEnabled::Response &res) {
@@ -259,6 +401,17 @@ bool LocomotionControl::getWalkArmsEnabled(
   return true;
 }
 
+/**
+ * @brief Sets if Arms Motions are enabled during the Walk Process.
+ * @details If _true_ Arms motions are controlled by the Walk Task.
+ * \n [NAOqi function](http://doc.aldebaran.com/1-14/naoqi/motion/control-walk-api.html#ALMotionProxy::setWalkArmsEnabled__bCR.bCR)
+ *
+ * @param req.left_arm_enable   **std_msgs::Bool**
+ * @param req.right_arm_enable  **std_msgs::Bool**
+ * @param res                   **None**
+ *
+ * @return _true_ if service completed successfully
+ */
 bool LocomotionControl::setWalkArmsEnabled(
   motion::SetWalkArmsEnabled::Request &req,
   motion::SetWalkArmsEnabled::Response &res) {
@@ -267,6 +420,9 @@ bool LocomotionControl::setWalkArmsEnabled(
   return true;
 }
 
+/**
+ * @brief Publish whether current move is Active
+ * @details This function is called automatically after any LocomotionControl srv call */
 void LocomotionControl::checkMoveActive() {
   move_active.data = mProxy_.moveIsActive();
   moving_pub_.publish(move_active);

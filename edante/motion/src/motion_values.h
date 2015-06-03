@@ -1,9 +1,10 @@
-/*
-* @Copyright: Copyright[2015]<Alejandro Bordallo>
-* @Date:      2015-05-09
-* @Email:     alex.bordallo@ed.ac.uk
-* @Desc:      Define common motion values
-*/
+/**
+ * @file      motion_values.h
+ * @brief     Define common motion values
+ * @author    Alejandro Bordallo <alex.bordallo@ed.ac.uk>
+ * @date      2015-05-19
+ * @copyright (MIT) 2015 Edinferno
+ */
 
 const float PI = 3.1415927;
 

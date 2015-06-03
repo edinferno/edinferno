@@ -50,11 +50,11 @@ void NavigateAction::executeCB(const navigation::NavigateGoalConstPtr &goal) {
     get_pose_client_.call(get_pose_srv_);
 
     feedback_.curr_pose.x =
-      get_pose_srv_.response.positions[0] - start_position_.response.positions[0];
+      get_pose_srv_.response.position.x - start_position_.response.position.x;
     feedback_.curr_pose.y =
-      get_pose_srv_.response.positions[1] - start_position_.response.positions[1];
+      get_pose_srv_.response.position.y - start_position_.response.position.y;
     feedback_.curr_pose.theta =
-      get_pose_srv_.response.positions[2] - start_position_.response.positions[2];
+      get_pose_srv_.response.position.theta - start_position_.response.position.theta;
     as_.publishFeedback(feedback_);
 
     ROS_INFO("Current pos: %f, %f, %f",

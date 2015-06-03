@@ -1,11 +1,10 @@
-/*
-* @File: definitions.h
-* @Author: Alejandro Bordallo
-* @Date:   2015-04-04 20:47:59
-* @Last Modified by:   ubuntubeast
-* @Last Modified time: 2015-04-07 16:32:46
-* @Desc: Debugging definitions
-*/
+/**
+ * @file      definitions.h
+ * @brief     Debugging definitions
+ * @author    Alejandro Bordallo <alex.bordallo@ed.ac.uk>
+ * @date      2015-05-19
+ * @copyright (MIT) 2015 Edinferno
+ */
 
 #ifndef DEFINITIONS_H_
 #define DEFINITIONS_H_

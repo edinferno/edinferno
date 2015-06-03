@@ -1,9 +1,10 @@
-/*
-* @Copyright: Copyright[2015]<Alejandro Bordallo>
-* @Date:      2015-05-17
-* @Email:     alex.bordallo@ed.ac.uk
-* @Desc:      ROS wrapper for NaoQI Stiffness control API
-*/
+/**
+ * @file      stiffness_control.cpp
+ * @brief     ROS wrapper for NaoQI Stiffness control API
+ * @author    Alejandro Bordallo <alex.bordallo@ed.ac.uk>
+ * @date      2015-05-22
+ * @copyright (MIT) 2015 Edinferno
+ */
 
 #include "stiffness_control.h"
 

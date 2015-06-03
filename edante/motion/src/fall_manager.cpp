@@ -1,9 +1,10 @@
-/*
-* @Copyright: Copyright[2015]<Alejandro Bordallo>
-* @Date:      2015-05-11
-* @Email:     alex.bordallo@ed.ac.uk
-* @Desc:      ROS Wrapper for NaoQI Fall Manager API
-*/
+/**
+ * @file      fall_manager.cpp
+ * @brief     ROS Wrapper for NaoQI Fall Manager API
+ * @author    Alejandro Bordallo <alex.bordallo@ed.ac.uk>
+ * @date      2015-05-20
+ * @copyright (MIT) 2015 Edinferno
+ */
 
 #include "fall_manager.h"
 

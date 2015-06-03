@@ -1,9 +1,10 @@
-/*
-* @Copyright: Copyright[2015]<Alejandro Bordallo>
-* @Date:      2015-05-18
-* @Email:     alex.bordallo@ed.ac.uk
-* @Desc:      Defines the Joint Control Wrapper functions
-*/
+/**
+ * @file      joint_control.cpp
+ * @brief     Defines the Joint Control Wrapper functions
+ * @author    Alejandro Bordallo <alex.bordallo@ed.ac.uk>
+ * @date      2015-05-22
+ * @copyright (MIT) 2015 Edinferno
+ */
 
 #include "joint_control.h"
 
