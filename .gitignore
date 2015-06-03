@@ -1,3 +1,6 @@
+# Ignore sublime workspace files
+*.sublime-workspace
+
 # Ignore the folder with documentation
 doc/
 
@@ -41,3 +44,7 @@ _*.h
 _*.srv
 _*.msg
 _*.txt
+
+# Ignore Glade temporary files
+*.*~
+[#]*[#]
