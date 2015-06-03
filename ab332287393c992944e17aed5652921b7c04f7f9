@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "facab960_7789af25",
+        "filename": "edante/comms/src/SPLStandardMessage.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-06-03T13:56:39Z",
+      "side": 1,
+      "message": "In fact, it is \"const \u003ctype\u003e \u0026\u003cname\u003e\" (1), which pretty much is equivalent to \"\u003ctype\u003e \u003cname\u003e\" (2) with the difference that when (1) is invoked, memory is not copied, thus it is faster.\n\nYou still need to add a \u0026 before msg.",
+      "range": {
+        "startLine": 34,
+        "startChar": 66,
+        "endLine": 34,
+        "endChar": 69
+      },
+      "revId": "ab332287393c992944e17aed5652921b7c04f7f9",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
