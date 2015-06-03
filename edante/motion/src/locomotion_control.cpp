@@ -49,7 +49,7 @@ void LocomotionControl::init() {
  * @brief ROS setup function
  * @details Uses the passed ROS NodeHandle to advertise all LocomotionControl services/publisher.
  *
- * @param nh NodeHandle, passed by Motion
+ * @param nh ROS NodeHandle, passed by Motion
  */
 void LocomotionControl::rosSetup(ros::NodeHandle* nh) {
   nh_ = nh;
@@ -96,7 +96,7 @@ void LocomotionControl::rosSetup(ros::NodeHandle* nh) {
 }
 
 /**
- * @brief Makes the robot move at the given velocity
+ * @brief Makes the robot move at the given velocity.
  * @details Expressed in `FRAME_ROBOT`, it takes an optional MoveConfiguration
  * \n [NAOqi function](http://doc.aldebaran.com/1-14/naoqi/motion/control-walk-api.html#ALMotionProxy::move__floatCR.floatCR.floatCR)
  *
@@ -138,9 +138,9 @@ bool LocomotionControl::move(motion::Move::Request &req,
 }
 
 /**
- * @brief Makes NAO move to the given pose in the ground plane
+ * @brief Makes NAO move to the given pose in the ground plane.
  * @details Relative to `FRAME_ROBOT`, it takes optional single/multiple control
- * points and optional single/multiple move configurations
+ * points and optional single/multiple move configurations.
  * \n [NAOqi function](http://doc.aldebaran.com/1-14/naoqi/motion/control-walk-api.html#ALMotionProxy::moveTo__floatCR.floatCR.floatCR)
  *
  * @param req.control_points      **motion::Position**
@@ -197,8 +197,8 @@ bool LocomotionControl::moveTo(motion::MoveTo::Request &req,
 }
 
 /**
- * @brief Makes the robot move at the given normalized velocity
- * @details Relative to `FRAME_ROBOT`, it takes an optional move configuration
+ * @brief Makes the robot move at the given normalized velocity.
+ * @details Relative to `FRAME_ROBOT`, it takes an optional move configuration.
  * \n [NAOqi function](http://doc.aldebaran.com/1-14/naoqi/motion/control-walk-api.html#ALMotionProxy::moveToward__floatCR.floatCR.floatCR)
  *
  * @param req.norm_velocity       **motion::Velocity**
@@ -381,8 +381,8 @@ bool LocomotionControl::getRobotVelocity(
 }
 
 /**
- * @brief Gets if Arms Motions are enabled during the Walk Process.
- * @details If _true_ Arms motions are controlled by the Walk Task
+ * @brief Returns if Arms Motions are enabled during the Walk Process.
+ * @details If _true_ Arms motions are controlled by the Walk Task.
  * \n [NAOqi function](http://doc.aldebaran.com/1-14/naoqi/motion/control-walk-api.html#ALMotionProxy::getWalkArmsEnabled)
  *
  * @param req             **None**
@@ -422,7 +422,7 @@ bool LocomotionControl::setWalkArmsEnabled(
 
 /**
  * @brief Publish whether current move is Active
- * @details This function is called automatically after every LocomotionControl srv call */
+ * @details This function is called automatically after any LocomotionControl srv call */
 void LocomotionControl::checkMoveActive() {
   move_active.data = mProxy_.moveIsActive();
   moving_pub_.publish(move_active);
