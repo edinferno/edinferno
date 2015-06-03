@@ -8,14 +8,21 @@
 #ifndef CAMERA_MODULE_HPP
 #define CAMERA_MODULE_HPP
 
+// System
 #include <string>
 
+// NaoQi
 #include <alcommon/almodule.h>
 #include <alproxies/alvideodeviceproxy.h>
 
-#include <boost/thread.hpp>
+// Boost
+#include <boost/interprocess/mapped_region.hpp>
+#include <boost/interprocess/shared_memory_object.hpp>
+#include <boost/interprocess/sync/named_mutex.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/thread.hpp>
 
+// ROS
 #include <ros/ros.h>
 #include <image_transport/image_transport.h>
 
@@ -36,7 +43,9 @@
 
 /**
  * @brief Exposes the Nao camera to ROS using the standard tool of
- *        the ROS image toolchain.
+ *        the ROS image toolchain. It supports color table segmentation
+ *        and puts the segmented image in the shared memroy for locally
+ *        running nodes.
  */
 class CameraNode : public AL::ALModule {
  public:
@@ -100,6 +109,7 @@ class CameraNode : public AL::ALModule {
   int active_fps_;
   ros::Rate* active_rate_;
 
+  // Camera calibration info
   sensor_msgs::CameraInfo active_cam_info_;
 
   // ROS service servers
@@ -115,6 +125,13 @@ class CameraNode : public AL::ALModule {
   static const size_t kTableSize = 64;
   static const size_t kTableLen = kTableSize * kTableSize * kTableSize;
   PixelClass table_[kTableSize][kTableSize][kTableSize];
+
+  // Shared memory
+  static const size_t kShdMemSize = 1280 * 960 + 128;  // k4VGA + misc
+  boost::interprocess::shared_memory_object shdmem_;
+  boost::interprocess::mapped_region* shdmem_region_;
+  uint8_t* shdmem_ptr_;
+  boost::interprocess::named_mutex* shdmem_mtx_;
 
   /**
    * @brief Initialised the module
@@ -137,6 +154,16 @@ class CameraNode : public AL::ALModule {
    *          and then publishes them over ROS. It runs on a separate thread.
    */
   void Spin();
+  /**
+   * @brief Copy the captured image and camera info to shared memory
+   * @details Copy the captured image and camera info to shared memory in order
+   *          to optimize access time for locally running nodes.
+   *
+   * @param image The image to be copied to memory
+   * @param cam_info The camera info to be copied to memory
+   */
+  void CameraToSharedMemory(const sensor_msgs::Image& image,
+                            const sensor_msgs::CameraInfo& cam_info);
   /**
    * @brief Segments the image using the color look up table
    * @details The 3 color channels of a pixel are used as indecies to the color
@@ -164,8 +191,8 @@ class CameraNode : public AL::ALModule {
    */
   void UpdateImage();
   /**
-   * @brief Updates the currently active camera_info to reflect the active camera settings.
-   */
+  * @brief Updates the currently active camera_info to reflect the active camera settings.
+  */
   void UpdateCameraInfo();
 
   // Service callbacks

@@ -6,14 +6,27 @@
 */
 #include "camera/camera_node.hpp"
 
+// System
 #include <fstream>
 
+// NaoQi definitions
 #include <alcommon/albroker.h>
 #include <alcommon/albrokermanager.h>
 #include <alvision/alimage.h>
 #include <alvision/alvisiondefinitions.h>
 
+// ROS
+#include <ros/serialization.h>
 #include <sensor_msgs/image_encodings.h>
+
+using boost::interprocess::open_or_create;
+using boost::interprocess::read_write;
+using boost::interprocess::mapped_region;
+using boost::interprocess::named_mutex;
+
+using ros::serialization::OStream;
+using ros::serialization::Serializer;
+
 
 const char* CameraNode::table_file_name_ = "/home/nao/config/camera/table.c64";
 
@@ -54,7 +67,8 @@ CameraNode::CameraNode(boost::shared_ptr<AL::ALBroker> broker,
                        const std::string& module_name) :
   AL::ALModule(broker, module_name),
   module_name_(module_name),
-  camera_proxy_(new AL::ALVideoDeviceProxy(broker)) {
+  camera_proxy_(new AL::ALVideoDeviceProxy(broker)),
+  shdmem_(open_or_create, "camera_image", read_write) {
   Init();
 }
 /**
@@ -133,9 +147,9 @@ void CameraNode::Init() {
 
   // Set the default active camera to be the top one
   active_cam_ = top_cam_;
-  active_resolution_ = AL::kVGA;
+  active_resolution_ = AL::kQVGA;
   active_color_space_ = AL::kYUV422ColorSpace;
-  active_fps_ = 15;
+  active_fps_ = 30;
   active_rate_ = new ros::Rate(active_fps_);
 
   // Subscribe to the active Nao camera
@@ -148,6 +162,13 @@ void CameraNode::Init() {
 
   // Read the color table
   LoadColorTable();
+
+  // Allocate shared memory
+  shdmem_.truncate(kShdMemSize);
+  shdmem_region_ = new mapped_region(shdmem_, read_write);
+  shdmem_ptr_ = static_cast<uint8_t*>(shdmem_region_->get_address());
+  named_mutex::remove("camera_image_mutex");
+  shdmem_mtx_ = new named_mutex(open_or_create, "camera_image_mutex");
 
   // Spawn the thread for the node
   module_thread_ = new boost::thread(boost::bind(&CameraNode::Spin, this));
@@ -216,11 +237,14 @@ void CameraNode::Spin() {
     image_pub_.publish(image_, active_cam_info_);
 
     // Segment the image and publish it
-    if (segmented_image_pub_.getNumSubscribers() > 0) {
-      SegmentImage(image_, segmented_image_);
-      segmented_image_.header.stamp = image_.header.stamp;
-      segmented_image_pub_.publish(segmented_image_, active_cam_info_);
-    }
+    SegmentImage(image_, segmented_image_);
+
+    // Publish segmented image
+    segmented_image_.header.stamp = image_.header.stamp;
+    segmented_image_pub_.publish(segmented_image_, active_cam_info_);
+
+    // Move image and camera info to shared memory
+    CameraToSharedMemory(segmented_image_, active_cam_info_);
 
     // Publish segmented RGB image if necessary
     if (segmented_rgb_image_pub_.getNumSubscribers() > 0) {
@@ -241,6 +265,42 @@ void CameraNode::Spin() {
   }
 
   camera_proxy_->unsubscribe(module_name_);
+}
+/**
+ * @brief Copy the captured image and camera info to shared memory
+ * @details Copy the captured image and camera info to shared memory in order
+ *          to optimize access time for locally running nodes.
+ *
+ * @param image The image to be copied to memory
+ * @param cam_info The camera info to be copied to memory
+ */
+void CameraNode::CameraToSharedMemory(const sensor_msgs::Image& image,
+                                      const sensor_msgs::CameraInfo& cam_info) {
+  // Gain access to the shared memory
+  shdmem_mtx_->lock();
+  uint8_t* ptr = shdmem_ptr_;
+
+  // Write the size in bytes of the cam_info
+  uint32_t cam_info_size = ros::serialization::serializationLength(cam_info);
+  memcpy(ptr, &cam_info_size, sizeof(cam_info_size));
+  ptr += sizeof(cam_info_size);
+
+  // Write the cam_info
+  OStream cam_info_stream(ptr, cam_info_size);
+  Serializer<sensor_msgs::CameraInfo>::write(cam_info_stream, cam_info);
+  ptr += cam_info_size;
+
+  // Write the size in bytes of the image
+  uint32_t image_size = ros::serialization::serializationLength(image);
+  memcpy(ptr, &image_size, sizeof(image_size));
+  ptr += sizeof(image_size);
+
+  // Write the image
+  OStream image_stream(ptr, image_size);
+  Serializer<sensor_msgs::Image>::write(image_stream, image);
+
+  // Release the shared memory
+  shdmem_mtx_->unlock();
 }
 /**
  * @brief Segments the image using the color look up table

@@ -20,16 +20,25 @@ using cv::Point2d;
 using cv::Point3d;
 
 const double BallDetector::kBallRadius = 0.03;
-
+/**
+ * @brief Creates the BallDetection publisher and the GetTransform client.
+ *
+ * @param nh The node handle to be used.
+ */
 BallDetector::BallDetector(ros::NodeHandle& nh) :
   ball_detection_pub_(nh.advertise<vision::BallDetection>("ball", 5)),
   transform_client_(nh.serviceClient<motion::GetTransform>(
                       "/motion/get_transform", true)) {
 }
-
+/**
+ * @brief Detect the ball in the image.
+ *
+ * @param image The image to be processed.
+ * @param cam_info The camera calibration information.
+ */
 void BallDetector::ProcessImage(
-  const sensor_msgs::ImageConstPtr& image,
-  const sensor_msgs::CameraInfoConstPtr& cam_info) {
+  const sensor_msgs::Image& image,
+  const sensor_msgs::CameraInfo& cam_info) {
   // Get a cv::Mat from the image message
   GetMat(image, image_);
 
@@ -37,8 +46,8 @@ void BallDetector::ProcessImage(
   ThresholdImage(image_);
 
   // Update the ball detection info
-  ball_detection_.header.stamp = image->header.stamp;
-  ball_detection_.header.frame_id = image->header.frame_id;
+  ball_detection_.header.stamp = image.header.stamp;
+  ball_detection_.header.frame_id = image.header.frame_id;
 
   // Find the ball in the thresholded image
   FindBall(image_, ball_detection_);
@@ -49,23 +58,43 @@ void BallDetector::ProcessImage(
   // Publish the detected ball info
   ball_detection_pub_.publish(ball_detection_);
 }
-
-void BallDetector::GetMat(const sensor_msgs::ImageConstPtr& image,
+/**
+ * @brief Makes a cv::Mat object from an image by copying memory.
+ *
+ * @param image The input image
+ * @param mat The output cv::Mat
+ */
+void BallDetector::GetMat(const sensor_msgs::Image& image,
                           cv::Mat& mat) {
-  if ((unsigned)mat.cols != image->width ||
-      (unsigned)mat.rows != image->height) {
-    mat = cv::Mat(image->height, image->width, CV_8UC1);
+  if ((unsigned)mat.cols != image.width ||
+      (unsigned)mat.rows != image.height) {
+    mat = cv::Mat(image.height, image.width, CV_8UC1);
   }
-  memcpy(mat.data, image->data.data(), image->data.size());
+  memcpy(mat.data, image.data.data(), image.data.size());
 }
-
+/**
+ * @brief Threshold the image such that only 'Ball' pixels are white.
+ *
+ * @param image The image to be thresholded.
+ */
 void BallDetector::ThresholdImage(cv::Mat& image) {
   int data_len = image.rows * image.step;
   for (int i = 0; i < data_len; ++i) {
     image.data[i] = (image.data[i] == Ball) ? 255 : 0;
   }
 }
-
+/**
+ * @brief Finds a ball in a thresholded image.
+ * @details Uses cv::findcontours to detect objects. Filters them based on
+ *          on size, circumference length and circularity. If none of the
+ *          contours meets the requirements then the ball is not found.
+ *          If multiple balls are present, the larger one is selected.
+ *
+ * @param image The image to be processed. It should be thresholded such that
+ *              only 'Ball' pixels are white.
+ * @param ball The results of the analysis are stored here including 2D ball
+ *             position and radius if the ball is found.
+ */
 void BallDetector::FindBall(cv::Mat& image,
                             vision::BallDetection& ball) {
   cv::findContours(image, contours_, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
@@ -106,9 +135,15 @@ void BallDetector::FindBall(cv::Mat& image,
     ball.certainty = max_circularity;
   }
 }
-
+/**
+ * @brief Estimate the 3D ball position based on the known size of the ball.
+ *
+ * @param cam_info Calibration information for the camera which captured
+ *                 the image.
+ * @param ball The estimated 3D position will be stored here.
+ */
 void BallDetector::EstimateBallPos3D(
-  const sensor_msgs::CameraInfoConstPtr& cam_info,
+  const sensor_msgs::CameraInfo& cam_info,
   vision::BallDetection& ball) {
   // Update the camera model
   cam_model_.fromCameraInfo(cam_info);
