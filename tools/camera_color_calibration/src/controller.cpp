@@ -14,6 +14,7 @@
 Controller::Controller(std::string app_name) :
   app_name_(app_name) {
 }
+
 void Controller::CreateView(int argc, char** argv, std::string filename) {
   view_ = new View(this);
   view_->Build(argc, argv, app_name_, filename);
@@ -29,9 +30,15 @@ bool Controller::SpinOnce() {
   // Make sure the timer is not stopped
   return true;
 }
+
 void Controller::OnNewPixelClass(double x, double y, PixelClass pixel_class) {
   model_->AddNewPixelClass(x, y, pixel_class);
 }
+
+void Controller::OnSwitchCamera() {
+  model_->SwitchCamera();
+}
+
 bool Controller::OnSendTable() {
   return model_->SendTable();
 }

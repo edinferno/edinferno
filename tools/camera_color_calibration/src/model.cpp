@@ -9,6 +9,8 @@
 #include "camera_color_calibration/model.hpp"
 #include "camera_color_calibration/controller.hpp"
 
+#include "camera/SetActiveCamera.h"
+#include "camera/SetColorSpace.h"
 #include "camera/SetColorTable.h"
 #include "camera/GetColorTable.h"
 
@@ -28,8 +30,30 @@ void Model::Build(int argc, char** argv) {
 
   // Subscribe to camera images
   image_sub_ = it_->subscribe("image", 1, &Model::ImageCallback, this);
-
+  SetupCamera();
   LoadTable();
+}
+
+void Model::SetupCamera() {
+  // Set top camera as active
+  active_camera_ = 1;
+  SwitchCamera();
+
+  // Set color space to be YUV422
+  ros::ServiceClient client =
+    nh_->serviceClient<camera::SetColorSpace>("set_color_space");
+  camera::SetColorSpace srv;
+  srv.request.color_space = 0;
+  client.call(srv);
+}
+
+void Model::SwitchCamera() {
+  ros::ServiceClient client =
+    nh_->serviceClient<camera::SetActiveCamera>("set_active_camera");
+  camera::SetActiveCamera srv;
+  srv.request.active_camera = (active_camera_ + 1) % 2;
+  if (client.call(srv))
+    active_camera_ = (active_camera_ + 1) % 2;
 }
 
 bool Model::LoadTable() {
@@ -87,6 +111,7 @@ bool Model::SendTable() {
   // Send the serialised color table to the robot
   return  client.call(srv);
 }
+
 
 void Model::AddNewPixelClass(double x, double y, PixelClass pixel_class) {
   int y_px = y * (raw_image_.height - 1);

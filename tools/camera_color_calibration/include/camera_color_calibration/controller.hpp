@@ -33,6 +33,7 @@ class Controller {
 
   // View callbacks
   void OnNewPixelClass(double x, double y, PixelClass pixel_class);
+  void OnSwitchCamera();
   bool OnSendTable();
   // Model callbacks
   void OnNewRawImage(const sensor_msgs::Image& msg);

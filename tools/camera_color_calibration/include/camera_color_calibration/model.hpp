@@ -22,10 +22,11 @@ class Model {
  public:
   explicit Model(Controller* controller);
   void Build(int argc, char** argv);
-  void AddNewPixelClass(double x, double y, PixelClass pixel_class);
+  void SetupCamera();
+  void SwitchCamera();
   bool LoadTable();
   bool SendTable();
-
+  void AddNewPixelClass(double x, double y, PixelClass pixel_class);
 
  private:
   Controller* controller_;
@@ -35,6 +36,9 @@ class Model {
 
   sensor_msgs::Image raw_image_;
   sensor_msgs::Image seg_image_;
+
+  int active_camera_;
+
   // Color table
   static const size_t kTableSize = 64;
   static const size_t kTableLen = kTableSize * kTableSize * kTableSize;

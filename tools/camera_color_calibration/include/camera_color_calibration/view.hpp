@@ -58,6 +58,5 @@ class View {
   void OnToolbarButtonClicked(std::string name);
   bool OnButtonPressEvent(GdkEventButton* event, std::string name);
   bool OnDrawImage(const Cairo::RefPtr<Cairo::Context>& cr, std::string name);
-
 };
 #endif

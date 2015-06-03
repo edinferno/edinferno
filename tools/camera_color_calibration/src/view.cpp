@@ -43,6 +43,7 @@ void View::Build(int argc, char** argv,
   ConnectRadioToolButton("green");
   ConnectRadioToolButton("red");
   ConnectRadioToolButton("blue");
+  ConnectToolButton("switch");
   ConnectToolButton("send");
 
   // Connect the drawing areas to the handlers
@@ -224,6 +225,8 @@ void View::OnToolbarButtonClicked(std::string name) {
     current_class_ = TeamBlue;
     statusbar_->push("Blue team", context_id_);
 
+  } else if (name == "switch") {
+    controller_->OnSwitchCamera();
   } else if (name == "send") {
     if (controller_->OnSendTable()) {
       statusbar_->push("Color table successfully sent.", context_id_);
