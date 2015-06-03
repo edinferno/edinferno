@@ -8,29 +8,28 @@
 
 #include <ros/ros.h>
 // #include "joint_control.h"
-#include "definitions.h"
-#include "motion_values.h"
+#include "motion/motion_values.hpp"
 // #include <std_srvs/Empty.h>
 
 // #include <ctime>
 
-// #include "motion/SetStiffness.h"
-// #include "motion/StiffnessInterp.h"
-#include "motion/AngleInterp.h"
-// #include "motion/SetAngles.h"
-// #include "motion/GetTaskList.h"
-// #include "motion/MoveTo.h"
-// #include "motion/Move.h"
-// #include "motion/MoveToward.h"
-// #include "motion/GetAngles.h"
-// #include "motion/PositionInterpolation.h"
-// #include "motion/SetPosition.h"
-// #include "motion/GetPosition.h"
-// #include "motion/GetTransform.h"
-// #include "motion/GoToBalance.h"
-// #include "motion/SetEffectorControl.h"
+// #include <motion_msgs/SetStiffness.h>
+// #include <motion_msgs/StiffnessInterp.h>
+#include <motion_msgs/AngleInterp.h>
+// #include <motion_msgs/SetAngles.h>
+// #include <motion_msgs/GetTaskList.h>
+// #include <motion_msgs/MoveTo.h>
+// #include <motion_msgs/Move.h>
+// #include <motion_msgs/MoveToward.h>
+// #include <motion_msgs/GetAngles.h>
+// #include <motion_msgs/PositionInterpolation.h>
+// #include <motion_msgs/SetPosition.h>
+// #include <motion_msgs/GetPosition.h>
+// #include <motion_msgs/GetTransform.h>
+// #include <motion_msgs/GoToBalance.h>
+// #include <motion_msgs/SetEffectorControl.h>
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   ros::init(argc, argv, "srv_test");
 
   ros::NodeHandle n;
@@ -38,10 +37,10 @@ int main(int argc, char *argv[]) {
 
   // // ANGLE INTERPOLATION TEST
   // ros::ServiceClient client1 =
-  // n.serviceClient<motion::AngleInterp>("/motion/angleInterp");
-  // motion::AngleInterp srv;
+  // n.serviceClient<motion_msgs::AngleInterp>("/motion/angleInterp");
+  // motion_msgs::AngleInterp srv;
 
-  // motion::AngleInterp serv;
+  // motion_msgs::AngleInterp serv;
   // serv.request.angle_lists.resize(2);
   // serv.request.time_lists.resize(2);
   // serv.request.names.push_back("HeadYaw");
@@ -70,10 +69,10 @@ int main(int argc, char *argv[]) {
 
   // // STIFFNESS INTERPOLATION TEST
   // ros::ServiceClient client1 =
-  // n.serviceClient<motion::StiffnessInterp>("/motion/stiffnessInterpolation");
-  // motion::StiffnessInterp srv;
+  // n.serviceClient<motion_msgs::StiffnessInterp>("/motion/stiffnessInterpolation");
+  // motion_msgs::StiffnessInterp srv;
 
-  // motion::StiffnessInterp serv;
+  // motion_msgs::StiffnessInterp serv;
   // serv.request.stiffness_lists.resize(2);
   // serv.request.time_lists.resize(2);
   // serv.request.names.push_back("HeadYaw");
@@ -103,8 +102,8 @@ int main(int argc, char *argv[]) {
   // sleep(1);
 
   // ros::ServiceClient client2 =
-  // n.serviceClient<motion::GetTaskList>("motion/getTaskList");
-  // motion::GetTaskList srv2;
+  // n.serviceClient<motion_msgs::GetTaskList>("motion_msgs/getTaskList");
+  // motion_msgs::GetTaskList srv2;
 
   // if (client2.call(srv2)){
   //   DEBUG("getTaskList Worked!" << std::endl);
@@ -122,7 +121,7 @@ int main(int argc, char *argv[]) {
   // sleep(1);
 
   // ros::ServiceClient client3 =
-  // n.serviceClient<std_srvs::Empty>("motion/killAll");
+  // n.serviceClient<std_srvs::Empty>("motion_msgs/killAll");
   // std_srvs::Empty srv3;
 
   // if (client3.call(srv3)){
@@ -134,15 +133,15 @@ int main(int argc, char *argv[]) {
 
   // ANGLE INTERPOLATION TEST
   // ros::ServiceClient client1 =
-  //   n.serviceClient<motion::setEffectorControl>("/motion/setEffectorControl",
+  //   n.serviceClient<motion_msgs::setEffectorControl>("/motion/setEffectorControl",
   //       true);
-  // motion::setEffectorControl srv1;
+  // motion_msgs::setEffectorControl srv1;
   // ros::ServiceClient client2 =
-  // n.serviceClient<motion::PositionInterpolation>
+  // n.serviceClient<motion_msgs::PositionInterpolation>
   // ("/motion/positionInterpolation", true);
-  // motion::PositionInterpolation srv2;
+  // motion_msgs::PositionInterpolation srv2;
 
-  // motion::PositionInterpolation serv;
+  // motion_msgs::PositionInterpolation serv;
   // serv.request.target_velocity.resize(1);
   // serv.request.norm_velocity.x = 0.2f;
   // serv.request.norm_velocity.y = 0.0f;
@@ -222,8 +221,8 @@ int main(int argc, char *argv[]) {
 
   // ANGLE INTERPOLATION TEST
   ros::ServiceClient client1 =
-    n.serviceClient<motion::AngleInterp>("/motion/angle_interp");
-  motion::AngleInterp srv;
+    n.serviceClient<motion_msgs::AngleInterp>("/motion/angle_interp");
+  motion_msgs::AngleInterp srv;
 
   srv.request.angle_lists.resize(1);
   srv.request.time_lists.resize(1);
@@ -238,155 +237,155 @@ int main(int argc, char *argv[]) {
   srv.request.is_absolute = true;
 
   if (client1.call(srv)) {
-    DEBUG("angleInterpolation Worked!" << std::endl);
+    ROS_INFO_STREAM("angleInterpolation Worked!");
   } else {
-    ERR("Failed to call angleInterpolation service" << std::endl);
+    ROS_ERROR("Failed to call angleInterpolation service");
   }
 
-// srv1.request.name = "RArm";
-// srv1.request.space = FRAME_TORSO;
-// srv1.request.use_sensor_values = false;
+  // srv1.request.name = "RArm";
+  // srv1.request.space = FRAME_TORSO;
+  // srv1.request.use_sensor_values = false;
 
-// if (client1.call(srv1)) {
-//   DEBUG("getTransform Worked!" << std::endl);
-//   DEBUG("Transform: ")
-//   for (size_t i = 0; i < 16; ++i) {
-//     DEBUG(srv1.response.transform[i] << ", ")
-//   }
-//   DEBUG(std::endl);
-// } else {
-//   ERR("Failed to call getTransform service" << std::endl);
-// }
+  // if (client1.call(srv1)) {
+  //   DEBUG("getTransform Worked!" << std::endl);
+  //   DEBUG("Transform: ")
+  //   for (size_t i = 0; i < 16; ++i) {
+  //     DEBUG(srv1.response.transform[i] << ", ")
+  //   }
+  //   DEBUG(std::endl);
+  // } else {
+  //   ERR("Failed to call getTransform service" << std::endl);
+  // }
 
-// srv1.request.effector_names.resize(2);
-// srv1.request.effector_names[0] = "LArm";
-// srv1.request.effector_names[1] = "RArm";
-// srv1.request.space = FRAME_ROBOT;
+  // srv1.request.effector_names.resize(2);
+  // srv1.request.effector_names[0] = "LArm";
+  // srv1.request.effector_names[1] = "RArm";
+  // srv1.request.space = FRAME_ROBOT;
 
-// srv1.request.paths.resize(2);
-// srv1.request.paths[0].traj_points.resize(1);
-// srv1.request.paths[1].traj_points.resize(1);
-// srv1.request.paths[0].traj_points[0].float_list.push_back(0.0f);
-// srv1.request.paths[0].traj_points[0].float_list.push_back(-0.04f);
-// srv1.request.paths[0].traj_points[0].float_list.push_back(0.0f);
-// srv1.request.paths[0].traj_points[0].float_list.push_back(0.0f);
-// srv1.request.paths[0].traj_points[0].float_list.push_back(0.0f);
-// srv1.request.paths[0].traj_points[0].float_list.push_back(0.0f);
-// srv1.request.paths[1].traj_points[0].float_list.push_back(0.0f);
-// srv1.request.paths[1].traj_points[0].float_list.push_back(0.04f);
-// srv1.request.paths[1].traj_points[0].float_list.push_back(0.0f);
-// srv1.request.paths[1].traj_points[0].float_list.push_back(0.0f);
-// srv1.request.paths[1].traj_points[0].float_list.push_back(0.0f);
-// srv1.request.paths[1].traj_points[0].float_list.push_back(0.0f);
-// srv1.request.axis_masks.resize(2);
-// srv1.request.axis_masks[0] = AXIS_MASK_VEL;
-// srv1.request.axis_masks[1] = AXIS_MASK_VEL;
-// srv1.request.durations.resize(2);
-// srv1.request.durations[0].float_list.push_back(1.0f);
-// srv1.request.durations[1].float_list.push_back(1.0f);
-// srv1.request.is_absolute = false;
+  // srv1.request.paths.resize(2);
+  // srv1.request.paths[0].traj_points.resize(1);
+  // srv1.request.paths[1].traj_points.resize(1);
+  // srv1.request.paths[0].traj_points[0].float_list.push_back(0.0f);
+  // srv1.request.paths[0].traj_points[0].float_list.push_back(-0.04f);
+  // srv1.request.paths[0].traj_points[0].float_list.push_back(0.0f);
+  // srv1.request.paths[0].traj_points[0].float_list.push_back(0.0f);
+  // srv1.request.paths[0].traj_points[0].float_list.push_back(0.0f);
+  // srv1.request.paths[0].traj_points[0].float_list.push_back(0.0f);
+  // srv1.request.paths[1].traj_points[0].float_list.push_back(0.0f);
+  // srv1.request.paths[1].traj_points[0].float_list.push_back(0.04f);
+  // srv1.request.paths[1].traj_points[0].float_list.push_back(0.0f);
+  // srv1.request.paths[1].traj_points[0].float_list.push_back(0.0f);
+  // srv1.request.paths[1].traj_points[0].float_list.push_back(0.0f);
+  // srv1.request.paths[1].traj_points[0].float_list.push_back(0.0f);
+  // srv1.request.axis_masks.resize(2);
+  // srv1.request.axis_masks[0] = AXIS_MASK_VEL;
+  // srv1.request.axis_masks[1] = AXIS_MASK_VEL;
+  // srv1.request.durations.resize(2);
+  // srv1.request.durations[0].float_list.push_back(1.0f);
+  // srv1.request.durations[1].float_list.push_back(1.0f);
+  // srv1.request.is_absolute = false;
 
-// if (client1.call(srv1)) {
-//   DEBUG("positionsInterp1 Worked!" << std::endl);
-// } else {
-//   ERR("Failed to call positionInterp1 service" << std::endl);
-// }
+  // if (client1.call(srv1)) {
+  //   DEBUG("positionsInterp1 Worked!" << std::endl);
+  // } else {
+  //   ERR("Failed to call positionInterp1 service" << std::endl);
+  // }
 
-// float dx = 0.03;
-// float dy = 0.04;
-// srv2.request.effector_names.resize(3);
-// srv2.request.effector_names[0] = "LArm";
-// srv2.request.effector_names[1] = "RArm";
-// srv2.request.effector_names[2] = "Torso";
-// srv2.request.space = FRAME_ROBOT;
-// srv2.request.paths.resize(3);
-// srv2.request.paths[0].traj_points.resize(1);
-// srv2.request.paths[1].traj_points.resize(1);
-// srv2.request.paths[2].traj_points.resize(4);
-// srv2.request.paths[0].traj_points[0].float_list.push_back(0.0f);
-// srv2.request.paths[0].traj_points[0].float_list.push_back(-0.04f);
-// srv2.request.paths[0].traj_points[0].float_list.push_back(0.0f);
-// srv2.request.paths[0].traj_points[0].float_list.push_back(0.0f);
-// srv2.request.paths[0].traj_points[0].float_list.push_back(0.0f);
-// srv2.request.paths[0].traj_points[0].float_list.push_back(0.0f);
-// srv2.request.paths[1].traj_points[0].float_list.push_back(0.0f);
-// srv2.request.paths[1].traj_points[0].float_list.push_back(0.04f);
-// srv2.request.paths[1].traj_points[0].float_list.push_back(0.0f);
-// srv2.request.paths[1].traj_points[0].float_list.push_back(0.0f);
-// srv2.request.paths[1].traj_points[0].float_list.push_back(0.0f);
-// srv2.request.paths[1].traj_points[0].float_list.push_back(0.0f);
-// srv2.request.paths[2].traj_points[0].float_list.push_back(0.0f);
-// srv2.request.paths[2].traj_points[0].float_list.push_back(dy);
-// srv2.request.paths[2].traj_points[0].float_list.push_back(0.0f);
-// srv2.request.paths[2].traj_points[0].float_list.push_back(0.0f);
-// srv2.request.paths[2].traj_points[0].float_list.push_back(0.0f);
-// srv2.request.paths[2].traj_points[0].float_list.push_back(0.0f);
-// srv2.request.paths[2].traj_points[1].float_list.push_back(-dx);
-// srv2.request.paths[2].traj_points[1].float_list.push_back(0.0f);
-// srv2.request.paths[2].traj_points[1].float_list.push_back(0.0f);
-// srv2.request.paths[2].traj_points[1].float_list.push_back(0.0f);
-// srv2.request.paths[2].traj_points[1].float_list.push_back(0.0f);
-// srv2.request.paths[2].traj_points[1].float_list.push_back(0.0f);
-// srv2.request.paths[2].traj_points[2].float_list.push_back(0.0f);
-// srv2.request.paths[2].traj_points[2].float_list.push_back(-dy);
-// srv2.request.paths[2].traj_points[2].float_list.push_back(0.0f);
-// srv2.request.paths[2].traj_points[2].float_list.push_back(0.0f);
-// srv2.request.paths[2].traj_points[2].float_list.push_back(0.0f);
-// srv2.request.paths[2].traj_points[2].float_list.push_back(0.0f);
-// srv2.request.paths[2].traj_points[3].float_list.push_back(0.0f);
-// srv2.request.paths[2].traj_points[3].float_list.push_back(0.0f);
-// srv2.request.paths[2].traj_points[3].float_list.push_back(0.0f);
-// srv2.request.paths[2].traj_points[3].float_list.push_back(0.0f);
-// srv2.request.paths[2].traj_points[3].float_list.push_back(0.0f);
-// srv2.request.paths[2].traj_points[3].float_list.push_back(0.0f);
-// srv2.request.axis_masks.resize(3);
-// srv2.request.axis_masks[0] = AXIS_MASK_VEL;
-// srv2.request.axis_masks[1] = AXIS_MASK_VEL;
-// srv2.request.axis_masks[2] = AXIS_MASK_ALL;
-// srv2.request.durations.resize(3);
-// srv2.request.durations[0].float_list.push_back(1.0f);
-// srv2.request.durations[1].float_list.push_back(1.0f);
-// srv2.request.durations[2].float_list.push_back(1.0f);
-// srv2.request.durations[2].float_list.push_back(2.0f);
-// srv2.request.durations[2].float_list.push_back(3.0f);
-// srv2.request.durations[2].float_list.push_back(4.0f);
-// srv2.request.is_absolute = false;
+  // float dx = 0.03;
+  // float dy = 0.04;
+  // srv2.request.effector_names.resize(3);
+  // srv2.request.effector_names[0] = "LArm";
+  // srv2.request.effector_names[1] = "RArm";
+  // srv2.request.effector_names[2] = "Torso";
+  // srv2.request.space = FRAME_ROBOT;
+  // srv2.request.paths.resize(3);
+  // srv2.request.paths[0].traj_points.resize(1);
+  // srv2.request.paths[1].traj_points.resize(1);
+  // srv2.request.paths[2].traj_points.resize(4);
+  // srv2.request.paths[0].traj_points[0].float_list.push_back(0.0f);
+  // srv2.request.paths[0].traj_points[0].float_list.push_back(-0.04f);
+  // srv2.request.paths[0].traj_points[0].float_list.push_back(0.0f);
+  // srv2.request.paths[0].traj_points[0].float_list.push_back(0.0f);
+  // srv2.request.paths[0].traj_points[0].float_list.push_back(0.0f);
+  // srv2.request.paths[0].traj_points[0].float_list.push_back(0.0f);
+  // srv2.request.paths[1].traj_points[0].float_list.push_back(0.0f);
+  // srv2.request.paths[1].traj_points[0].float_list.push_back(0.04f);
+  // srv2.request.paths[1].traj_points[0].float_list.push_back(0.0f);
+  // srv2.request.paths[1].traj_points[0].float_list.push_back(0.0f);
+  // srv2.request.paths[1].traj_points[0].float_list.push_back(0.0f);
+  // srv2.request.paths[1].traj_points[0].float_list.push_back(0.0f);
+  // srv2.request.paths[2].traj_points[0].float_list.push_back(0.0f);
+  // srv2.request.paths[2].traj_points[0].float_list.push_back(dy);
+  // srv2.request.paths[2].traj_points[0].float_list.push_back(0.0f);
+  // srv2.request.paths[2].traj_points[0].float_list.push_back(0.0f);
+  // srv2.request.paths[2].traj_points[0].float_list.push_back(0.0f);
+  // srv2.request.paths[2].traj_points[0].float_list.push_back(0.0f);
+  // srv2.request.paths[2].traj_points[1].float_list.push_back(-dx);
+  // srv2.request.paths[2].traj_points[1].float_list.push_back(0.0f);
+  // srv2.request.paths[2].traj_points[1].float_list.push_back(0.0f);
+  // srv2.request.paths[2].traj_points[1].float_list.push_back(0.0f);
+  // srv2.request.paths[2].traj_points[1].float_list.push_back(0.0f);
+  // srv2.request.paths[2].traj_points[1].float_list.push_back(0.0f);
+  // srv2.request.paths[2].traj_points[2].float_list.push_back(0.0f);
+  // srv2.request.paths[2].traj_points[2].float_list.push_back(-dy);
+  // srv2.request.paths[2].traj_points[2].float_list.push_back(0.0f);
+  // srv2.request.paths[2].traj_points[2].float_list.push_back(0.0f);
+  // srv2.request.paths[2].traj_points[2].float_list.push_back(0.0f);
+  // srv2.request.paths[2].traj_points[2].float_list.push_back(0.0f);
+  // srv2.request.paths[2].traj_points[3].float_list.push_back(0.0f);
+  // srv2.request.paths[2].traj_points[3].float_list.push_back(0.0f);
+  // srv2.request.paths[2].traj_points[3].float_list.push_back(0.0f);
+  // srv2.request.paths[2].traj_points[3].float_list.push_back(0.0f);
+  // srv2.request.paths[2].traj_points[3].float_list.push_back(0.0f);
+  // srv2.request.paths[2].traj_points[3].float_list.push_back(0.0f);
+  // srv2.request.axis_masks.resize(3);
+  // srv2.request.axis_masks[0] = AXIS_MASK_VEL;
+  // srv2.request.axis_masks[1] = AXIS_MASK_VEL;
+  // srv2.request.axis_masks[2] = AXIS_MASK_ALL;
+  // srv2.request.durations.resize(3);
+  // srv2.request.durations[0].float_list.push_back(1.0f);
+  // srv2.request.durations[1].float_list.push_back(1.0f);
+  // srv2.request.durations[2].float_list.push_back(1.0f);
+  // srv2.request.durations[2].float_list.push_back(2.0f);
+  // srv2.request.durations[2].float_list.push_back(3.0f);
+  // srv2.request.durations[2].float_list.push_back(4.0f);
+  // srv2.request.is_absolute = false;
 
-// if (client2.call(srv2)) {
-//   DEBUG("positionsInterp2 Worked!" << std::endl);
-// } else {
-//   ERR("Failed to call positionInterp2 service" << std::endl);
-// }
+  // if (client2.call(srv2)) {
+  //   DEBUG("positionsInterp2 Worked!" << std::endl);
+  // } else {
+  //   ERR("Failed to call positionInterp2 service" << std::endl);
+  // }
 
-// srv.request.names.resize(1);
-// srv.request.names[0] = "RArm";
-// srv.request.use_sensors = true;
-// int nSucc;
+  // srv.request.names.resize(1);
+  // srv.request.names[0] = "RArm";
+  // srv.request.use_sensors = true;
+  // int nSucc;
 
 
-// clock_t begin = clock();
+  // clock_t begin = clock();
 
-// for (int i = 0; i < 100; ++i) {
-//   if (client1.call(srv)) {
-//     // DEBUG("moveToward Worked!" << std::endl);
-//     nSucc++;
-//   } else {
-//     // ERR("Failed to call moveToward service" << std::endl);
-//   }
-// }
+  // for (int i = 0; i < 100; ++i) {
+  //   if (client1.call(srv)) {
+  //     // DEBUG("moveToward Worked!" << std::endl);
+  //     nSucc++;
+  //   } else {
+  //     // ERR("Failed to call moveToward service" << std::endl);
+  //   }
+  // }
 
-// clock_t end = clock();
-// double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+  // clock_t end = clock();
+  // double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
 
-// cout
-//     << "Succ: " << nSucc
-//     << " Dur: " << elapsed_secs
-//     << " Clock: " << CLOCKS_PER_SEC
-//     << std::endl;
+  // cout
+  //     << "Succ: " << nSucc
+  //     << " Dur: " << elapsed_secs
+  //     << " Clock: " << CLOCKS_PER_SEC
+  //     << std::endl;
 
-// while (ros::ok()) {
-//   ros::spinOnce();
-//   r.sleep();
-// }
+  // while (ros::ok()) {
+  //   ros::spinOnce();
+  //   r.sleep();
+  // }
   return 0;
 }

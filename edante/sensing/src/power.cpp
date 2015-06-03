@@ -5,7 +5,7 @@
 * @Desc:      ROS wrapper for Nao's power sensors
 */
 
-#include "power.h"
+#include "sensing/power.hpp"
 
 #include <alvalue/alvalue.h>
 #include <alcommon/alproxy.h>
@@ -42,11 +42,11 @@ void Power::init() {
     fMemoryProxy.subscribeToEvent("HotJointDetected", "Power",
                                   "hotJointDetected");
   } catch (const AL::ALError& e) {
-    DEBUG(e.what() << std::endl);
+    ROS_DEBUG_STREAM(e.what());
   }
 }
 
-void Power::rosSetup(ros::NodeHandle * nh) {
+void Power::rosSetup(ros::NodeHandle* nh) {
   nh_ = nh;
   power_status_pub_ = nh_->advertise<std_msgs::String>("power_status", 10);
   power_charge_pub_ = nh_->advertise<std_msgs::Int32>("power_charge", 10);
@@ -64,5 +64,5 @@ void Power::powerPub() {
 
 void Power::hotJointDetected() {
   AL::ALCriticalSection section(fCallbackMutex);
-  ERR("Hot Joint Detected!");
+  ROS_WARN("Hot Joint Detected!");
 }

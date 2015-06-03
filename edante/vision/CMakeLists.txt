@@ -8,11 +8,9 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   image_geometry
   image_transport
-  std_msgs
-  sensor_msgs
-  geometry_msgs
-  message_generation
   camera
+  vision_msgs
+  motion_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -49,10 +47,11 @@ find_package(OpenCV REQUIRED)
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-add_message_files(
-  FILES
-  BallDetection.msg
-)
+# add_message_files(
+#   FILES
+#   Message1.msg
+#   Message2.msg
+# )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -69,11 +68,10 @@ add_message_files(
 # )
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages(
-  DEPENDENCIES
-  std_msgs
-  geometry_msgs
-)
+# generate_messages(
+#   DEPENDENCIES
+#   geometry_msgs#   sensor_msgs
+# )
 
 ###################################
 ## catkin specific configuration ##
@@ -119,7 +117,7 @@ add_executable(vision
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(vision vision_generate_messages_cpp)
+add_dependencies(vision vision_msgs motion_msgs)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(vision

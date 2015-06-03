@@ -1,5 +1,10 @@
 #!/bin/bash
-packages=($(ls ./edante/))
+if [ "$#" -eq 1 ]; then
+  packages=("$1")
+else
+  packages=($(ls ./edante/) $(ls ./edante/edante_msgs/))
+fi
+
 white_list=$(printf "%s;" "${packages[@]}")
 
 cd ./../..

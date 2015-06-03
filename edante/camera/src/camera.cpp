@@ -5,8 +5,8 @@
 *      @Desc: Implementation of the Camera class.
 */
 #include "camera/camera.hpp"
-#include <cstring>
 
+#include <cstring>
 
 #include <sensor_msgs/image_encodings.h>
 /**

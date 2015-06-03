@@ -5,7 +5,7 @@
 * @Desc:      ROS wrapper for Nao's fsr sensors
 */
 
-#include "fsr.h"
+#include "sensing/fsr.hpp"
 
 #include <alvalue/alvalue.h>
 #include <alcommon/alproxy.h>
@@ -35,7 +35,7 @@ void Fsr::init() {
     fMemoryProxy.subscribeToEvent("footContactChanged", "Fsr",
                                   "pubContact");
   } catch (const AL::ALError& e) {
-    DEBUG(e.what() << std::endl);
+    ROS_ERROR_STREAM(e.what());
   }
 }
 
@@ -43,7 +43,7 @@ void Fsr::rosSetup(ros::NodeHandle* nh, bool pubFsrs) {
   nh_ = nh;
   pubFsrs_ = pubFsrs;
   fsr_contact_pub_ = nh_->advertise<std_msgs::Bool>("fsr_contact", 10);
-  fsr_data_pub_ = nh_->advertise<sensing::Fsr>("fsr_data", 10);
+  fsr_data_pub_ = nh_->advertise<sensing_msgs::Fsr>("fsr_data", 10);
   srv_enab_fsr_ = nh_->advertiseService("enable_fsr_pub",
                                         &Fsr::enableFsrPub, this);
 }
@@ -63,7 +63,7 @@ void Fsr::pubContact() {
 
 void Fsr::pubFsr() {
   AL::ALCriticalSection section(fCallbackMutex);
-  sensing::Fsr msg;
+  sensing_msgs::Fsr msg;
   if (static_cast<float>(fMemoryProxy.getData("leftFootContact")) > 0.5f)
   {msg.left_contact = true;} else {msg.left_contact = false;}
   if (static_cast<float>(fMemoryProxy.getData("rightFootContact")) > 0.5f)
@@ -75,8 +75,8 @@ void Fsr::pubFsr() {
   fsr_data_pub_.publish(msg);
 }
 
-bool Fsr::enableFsrPub(sensing::Enable::Request &req,
-                       sensing::Enable::Response &res) {
+bool Fsr::enableFsrPub(sensing_msgs::Enable::Request& req,
+                       sensing_msgs::Enable::Response& res) {
   pubFsrs_ = req.is_enabled;
   return true;
 }

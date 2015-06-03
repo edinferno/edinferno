@@ -6,7 +6,7 @@
  * @copyright (MIT) 2015 Edinferno
  */
 
-#include "stiffness_control.h"
+#include "motion/stiffness_control.hpp"
 
 #include <alvalue/alvalue.h>
 #include <alcommon/alproxy.h>
@@ -33,22 +33,22 @@ void StiffnessControl::init() {
     fMemoryProxy = AL::ALMemoryProxy(getParentBroker());
     mProxy_ = AL::ALMotionProxy(getParentBroker());
   } catch (const AL::ALError& e) {
-    DEBUG(e.what() << std::endl);
+    ROS_ERROR_STREAM(e.what());
   }
 }
 
 void StiffnessControl::rosSetup(ros::NodeHandle* nh) {
   nh_ = nh;
-  INFO("Setting up Stiffness Control publishers" << std::endl);
+  ROS_INFO_STREAM("Setting up Stiffness Control publishers");
   wake_pub_ = nh_->advertise<std_msgs::Bool>("is_awake", 10, true);
 
-  INFO("Setting up Stiffness Control services" << std::endl);
+  ROS_INFO_STREAM("Setting up Stiffness Control services");
   srv_wake_up_ = nh_->advertiseService("wake_up",
                                        &StiffnessControl::wakeUp, this);
   srv_rest_ = nh_->advertiseService("rest",
                                     &StiffnessControl::rest, this);
   stiffness_interp_ = nh_->advertiseService("stiffness_interpolation",
-                      &StiffnessControl::stiffnessInterp, this);
+                                            &StiffnessControl::stiffnessInterp, this);
   set_stiffness_ =
     nh_->advertiseService("set_stiffness",
                           &StiffnessControl::setStiffness, this);
@@ -59,16 +59,16 @@ void StiffnessControl::rosSetup(ros::NodeHandle* nh) {
   wake_pub_.publish(awake_);
 }
 
-bool StiffnessControl::wakeUp(std_srvs::Empty::Request &req,
-                              std_srvs::Empty::Response &res) {
+bool StiffnessControl::wakeUp(std_srvs::Empty::Request& req,
+                              std_srvs::Empty::Response& res) {
   mProxy_.wakeUp();
   awake_.data = true;
   wake_pub_.publish(awake_);
   return true;
 }
 
-bool StiffnessControl::rest(std_srvs::Empty::Request &req,
-                            std_srvs::Empty::Response &res) {
+bool StiffnessControl::rest(std_srvs::Empty::Request& req,
+                            std_srvs::Empty::Response& res) {
   mProxy_.rest();
   awake_.data = false;
   wake_pub_.publish(awake_);
@@ -76,8 +76,8 @@ bool StiffnessControl::rest(std_srvs::Empty::Request &req,
 }
 
 bool StiffnessControl::stiffnessInterp(
-  motion::StiffnessInterp::Request &req,
-  motion::StiffnessInterp::Response &res) {
+  motion_msgs::StiffnessInterp::Request& req,
+  motion_msgs::StiffnessInterp::Response& res) {
   size_t s = req.names.size();
 
   AL::ALValue stiffness_lists;
@@ -99,8 +99,8 @@ bool StiffnessControl::stiffnessInterp(
   return true;
 }
 
-bool StiffnessControl::setStiffness(motion::SetStiffness::Request &req,
-                                    motion::SetStiffness::Response &res) {
+bool StiffnessControl::setStiffness(motion_msgs::SetStiffness::Request& req,
+                                    motion_msgs::SetStiffness::Response& res) {
   bool nameIsVect;
   string jointName;
   vector<string> jointNameVect;
@@ -141,8 +141,8 @@ bool StiffnessControl::setStiffness(motion::SetStiffness::Request &req,
   return true;
 }
 
-bool StiffnessControl::getStiffness(motion::GetStiffness::Request &req,
-                                    motion::GetStiffness::Response &res) {
+bool StiffnessControl::getStiffness(motion_msgs::GetStiffness::Request& req,
+                                    motion_msgs::GetStiffness::Response& res) {
   res.stiffnesses = mProxy_.getStiffnesses(req.names);
   return true;
 }

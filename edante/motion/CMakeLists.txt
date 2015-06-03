@@ -1,23 +1,12 @@
-cmake_minimum_required(VERSION 2.8.3)
+ cmake_minimum_required(VERSION 2.8.3)
 project(motion)
-
-include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
-if(COMPILER_SUPPORTS_CXX11)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
-elseif(COMPILER_SUPPORTS_CXX0X)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall")
-else()
-        message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
-endif()
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
  roscpp
- message_generation)
+ motion_msgs)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -27,75 +16,31 @@ find_package(catkin REQUIRED COMPONENTS
 ## Declare ROS messages and services ##
 #######################################
 
-# Generate messages in the 'msg' folder
-add_message_files(
-  FILES
-  Float32List.msg
-  # LocomotionControl
-  Velocity.msg
-  Position.msg
-  MoveConfiguration.msg
-  # CartesianControl
-  Path.msg
-  # MotionTask
-  Task.msg
-)
+## Generate messages in the 'msg' folder
+# add_message_files(
+#   FILES
+#   Message1.msg
+#   Message2.msg
+# )
 
 ## Generate services in the 'srv' folder
-add_service_files(
-  FILES
-  # General
-  Enable.srv
-  IsEnabled.srv
-  # StiffnessControl
-  StiffnessInterp.srv
-  SetStiffness.srv
-  GetStiffness.srv
-  # JointControl
-  AngleInterp.srv
-  AngleInterpSpeed.srv
-  SetAngles.srv
-  ChangeAngles.srv
-  GetAngles.srv
-  UseHand.srv
-  # Locomotion_control
-  Move.srv
-  MoveTo.srv
-  MoveToward.srv
-  GetMoveConfig.srv
-  GetRobotPosition.srv
-  GetNextRobotPosition.srv
-  GetRobotVelocity.srv
-  GetWalkArmsEnabled.srv
-  SetWalkArmsEnabled.srv
-  # CartesianControl
-  PositionInterpolation.srv
-  PositionInterpolations.srv
-  SetPosition.srv
-  ChangePosition.srv
-  GetPosition.srv
-  GetTransform.srv
-  # BodyBalancer
-  FootState.srv
-  EnableBalanceConstraint.srv
-  GoToBalance.srv
-  EnableEffector.srv
-  SetEffectorControl.srv
-  # MotionTask
-  GetTaskList.srv
-  AreResourcesAvailable.srv
-  TaskResource.srv
-  # RobotPosture
-  GetPostureList.srv
-  SetPosture.srv
-  GetPostureFamily.srv
-  SetMaxTryNumber.srv
-)
+# add_service_files(
+#   FILES
+#   Service1.srv
+#   Service2.srv
+# )
+
+## Generate actions in the 'action' folder
+# add_action_files(
+#   FILES
+#   Action1.action
+#   Action2.action
+# )
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages(
-  DEPENDENCIES
-)
+# generate_messages(
+#   DEPENDENCIES
+# )
 
 ###################################
 ## catkin specific configuration ##
@@ -106,9 +51,9 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-   INCLUDE_DIRS include
+#  INCLUDE_DIRS include
 #  LIBRARIES motion
-  CATKIN_DEPENDS roscpp
+#  CATKIN_DEPENDS roscpp
 #  DEPENDS system_lib
 )
 
@@ -116,9 +61,12 @@ catkin_package(
 ## Build ##
 ###########
 
+set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -O2")
+
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(include
+include_directories(
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -147,9 +95,9 @@ add_executable(joy_remote
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(motion motion_generate_messages_cpp)
-add_dependencies(srv_test motion_generate_messages_cpp)
-add_dependencies(joy_remote motion_generate_messages_cpp)
+add_dependencies(motion motion_msgs)
+add_dependencies(srv_test motion_msgs)
+add_dependencies(joy_remote motion_msgs)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(motion

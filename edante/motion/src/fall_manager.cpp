@@ -6,7 +6,7 @@
  * @copyright (MIT) 2015 Edinferno
  */
 
-#include "fall_manager.h"
+#include "motion/fall_manager.hpp"
 
 #include <alvalue/alvalue.h>
 #include <alcommon/alproxy.h>
@@ -35,19 +35,19 @@ void FallManager::init() {
     mProxy_ = AL::ALMotionProxy(getParentBroker());
     fMemoryProxy.subscribeToEvent("robotHasFallen", "FallManager", "hasFallen");
   } catch (const AL::ALError& e) {
-    DEBUG(e.what() << std::endl);
+    ROS_ERROR_STREAM(e.what());
   }
 }
 
 void FallManager::rosSetup(ros::NodeHandle* nh) {
   nh_ = nh;
-  INFO("Setting up Fall Manager publishers" << std::endl);
+  ROS_INFO_STREAM("Setting up Fall Manager publishers");
   has_fallen_pub_ = nh_->advertise<std_msgs::Bool>("has_fallen", 10, true);
-  INFO("Setting up Fall Manager services" << std::endl);
+  ROS_INFO_STREAM("Setting up Fall Manager services");
   srv_set_fall_manager_ = nh_->advertiseService("set_fall_manager_enabled",
-                          &FallManager::setFallManagerEnabled, this);
+                                                &FallManager::setFallManagerEnabled, this);
   srv_get_fall_manager_ = nh_->advertiseService("get_fall_manager_enabled",
-                          &FallManager::getFallManagerEnabled, this);
+                                                &FallManager::getFallManagerEnabled, this);
   fallen_.data = false;
   has_fallen_pub_.publish(fallen_);
 }
@@ -59,14 +59,14 @@ void FallManager::hasFallen() {
 }
 
 // ROS services
-bool FallManager::setFallManagerEnabled(motion::Enable::Request &req,
-                                        motion::Enable::Response &res) {
+bool FallManager::setFallManagerEnabled(motion_msgs::Enable::Request& req,
+                                        motion_msgs::Enable::Response& res) {
   mProxy_.setFallManagerEnabled(req.is_enabled);
   return true;
 }
 
-bool FallManager::getFallManagerEnabled(motion::IsEnabled::Request &req,
-                                        motion::IsEnabled::Response &res) {
+bool FallManager::getFallManagerEnabled(motion_msgs::IsEnabled::Request& req,
+                                        motion_msgs::IsEnabled::Response& res) {
   res.is_enabled = mProxy_.getFallManagerEnabled();
   return true;
 }

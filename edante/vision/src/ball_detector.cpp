@@ -5,13 +5,14 @@
 *      @desc: The class finds the ball in a segmented image.
 */
 #include "vision/ball_detector.hpp"
+// Camera
+#include <camera/color_table.hpp>
 
+// OpenCV
 #include <opencv2/imgproc/imgproc.hpp>
 
-#include "motion/GetTransform.h"
-
-#include "camera/color_table.hpp"
-
+// Messages
+#include "motion_msgs/GetTransform.h"
 
 using std::vector;
 
@@ -26,8 +27,8 @@ const double BallDetector::kBallRadius = 0.03;
  * @param nh The node handle to be used.
  */
 BallDetector::BallDetector(ros::NodeHandle& nh) :
-  ball_detection_pub_(nh.advertise<vision::BallDetection>("ball", 5)),
-  transform_client_(nh.serviceClient<motion::GetTransform>(
+  ball_detection_pub_(nh.advertise<vision_msgs::BallDetection>("ball", 5)),
+  transform_client_(nh.serviceClient<motion_msgs::GetTransform>(
                       "/motion/get_transform", true)) {
 }
 /**
@@ -96,7 +97,7 @@ void BallDetector::ThresholdImage(cv::Mat& image) {
  *             position and radius if the ball is found.
  */
 void BallDetector::FindBall(cv::Mat& image,
-                            vision::BallDetection& ball) {
+                            vision_msgs::BallDetection& ball) {
   cv::findContours(image, contours_, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
 
   double max_area = -1;
@@ -144,7 +145,7 @@ void BallDetector::FindBall(cv::Mat& image,
  */
 void BallDetector::EstimateBallPos3D(
   const sensor_msgs::CameraInfo& cam_info,
-  vision::BallDetection& ball) {
+  vision_msgs::BallDetection& ball) {
   // Update the camera model
   cam_model_.fromCameraInfo(cam_info);
   // Calculate the undistorted 2d position
@@ -168,7 +169,7 @@ void BallDetector::EstimateBallPos3D(
   pos_3d.z = -cam_pos_3d.y;
 
   // Get the camera frame to robot frame transformation
-  motion::GetTransform srv;
+  motion_msgs::GetTransform srv;
   if (ball.header.frame_id == "top_camera") {
     srv.request.name = "CameraTop";
   } else {

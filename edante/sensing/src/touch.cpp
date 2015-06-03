@@ -5,7 +5,7 @@
 * @Desc:      Testing ALModule and ROS topic integration
 */
 
-#include "touch.h"
+#include "sensing/touch.hpp"
 
 #include <alvalue/alvalue.h>
 #include <alcommon/alproxy.h>
@@ -14,9 +14,8 @@
 
 #include <qi/log.hpp>
 
-Touch::Touch(
-  boost::shared_ptr<AL::ALBroker> broker,
-  const std::string& name): AL::ALModule(broker, name),
+Touch::Touch(boost::shared_ptr<AL::ALBroker> broker, const std::string& name) :
+  AL::ALModule(broker, name),
   fCallbackMutex(AL::ALMutex::createALMutex()) {
   qi::log::setVerbosity(qi::log::silent);
   // setModuleDescription("Sensing Test module.");
@@ -109,17 +108,17 @@ void Touch::init() {
     fMemoryProxy.subscribeToEvent("ALSentinel/TripleClickOccured", "Touch",
                                   "tripleChestClick");
   } catch (const AL::ALError& e) {
-    DEBUG(e.what() << std::endl);
+    ROS_ERROR_STREAM(e.what());
   }
 }
 
 void Touch::rosSetup(ros::NodeHandle* nh) {
   nh_ = nh;
-  bumpers_pub_ = nh_->advertise<sensing::Bumpers>("bumpers", 10);
+  bumpers_pub_ = nh_->advertise<sensing_msgs::Bumpers>("bumpers", 10);
   chest_pub_ = nh_->advertise<std_msgs::String>("chest", 10);
-  head_pub_ = nh_->advertise<sensing::Head>("head", 10);
-  right_hand_pub_ = nh_->advertise<sensing::Hand>("right_hand", 10);
-  left_hand_pub_ = nh_->advertise<sensing::Hand>("left_hand", 10);
+  head_pub_ = nh_->advertise<sensing_msgs::Head>("head", 10);
+  right_hand_pub_ = nh_->advertise<sensing_msgs::Hand>("right_hand", 10);
+  left_hand_pub_ = nh_->advertise<sensing_msgs::Hand>("left_hand", 10);
 }
 
 void Touch::rightBumperPressed() {

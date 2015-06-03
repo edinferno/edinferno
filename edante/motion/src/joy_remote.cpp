@@ -6,12 +6,12 @@
  * @copyright (MIT) 2015 Edinferno
  */
 
-#include "joy_remote.h"
+#include "motion/joy_remote.hpp"
 
 JoyRemote::JoyRemote(ros::NodeHandle* nh) {
   nh_ = nh;
   joy_sub_ = nh_->subscribe("joy", 1000, &JoyRemote::joyCallback, this);
-  moveTowardClient = nh_->serviceClient<motion::MoveToward>(
+  moveTowardClient = nh_->serviceClient<motion_msgs::MoveToward>(
                        "/motion/move_toward", true);
   moveTowardClient.waitForExistence();
   wakeUpClient = nh_->serviceClient<std_srvs::Empty>(
@@ -20,7 +20,7 @@ JoyRemote::JoyRemote(ros::NodeHandle* nh) {
   moveInitClient = nh_->serviceClient<std_srvs::Empty>(
                      "/motion/move_init", true);
   moveInitClient.waitForExistence();
-  standClient = nh_->serviceClient<motion::SetPosture>(
+  standClient = nh_->serviceClient<motion_msgs::SetPosture>(
                   "/motion/goto_posture", true);
   standClient.waitForExistence();
   restClient = nh_->serviceClient<std_srvs::Empty>(
@@ -29,10 +29,10 @@ JoyRemote::JoyRemote(ros::NodeHandle* nh) {
   stopMoveClient = nh_->serviceClient<std_srvs::Empty>(
                      "/motion/stop_move", true);
   stopMoveClient.waitForExistence();
-  changeAnglesClient = nh_->serviceClient<motion::ChangeAngles>(
+  changeAnglesClient = nh_->serviceClient<motion_msgs::ChangeAngles>(
                          "/motion/change_angles", true);
   changeAnglesClient.waitForExistence();
-  INFO("Joystick remote node initialised" << std::endl);
+  ROS_INFO_STREAM("Joystick remote node initialised");
   wakeUpFlag = false;
   moveInitFlag = false;
   standFlag = false;
@@ -111,7 +111,7 @@ void JoyRemote::rest() {
   restFlag = false;
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   ros::init(argc, argv, "JoyRemote");
   ros::NodeHandle nh;
 

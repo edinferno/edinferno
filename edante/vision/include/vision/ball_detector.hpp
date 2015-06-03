@@ -20,8 +20,7 @@
 // Messages
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/CameraInfo.h>
-
-#include "vision/BallDetection.h"
+#include <vision_msgs/BallDetection.h>
 
 class BallDetector {
  public:
@@ -49,7 +48,7 @@ class BallDetector {
   // Detected contours
   std::vector< std::vector<cv::Point> > contours_;
   // Information about the detected ball
-  vision::BallDetection ball_detection_;
+  vision_msgs::BallDetection ball_detection_;
   // Publisher of the detected ball
   ros::Publisher ball_detection_pub_;
   // Camera model used for estimating 3D ball position
@@ -82,7 +81,7 @@ class BallDetector {
    * @param ball The results of the analysis are stored here including 2D ball
    *             position and radius if the ball is found.
    */
-  void FindBall(cv::Mat& image, vision::BallDetection& ball);
+  void FindBall(cv::Mat& image, vision_msgs::BallDetection& ball);
   /**
    * @brief Estimate the 3D ball position based on the known size of the ball.
    *
@@ -91,6 +90,6 @@ class BallDetector {
    * @param ball The estimated 3D position will be stored here.
    */
   void EstimateBallPos3D(const sensor_msgs::CameraInfo& cam_info,
-                         vision::BallDetection& ball);
+                         vision_msgs::BallDetection& ball);
 };
 #endif

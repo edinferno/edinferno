@@ -6,17 +6,16 @@
 */
 
 #include <ros/ros.h>
-// #include <signal.h>
+
 #include <boost/shared_ptr.hpp>
 #include <alcommon/albroker.h>
 #include <alcommon/almodule.h>
 #include <alcommon/albrokermanager.h>
 
-#include "led.h"
-#include "audio.h"
-#include "definitions.h"
+#include "signalling/led.hpp"
+#include "signalling/audio.hpp"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   ros::init(argc, argv, "signalling");
   ros::NodeHandle nh("signalling");
 

@@ -31,15 +31,17 @@
 #include <sensor_msgs/CameraInfo.h>
 
 // Services
-#include "camera/SetActiveCamera.h"
-#include "camera/SetColorSpace.h"
-#include "camera/SetFrameRate.h"
-#include "camera/SetResolution.h"
-#include "camera/SetColorTable.h"
-#include "camera/GetColorTable.h"
+#include <camera_msgs/SetActiveCamera.h>
+#include <camera_msgs/SetColorSpace.h>
+#include <camera_msgs/SetFrameRate.h>
+#include <camera_msgs/SetResolution.h>
+#include <camera_msgs/SetColorTable.h>
+#include <camera_msgs/GetColorTable.h>
 
+// Local
 #include "camera/camera.hpp"
 #include "camera/color_table.hpp"
+
 
 /**
  * @brief Exposes the Nao camera to ROS using the standard tool of
@@ -204,8 +206,8 @@ class CameraNode : public AL::ALModule {
    *
    * @return Return true on successful completion.
    */
-  bool set_active_camera(camera::SetActiveCamera::Request&  req,
-                         camera::SetActiveCamera::Response& res);
+  bool set_active_camera(camera_msgs::SetActiveCamera::Request&  req,
+                         camera_msgs::SetActiveCamera::Response& res);
   /**
    * @brief Set the currently active resolution.
    *
@@ -214,8 +216,8 @@ class CameraNode : public AL::ALModule {
    *
    * @return Return true on successful completion.
    */
-  bool set_resolution(camera::SetResolution::Request&  req,
-                      camera::SetResolution::Response& res);
+  bool set_resolution(camera_msgs::SetResolution::Request&  req,
+                      camera_msgs::SetResolution::Response& res);
   /**
   * @brief Set the currently active frame rate.
   *
@@ -224,8 +226,8 @@ class CameraNode : public AL::ALModule {
   *
   * @return Return true on successful completion.
   */
-  bool set_frame_rate(camera::SetFrameRate::Request&  req,
-                      camera::SetFrameRate::Response& res);
+  bool set_frame_rate(camera_msgs::SetFrameRate::Request&  req,
+                      camera_msgs::SetFrameRate::Response& res);
   /**
   * @brief Set the color space in which images are captured.
   *
@@ -234,8 +236,8 @@ class CameraNode : public AL::ALModule {
   *
   * @return Return true on successful completion.
   */
-  bool set_color_space(camera::SetColorSpace::Request&  req,
-                       camera::SetColorSpace::Response& res);
+  bool set_color_space(camera_msgs::SetColorSpace::Request&  req,
+                       camera_msgs::SetColorSpace::Response& res);
   /**
    * @brief Set the color table to be used.
    * @details The service receives a serialised color table and stores
@@ -248,8 +250,8 @@ class CameraNode : public AL::ALModule {
    *
    * @return Return true on successful completion.
    */
-  bool set_color_table(camera::SetColorTable::Request&  req,
-                       camera::SetColorTable::Response& res);
+  bool set_color_table(camera_msgs::SetColorTable::Request&  req,
+                       camera_msgs::SetColorTable::Response& res);
   /**
    * @brief Returns the currently used color table.
    * @details The current color table is serialised and sent back.
@@ -259,8 +261,8 @@ class CameraNode : public AL::ALModule {
    *
    * @return Return true on successful completion.
    */
-  bool get_color_table(camera::GetColorTable::Request&  req,
-                       camera::GetColorTable::Response& res);
+  bool get_color_table(camera_msgs::GetColorTable::Request&  req,
+                       camera_msgs::GetColorTable::Response& res);
 };
 
 #endif

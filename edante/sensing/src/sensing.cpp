@@ -10,10 +10,10 @@
 #include <alcommon/almodule.h>
 #include <alcommon/albrokermanager.h>
 
-#include "sonar.h"
-#include "touch.h"
-#include "power.h"
-#include "fsr.h"
+#include "sensing/sonar.hpp"
+#include "sensing/touch.hpp"
+#include "sensing/power.hpp"
+#include "sensing/fsr.hpp"
 
 boost::shared_ptr<AL::ALBroker> naoqiBroker(std::string brokerName, int pt) {
   const std::string parentBrokerIP = "127.0.0.1";
@@ -37,7 +37,7 @@ boost::shared_ptr<AL::ALBroker> naoqiBroker(std::string brokerName, int pt) {
   return broker;
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   ros::init(argc, argv, "sensing");
   ros::NodeHandle nh("sensing");
 

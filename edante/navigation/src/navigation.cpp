@@ -1,4 +1,4 @@
-#include "navigation_server.h"
+#include "navigation/navigation_server.hpp"
 
 int main(int argc, char** argv) {
   ros::init(argc, argv, "navigation");

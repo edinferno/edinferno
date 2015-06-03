@@ -6,7 +6,7 @@
  * @copyright (MIT) 2015 Edinferno
  */
 
-#include "locomotion_control.h"
+#include "motion/locomotion_control.hpp"
 
 #include <alvalue/alvalue.h>
 #include <alcommon/alproxy.h>
@@ -41,7 +41,7 @@ void LocomotionControl::init() {
     fMemoryProxy = AL::ALMemoryProxy(getParentBroker());
     mProxy_ = AL::ALMotionProxy(getParentBroker());
   } catch (const AL::ALError& e) {
-    DEBUG(e.what() << std::endl);
+    ROS_ERROR_STREAM(e.what());
   }
 }
 
@@ -53,9 +53,9 @@ void LocomotionControl::init() {
  */
 void LocomotionControl::rosSetup(ros::NodeHandle* nh) {
   nh_ = nh;
-  INFO("Setting up Locomotion Control publishers" << std::endl);
+  ROS_INFO_STREAM("Setting up Locomotion Control publishers");
   moving_pub_ = nh_->advertise<std_msgs::Bool>("is_moving", 10, true);
-  INFO("Setting up Locomotion Control services" << std::endl);
+  ROS_INFO_STREAM("Setting up Locomotion Control services");
   srv_move_ =
     nh_->advertiseService("move",
                           &LocomotionControl::move, this);
@@ -100,14 +100,14 @@ void LocomotionControl::rosSetup(ros::NodeHandle* nh) {
  * @details Expressed in `FRAME_ROBOT`, it takes an optional MoveConfiguration
  * \n [NAOqi function](http://doc.aldebaran.com/1-14/naoqi/motion/control-walk-api.html#ALMotionProxy::move__floatCR.floatCR.floatCR)
  *
- * @param req.velocity            **motion::Velocity**
- * @param req.move_configuration  **motion::MoveConfiguration**
+ * @param req.velocity            **motion_msgs::Velocity**
+ * @param req.move_configuration  **motion_msgs::MoveConfiguration**
  * @param res.res bool            **std_msgs::Bool**
  *
  * @return _true_ if service completed successfully
  */
-bool LocomotionControl::move(motion::Move::Request &req,
-                             motion::Move::Response &res) {
+bool LocomotionControl::move(motion_msgs::Move::Request& req,
+                             motion_msgs::Move::Response& res) {
   // Check for size of move_configuration
   int configSize = req.move_configuration.names.size();
   AL::ALValue move_configuration;
@@ -143,14 +143,14 @@ bool LocomotionControl::move(motion::Move::Request &req,
  * points and optional single/multiple move configurations.
  * \n [NAOqi function](http://doc.aldebaran.com/1-14/naoqi/motion/control-walk-api.html#ALMotionProxy::moveTo__floatCR.floatCR.floatCR)
  *
- * @param req.control_points      **motion::Position**
- * @param req.move_configuration  **motion::MoveConfiguration**
+ * @param req.control_points      **motion_msgs::Position**
+ * @param req.move_configuration  **motion_msgs::MoveConfiguration**
  * @param res.res bool            **std_msgs::Bool**
  *
  * @return _true_ if service completed successfully
  */
-bool LocomotionControl::moveTo(motion::MoveTo::Request &req,
-                               motion::MoveTo::Response &res) {
+bool LocomotionControl::moveTo(motion_msgs::MoveTo::Request& req,
+                               motion_msgs::MoveTo::Response& res) {
   //  Check for multiple positions
   int posNum = req.control_points.size();
   AL::ALValue control_points;
@@ -201,14 +201,14 @@ bool LocomotionControl::moveTo(motion::MoveTo::Request &req,
  * @details Relative to `FRAME_ROBOT`, it takes an optional move configuration.
  * \n [NAOqi function](http://doc.aldebaran.com/1-14/naoqi/motion/control-walk-api.html#ALMotionProxy::moveToward__floatCR.floatCR.floatCR)
  *
- * @param req.norm_velocity       **motion::Velocity**
- * @param req.move_configuration  **motion::MoveConfiguration**
+ * @param req.norm_velocity       **motion_msgs::Velocity**
+ * @param req.move_configuration  **motion_msgs::MoveConfiguration**
  * @param res.res                 **std_msgs::Bool**
  *
  * @return _true_ if service completed successfully
  */
-bool LocomotionControl::moveToward(motion::MoveToward::Request &req,
-                                   motion::MoveToward::Response &res) {
+bool LocomotionControl::moveToward(motion_msgs::MoveToward::Request& req,
+                                   motion_msgs::MoveToward::Response& res) {
   // Check for size of move_configuration
   int configSize = req.move_configuration.names.size();
   AL::ALValue move_configuration;
@@ -248,8 +248,8 @@ bool LocomotionControl::moveToward(motion::MoveToward::Request &req,
  *
  * @return _true_ if service completed successfully
  */
-bool LocomotionControl::moveInit(std_srvs::Empty::Request &req,
-                                 std_srvs::Empty::Response &res) {
+bool LocomotionControl::moveInit(std_srvs::Empty::Request& req,
+                                 std_srvs::Empty::Response& res) {
   mProxy_.post.moveInit();
   this->checkMoveActive();
   return true;
@@ -266,8 +266,8 @@ bool LocomotionControl::moveInit(std_srvs::Empty::Request &req,
  * @return _true_ if service completed successfully
  */
 bool LocomotionControl::waitUntilMoveIsFinished(
-  std_srvs::Empty::Request &req,
-  std_srvs::Empty::Response &res) {
+  std_srvs::Empty::Request& req,
+  std_srvs::Empty::Response& res) {
   mProxy_.waitUntilMoveIsFinished();
   this->checkMoveActive();
   return true;
@@ -283,8 +283,8 @@ bool LocomotionControl::waitUntilMoveIsFinished(
  *
  * @return _true_ if service completed successfully
  */
-bool LocomotionControl::stopMove(std_srvs::Empty::Request &req,
-                                 std_srvs::Empty::Response &res) {
+bool LocomotionControl::stopMove(std_srvs::Empty::Request& req,
+                                 std_srvs::Empty::Response& res) {
   mProxy_.stopMove();
   this->checkMoveActive();
   return true;
@@ -296,12 +296,12 @@ bool LocomotionControl::stopMove(std_srvs::Empty::Request &req,
  * \n [NAOqi function](http://doc.aldebaran.com/1-14/naoqi/motion/control-walk-api.html#ALMotionProxy::getMoveConfig__ssCR)
  *
  * @param req.config              **std_msgs::string**
- * @param res.move_configuration  **motion::MoveConfiguration**
+ * @param res.move_configuration  **motion_msgs::MoveConfiguration**
  *
  * @return _true_ if service completed successfully
  */
-bool LocomotionControl::getMoveConfig(motion::GetMoveConfig::Request &req,
-                                      motion::GetMoveConfig::Response &res) {
+bool LocomotionControl::getMoveConfig(motion_msgs::GetMoveConfig::Request& req,
+                                      motion_msgs::GetMoveConfig::Response& res) {
   AL::ALValue move_configuration;
   move_configuration = mProxy_.getMoveConfig(req.config);
   std::size_t CSize = move_configuration.getSize();
@@ -321,13 +321,13 @@ bool LocomotionControl::getMoveConfig(motion::GetMoveConfig::Request &req,
  * \n [NAOqi function](http://doc.aldebaran.com/1-14/naoqi/motion/control-walk-api.html#ALMotionProxy::getRobotPosition__bCR)
  *
  * @param req.use_sensors **std_msgs::Bool** – If _true_, use the MRE sensor values
- * @param res.position  **motion::position**
+ * @param res.position  **motion_msgs::position**
  *
  * @return _true_ if service completed successfully
  */
 bool LocomotionControl::getRobotPosition(
-  motion::GetRobotPosition::Request &req,
-  motion::GetRobotPosition::Response &res) {
+  motion_msgs::GetRobotPosition::Request& req,
+  motion_msgs::GetRobotPosition::Response& res) {
   std::vector<float> pose = mProxy_.getRobotPosition(req.use_sensors);
   res.position.x = pose[0];
   res.position.y = pose[1];
@@ -344,13 +344,13 @@ bool LocomotionControl::getRobotPosition(
  * \n [NAOqi function](http://doc.aldebaran.com/1-14/naoqi/motion/control-walk-api.html#ALMotionProxy::getNextRobotPosition)
  *
  * @param req                 **None**
- * @param res.next_position   **motion::Position**
+ * @param res.next_position   **motion_msgs::Position**
  *
  * @return _true_ if service completed successfully
  */
 bool LocomotionControl::getNextRobotPosition(
-  motion::GetNextRobotPosition::Request &req,
-  motion::GetNextRobotPosition::Response &res) {
+  motion_msgs::GetNextRobotPosition::Request& req,
+  motion_msgs::GetNextRobotPosition::Response& res) {
   std::vector<float> pose = mProxy_.getNextRobotPosition();
   res.next_position.x = pose[0];
   res.next_position.y = pose[1];
@@ -370,8 +370,8 @@ bool LocomotionControl::getNextRobotPosition(
  * @return _true_ if service completed successfully
  */
 bool LocomotionControl::getRobotVelocity(
-  motion::GetRobotVelocity::Request &req,
-  motion::GetRobotVelocity::Response &res) {
+  motion_msgs::GetRobotVelocity::Request& req,
+  motion_msgs::GetRobotVelocity::Response& res) {
   std::vector<float> velocity = mProxy_.getRobotVelocity();
   res.velocity.x = velocity[0];
   res.velocity.y = velocity[1];
@@ -391,8 +391,8 @@ bool LocomotionControl::getRobotVelocity(
  * @return _true_ if service completed successfully
  */
 bool LocomotionControl::getWalkArmsEnabled(
-  motion::GetWalkArmsEnabled::Request &req,
-  motion::GetWalkArmsEnabled::Response &res) {
+  motion_msgs::GetWalkArmsEnabled::Request& req,
+  motion_msgs::GetWalkArmsEnabled::Response& res) {
   AL::ALValue result = mProxy_.getWalkArmsEnabled();
   res.arm_motions.resize(2);
   res.arm_motions[0] = static_cast<bool>(result[0]);
@@ -413,8 +413,8 @@ bool LocomotionControl::getWalkArmsEnabled(
  * @return _true_ if service completed successfully
  */
 bool LocomotionControl::setWalkArmsEnabled(
-  motion::SetWalkArmsEnabled::Request &req,
-  motion::SetWalkArmsEnabled::Response &res) {
+  motion_msgs::SetWalkArmsEnabled::Request& req,
+  motion_msgs::SetWalkArmsEnabled::Response& res) {
   mProxy_.setWalkArmsEnabled(req.left_arm_enable, req.right_arm_enable);
   this->checkMoveActive();
   return true;

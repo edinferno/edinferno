@@ -5,8 +5,8 @@
 * @Desc:      Main motion planning node
 */
 
-#include "stand_server.h"
-#include "sit_server.h"
+#include "motion_planning/stand_server.hpp"
+#include "motion_planning/sit_server.hpp"
 
 int main(int argc, char** argv) {
   ros::init(argc, argv, "motion_planning");

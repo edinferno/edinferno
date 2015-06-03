@@ -9,7 +9,7 @@
 // System
 #include <fstream>
 
-// NaoQi definitions
+// NaoQi
 #include <alcommon/albroker.h>
 #include <alcommon/albrokermanager.h>
 #include <alvision/alimage.h>
@@ -487,8 +487,8 @@ void CameraNode::UpdateCameraInfo() {
  *
  * @return Return true on successful completion.
  */
-bool CameraNode::set_active_camera(camera::SetActiveCamera::Request&  req,
-                                   camera::SetActiveCamera::Response& res) {
+bool CameraNode::set_active_camera(camera_msgs::SetActiveCamera::Request&  req,
+                                   camera_msgs::SetActiveCamera::Response& res) {
   int new_active_cam_id;
   Camera* new_active_cam;
   switch (req.active_camera) {
@@ -526,8 +526,8 @@ bool CameraNode::set_active_camera(camera::SetActiveCamera::Request&  req,
  *
  * @return Return true on successful completion.
  */
-bool CameraNode::set_resolution(camera::SetResolution::Request&  req,
-                                camera::SetResolution::Response& res) {
+bool CameraNode::set_resolution(camera_msgs::SetResolution::Request&  req,
+                                camera_msgs::SetResolution::Response& res) {
   int new_resolution;
   switch (req.resolution) {
     case 0:
@@ -564,8 +564,8 @@ bool CameraNode::set_resolution(camera::SetResolution::Request&  req,
 *
 * @return Return true on successful completion.
 */
-bool CameraNode::set_frame_rate(camera::SetFrameRate::Request&  req,
-                                camera::SetFrameRate::Response& res) {
+bool CameraNode::set_frame_rate(camera_msgs::SetFrameRate::Request&  req,
+                                camera_msgs::SetFrameRate::Response& res) {
   if (req.frame_rate < 1 || req.frame_rate > 30) {
     res.result = false;
     return true;
@@ -589,8 +589,8 @@ bool CameraNode::set_frame_rate(camera::SetFrameRate::Request&  req,
 *
 * @return Return true on successful completion.
 */
-bool CameraNode::set_color_space(camera::SetColorSpace::Request&  req,
-                                 camera::SetColorSpace::Response& res) {
+bool CameraNode::set_color_space(camera_msgs::SetColorSpace::Request&  req,
+                                 camera_msgs::SetColorSpace::Response& res) {
   int new_color_space;
   switch (req.color_space) {
     case 0:
@@ -634,8 +634,8 @@ bool CameraNode::set_color_space(camera::SetColorSpace::Request&  req,
  *
  * @return Return true on successful completion.
  */
-bool CameraNode::set_color_table(camera::SetColorTable::Request&  req,
-                                 camera::SetColorTable::Response& res) {
+bool CameraNode::set_color_table(camera_msgs::SetColorTable::Request&  req,
+                                 camera_msgs::SetColorTable::Response& res) {
   std::ofstream table_file;
   table_file.open(table_file_name_, std::ios::binary);
 
@@ -662,8 +662,8 @@ bool CameraNode::set_color_table(camera::SetColorTable::Request&  req,
  *
  * @return Return true on successful completion.
  */
-bool CameraNode::get_color_table(camera::GetColorTable::Request&  req,
-                                 camera::GetColorTable::Response& res) {
+bool CameraNode::get_color_table(camera_msgs::GetColorTable::Request&  req,
+                                 camera_msgs::GetColorTable::Response& res) {
   PixelClass* table_ptr = reinterpret_cast<PixelClass*>(table_);
   for (size_t i = 0; i < kTableLen; ++i) {
     PixelClass c = table_ptr[i];

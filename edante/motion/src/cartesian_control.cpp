@@ -6,7 +6,7 @@
  * @copyright (MIT) 2015 Edinferno
  */
 
-#include "cartesian_control.h"
+#include "motion/cartesian_control.hpp"
 
 #include <alvalue/alvalue.h>
 #include <alcommon/alproxy.h>
@@ -31,13 +31,13 @@ void CartesianControl::init() {
     fMemoryProxy = AL::ALMemoryProxy(getParentBroker());
     mProxy_ = AL::ALMotionProxy(getParentBroker());
   } catch (const AL::ALError& e) {
-    DEBUG(e.what() << std::endl);
+    ROS_ERROR_STREAM(e.what());
   }
 }
 
 void CartesianControl::rosSetup(ros::NodeHandle* nh) {
   nh_ = nh;
-  INFO("Setting up Cartesian Control services" << std::endl);
+  ROS_INFO_STREAM("Setting up Cartesian Control services");
   srv_position_interpolation_ =
     nh_->advertiseService("position_interpolation",
                           &CartesianControl::positionInterpolation, this);
@@ -59,8 +59,8 @@ void CartesianControl::rosSetup(ros::NodeHandle* nh) {
 }
 
 bool CartesianControl::positionInterpolation(
-  motion::PositionInterpolation::Request &req,
-  motion::PositionInterpolation::Response &res) {
+  motion_msgs::PositionInterpolation::Request& req,
+  motion_msgs::PositionInterpolation::Response& res) {
   AL::ALValue traj_points;
   size_t l = req.path.traj_points.size();
   traj_points.arraySetSize(l);
@@ -76,8 +76,8 @@ bool CartesianControl::positionInterpolation(
 }
 
 bool CartesianControl::positionInterpolations(
-  motion::PositionInterpolations::Request &req,
-  motion::PositionInterpolations::Response &res) {
+  motion_msgs::PositionInterpolations::Request& req,
+  motion_msgs::PositionInterpolations::Response& res) {
   size_t s = req.paths.size();
   AL::ALValue paths;
   paths.arraySetSize(s);
@@ -107,28 +107,30 @@ bool CartesianControl::positionInterpolations(
   return true;
 }
 
-bool CartesianControl::setPosition(motion::SetPosition::Request &req,
-                                   motion::SetPosition::Response &res) {
+bool CartesianControl::setPosition(motion_msgs::SetPosition::Request& req,
+                                   motion_msgs::SetPosition::Response& res) {
   mProxy_.setPosition(req.chain_name, req.space, req.position,
                       req.fraction_max_speed, req.axis_mask);
   return true;
 }
 
-bool CartesianControl::changePosition(motion::ChangePosition::Request &req,
-                                      motion::ChangePosition::Response &res) {
+bool CartesianControl::changePosition(
+  motion_msgs::ChangePosition::Request& req,
+  motion_msgs::ChangePosition::Response& res) {
   mProxy_.changePosition(req.effector_name, req.space, req.position_change,
                          req.fraction_max_speed, req.axis_mask);
   return true;
 }
 
-bool CartesianControl::getPosition(motion::GetPosition::Request &req,
-                                   motion::GetPosition::Response &res) {
-  res.position = mProxy_.getPosition(req.name, req.space, req.use_sensor_values);
+bool CartesianControl::getPosition(motion_msgs::GetPosition::Request& req,
+                                   motion_msgs::GetPosition::Response& res) {
+  res.position = mProxy_.getPosition(
+                   req.name, req.space, req.use_sensor_values);
   return true;
 }
 
-bool CartesianControl::getTransform(motion::GetTransform::Request &req,
-                                    motion::GetTransform::Response &res) {
+bool CartesianControl::getTransform(motion_msgs::GetTransform::Request& req,
+                                    motion_msgs::GetTransform::Response& res) {
   res.transform = mProxy_.getTransform(req.name, req.space,
                                        req.use_sensor_values);
   return true;

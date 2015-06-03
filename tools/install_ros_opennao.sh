@@ -67,6 +67,7 @@ sudo robotpkgin install ros-actionlib-1.11.2
 # Install additional ROS packages
 sudo robotpkgin install ros-geometry-1.11.3
 sudo robotpkgin install ros-vision-opencv-1.11.4
+sudo robotpkgin install ros-executive-smach-2.0.0
 
 # Set the ROS setup.sh to be called automatically at logon
 echo "source /opt/openrobots/etc/ros/setup.sh" >> ~/.bash_profile

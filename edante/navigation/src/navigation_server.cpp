@@ -1,12 +1,12 @@
-#include "navigation_server.h"
+#include "navigation/navigation_server.hpp"
 
 NavigateAction::NavigateAction(std::string name) :
   as_(nh_, name, boost::bind(&NavigateAction::executeCB, this, _1), false),
   action_name_(name) {
-  get_pose_client_ = nh_.serviceClient<motion::GetRobotPosition>(
+  get_pose_client_ = nh_.serviceClient<motion_msgs::GetRobotPosition>(
                        "/motion/get_robot_position", true);
   get_pose_client_.waitForExistence();
-  move_to_client_ = nh_.serviceClient<motion::MoveTo>(
+  move_to_client_ = nh_.serviceClient<motion_msgs::MoveTo>(
                       "/motion/move_to", true);
   move_to_client_.waitForExistence();
   stop_move_client_ = nh_.serviceClient<std_srvs::Empty>(
@@ -24,7 +24,8 @@ NavigateAction::NavigateAction(std::string name) :
 NavigateAction::~NavigateAction(void) {
 }
 
-void NavigateAction::executeCB(const navigation::NavigateGoalConstPtr &goal) {
+void NavigateAction::executeCB(
+  const navigation_msgs::NavigateGoalConstPtr& goal) {
   bool going = true;
   bool success = true;
   float thresh = 0.01f;

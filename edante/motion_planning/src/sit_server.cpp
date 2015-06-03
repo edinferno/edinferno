@@ -5,19 +5,19 @@
 * @Desc:      Sit down action server
 */
 
-#include "sit_server.h"
+#include "motion_planning/sit_server.hpp"
 
 SitAction::SitAction(std::string name) :
   as_(nh_, name, boost::bind(&SitAction::executeCB, this, _1), false),
   action_name_(name) {
   wake_up_client_ = nh_.serviceClient<std_srvs::Empty>("motion/wake_up", true);
-  get_posture_family_client_ = nh_.serviceClient<motion::GetPostureFamily>(
+  get_posture_family_client_ = nh_.serviceClient<motion_msgs::GetPostureFamily>(
                                  "/motion/get_posture_family", true);
   get_posture_family_client_.waitForExistence();
   stopMoveClient = nh_.serviceClient<std_srvs::Empty>(
                      "/motion/stop_move", true);
   stopMoveClient.waitForExistence();
-  set_posture_client_ = nh_.serviceClient<motion::SetPosture>(
+  set_posture_client_ = nh_.serviceClient<motion_msgs::SetPosture>(
                           "/motion/goto_posture", true);
   set_posture_client_.waitForExistence();
   set_posture_srv_.request.posture_name = "Crouch";
@@ -29,7 +29,7 @@ SitAction::SitAction(std::string name) :
 SitAction::~SitAction(void) {
 }
 
-void SitAction::executeCB(const motion_planning::SitGoalConstPtr &goal) {
+void SitAction::executeCB(const motion_planning_msgs::SitGoalConstPtr& goal) {
   bool going = true;
   bool success = true;
   std::string curr_pos;
@@ -45,7 +45,7 @@ void SitAction::executeCB(const motion_planning::SitGoalConstPtr &goal) {
     going = false;
   }
 
-  if ( (curr_pos.compare("Crouch") == 0) && going == true) {
+  if ((curr_pos.compare("Crouch") == 0) && going == true) {
     ROS_INFO("Already Crouching!");
     get_posture_family_client_.call(get_posture_family_srv_);
     curr_pos = get_posture_family_srv_.response.posture_family;

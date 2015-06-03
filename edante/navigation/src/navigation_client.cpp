@@ -1,21 +1,21 @@
 #include <ros/ros.h>
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/client/terminal_state.h>
-#include <navigation/NavigateAction.h>
+#include <navigation_msgs/NavigateAction.h>
 
-int main (int argc, char **argv) {
+int main (int argc, char** argv) {
   ros::init(argc, argv, "nav_client");
 
   std::string ac_name = "navigation";
   // true causes the client to spin its own thread
-  actionlib::SimpleActionClient<navigation::NavigateAction>
+  actionlib::SimpleActionClient<navigation_msgs::NavigateAction>
   ac(ac_name, true);
 
   ROS_INFO("Waiting for %s to start.", ac_name.c_str());
   ac.waitForServer();
 
   ROS_INFO("%s started, sending goal.", ac_name.c_str());
-  navigation::NavigateGoal goal;
+  navigation_msgs::NavigateGoal goal;
   goal.target_pose.x = 0.25f;
   goal.target_pose.y = 0.0f;
   goal.target_pose.theta = -0.4f;
