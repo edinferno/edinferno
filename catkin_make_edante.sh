@@ -1,6 +1,10 @@
 #!/bin/bash
 if [ "$#" -eq 1 ]; then
-  packages=("$1")
+  if [ "$1" == "msgs" ]; then
+    packages=($(ls ./edante/edante_msgs/))
+  else
+    packages=("$1")
+  fi
 else
   packages=($(ls ./edante/) $(ls ./edante/edante_msgs/))
 fi

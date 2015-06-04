@@ -21,6 +21,7 @@
 #include <sensor_msgs/CameraInfo.h>
 
 #include "vision/ball_detector.hpp"
+#include "vision/head_tracker.hpp"
 
 /**
  * @brief Reads the segmented image and the corresponding camera infro
@@ -52,6 +53,9 @@ class VisionNode {
   // Detects the ball and publishes information
   BallDetector ball_detector_;
 
+  // Head tracking
+  HeadTracker head_tracker_;
+
   /**
    * @brief Retrieves the camera data stored in the shared memory.
    * @details Retreives the current camera info and image stored
@@ -64,15 +68,6 @@ class VisionNode {
    */
   bool SharedMemoryToCamera(sensor_msgs::Image& image,
                             sensor_msgs::CameraInfo& cam_info);
-  /**
-   * @brief Called every time new camera information is received.
-   * @details Runs the image processing in order to extract useful information.
-   *
-   * @param image The image to be processed.
-   * @param cam_info The calibration information of the camera
-   */
-  void CameraCallback(const sensor_msgs::Image& image,
-                      const sensor_msgs::CameraInfo& cam_info);
 };
 
 #endif
