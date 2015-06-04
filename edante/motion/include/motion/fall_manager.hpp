@@ -1,5 +1,5 @@
 /**
- * @file      fall_manager.h
+ * @file      fall_manager.hpp
  * @brief     ROS wrapper for NaoQI Fall Manager API
  * @author    Alejandro Bordallo <alex.bordallo@ed.ac.uk>
  * @date      2015-05-20

@@ -1,5 +1,5 @@
 /**
- * @file      joy_remote.h
+ * @file      joy_remote.hpp
  * @brief     Joystick remote control node
  * @author    Alejandro Bordallo <alex.bordallo@ed.ac.uk>
  * @date      2015-05-22

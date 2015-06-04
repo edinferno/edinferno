@@ -1,5 +1,5 @@
 /**
- * @file      body_balancer.h
+ * @file      body_balancer.hpp
  * @brief     ROS wrapper for NaoQI Whole Body Balancer
  * @author    Alejandro Bordallo <alex.bordallo@ed.ac.uk>
  * @date      2015-05-20
