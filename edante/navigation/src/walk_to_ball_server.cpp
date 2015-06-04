@@ -4,7 +4,7 @@ WalkToBallAction::WalkToBallAction(std::string name) :
   as_(nh_, name, boost::bind(&WalkToBallAction::executeCB, this, _1), false),
   action_name_(name) {
   // as_.registerGoalCallback(boost::bind(&WalkToBallAction::goalCB, this));
-  ball_pos_sub_ = nh_.subscribe("/vision/ball_targ_pos", 1,
+  ball_pos_sub_ = nh_.subscribe("/vision/ball", 1,
                                 &WalkToBallAction::goalCB, this);
   get_pose_client_ = nh_.serviceClient<motion_msgs::GetRobotPosition>(
                        "/motion/get_robot_position", true);
@@ -86,8 +86,8 @@ void WalkToBallAction::executeCB(
     ROS_INFO("Target dis: %f, Target theta %f",
              target_distance,
              target_theta);
-    float distance = sqrt(pow(feedback_.curr_pose.x, 2) +
-                          pow(feedback_.curr_pose.y, 2) );
+    // float distance = sqrt(pow(feedback_.curr_pose.x, 2) +
+    //                       pow(feedback_.curr_pose.y, 2) );
     // float distance_error = target_distance - distance;            // Absolute
     // float theta_error = target_theta - feedback_.curr_pose.theta; // Absolute
     float distance_error = target_distance; // Relative
