@@ -38,6 +38,10 @@ class BallDetector {
    */
   void ProcessImage(const sensor_msgs::Image& image,
                     const sensor_msgs::CameraInfo& cam_info);
+  /**
+   * @brief Getter of the current ball detection
+   */
+  const vision_msgs::BallDetection& ball() const { return ball_detection_; }
 
  private:
   // Ball radius in meters

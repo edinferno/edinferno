@@ -130,8 +130,8 @@ void BallDetector::FindBall(cv::Mat& image,
     Rect r = cv::boundingRect(contours_[max_index]);
 
     ball.area = max_area;
-    ball.pos_2d.x = r.x + r.width / 2;
-    ball.pos_2d.y = r.y + r.height / 2;
+    ball.pos_image.x = r.x + r.width / 2;
+    ball.pos_image.y = r.y + r.height / 2;
     ball.radius = (r.width + r.height + 4) / 4;
     ball.certainty = max_circularity;
   }
@@ -150,8 +150,8 @@ void BallDetector::EstimateBallPos3D(
   cam_model_.fromCameraInfo(cam_info);
   // Calculate the undistorted 2d position
   Point2d pos_2d = cam_model_.rectifyPoint(
-                     Point2d(ball.pos_2d.x,
-                             ball.pos_2d.y));
+                     Point2d(ball.pos_image.x,
+                             ball.pos_image.y));
   // Project the point to the z = 1m plane
   Point3d cam_pos_3d = cam_model_.projectPixelTo3dRay(pos_2d);
 
@@ -164,9 +164,9 @@ void BallDetector::EstimateBallPos3D(
 
   // Transform the point from the optical camera frame to the Nao camera frame
   Point3d pos_3d;
-  pos_3d.x = cam_pos_3d.z;
-  pos_3d.y = -cam_pos_3d.x;
-  pos_3d.z = -cam_pos_3d.y;
+  ball.pos_camera.x = cam_pos_3d.z;
+  ball.pos_camera.y = -cam_pos_3d.x;
+  ball.pos_camera.z = -cam_pos_3d.y;
 
   // Get the camera frame to robot frame transformation
   motion_msgs::GetTransform srv;
@@ -181,15 +181,15 @@ void BallDetector::EstimateBallPos3D(
   if (!transform_client_.call(srv)) {
     ROS_WARN("Unable to call get_transform.");
     // Set invalid ball position
-    ball.pos_3d.x = ball.pos_3d.y = ball.pos_3d.z = 0;
+    ball.pos_robot.x = ball.pos_robot.y = ball.pos_robot.z = 0;
     return;
   }
 
   // Apply the transformation to get the ball in the robot frame.
   vector<float>& T = srv.response.transform;
-  ball.pos_3d.x = T[0] * pos_3d.x + T[1] * pos_3d.y + T[2] * pos_3d.z + T[3];
-  ball.pos_3d.y = T[4] * pos_3d.x + T[5] * pos_3d.y + T[6] * pos_3d.z + T[7];
-  ball.pos_3d.z = T[8] * pos_3d.x + T[9] * pos_3d.y + T[10] * pos_3d.z + T[11];
+  ball.pos_robot.x = T[0] * pos_3d.x + T[1] * pos_3d.y + T[2] * pos_3d.z + T[3];
+  ball.pos_robot.y = T[4] * pos_3d.x + T[5] * pos_3d.y + T[6] * pos_3d.z + T[7];
+  ball.pos_robot.z = T[8] * pos_3d.x + T[9] * pos_3d.y + T[10] * pos_3d.z + T[11];
 }
 
 

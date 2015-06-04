@@ -1,0 +1,5 @@
+# The type of object to be tracked
+# 0 - Ball
+uint8 object_type
+---
+bool result
