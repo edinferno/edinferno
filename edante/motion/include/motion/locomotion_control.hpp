@@ -1,5 +1,5 @@
 /**
- * @file      locomotion_control.h
+ * @file      locomotion_control.hpp
  * @brief     ROS wrapper for NaoQI locomotion control methods
  * @author    Alejandro Bordallo <alex.bordallo@ed.ac.uk>
  * @date      2015-05-20

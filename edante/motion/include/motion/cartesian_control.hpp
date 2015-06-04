@@ -1,5 +1,5 @@
 /**
- * @file      cartesian_control.h
+ * @file      cartesian_control.hpp
  * @brief     ROS wrapper for NaoQI cartesian control methods
  * @author    Alejandro Bordallo <alex.bordallo@ed.ac.uk>
  * @date      2015-05-20

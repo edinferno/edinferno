@@ -1,5 +1,5 @@
 /**
- * @file      motion_task.h
+ * @file      motion_task.hpp
  * @brief     ROS wrapper for NaoQI motion task methods
  * @author    Alejandro Bordallo <alex.bordallo@ed.ac.uk>
  * @date      2015-05-20

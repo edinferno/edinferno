@@ -1,5 +1,5 @@
 /**
- * @file      joint_control.h
+ * @file      joint_control.hpp
  * @brief     Defines the Joint Control Wrapper functions
  * @author    Alejandro Bordallo <alex.bordallo@ed.ac.uk>
  * @date      2015-05-20
