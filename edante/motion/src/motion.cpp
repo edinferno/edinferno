@@ -107,7 +107,7 @@ int main(int argc, char* argv[]) {
                                              "RobotPosture");
   RobotPostureTest->rosSetup(&nh);
 
-  ros::Rate r(10);
+  ros::Rate r(30);
 
   while (ros::ok()) {
     ros::spinOnce();

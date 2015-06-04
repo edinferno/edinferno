@@ -24,7 +24,8 @@ VisionNode::VisionNode() :
   nh_("vision"),
   shdmem_(open_only, "camera_image", read_only),
   shdmem_mtx_(open_only, "camera_image_mutex"),
-  ball_detector_(nh_) {
+  ball_detector_(nh_),
+  head_tracker_(nh_) {
   shdmem_region_ = new mapped_region(shdmem_, read_only);
   shdmem_ptr_ = static_cast<uint8_t*>(shdmem_region_->get_address());
 }
@@ -34,13 +35,13 @@ VisionNode::VisionNode() :
 void VisionNode::Spin() {
   sensor_msgs::Image image;
   sensor_msgs::CameraInfo cam_info;
-  // Use rate twice the maximum fps which is 30
-  ros::Rate rate(60);
+  // Use rate as the maximum fps which is 30
+  ros::Rate rate(30);
   while (ros::ok()) {
     if (SharedMemoryToCamera(image, cam_info)) {
-      CameraCallback(image, cam_info);
+      ball_detector_.ProcessImage(image, cam_info);
+      head_tracker_.Track(ball_detector_.ball());
     }
-
     ros::spinOnce();
     rate.sleep();
   }
@@ -77,16 +78,4 @@ bool VisionNode::SharedMemoryToCamera(sensor_msgs::Image& image,
   shdmem_mtx_.unlock();
 
   return true;
-}
-/**
- * @brief Called every time new camera information is received.
- * @details Runs the image processing in order to extract useful information.
- *
- * @param image The image to be processed.
- * @param cam_info The calibration information of the camera
- */
-void VisionNode::CameraCallback(
-  const sensor_msgs::Image& image,
-  const sensor_msgs::CameraInfo& cam_info) {
-  ball_detector_.ProcessImage(image, cam_info);
 }
