@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   motion_msgs
   navigation_msgs
+  std_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -111,15 +112,21 @@ include_directories(
 ## Declare a cpp executable
 add_executable(navigation
  src/navigation.cpp
- src/navigation_server.cpp)
+ src/navigation_server.cpp
+ src/walk_to_ball_server.cpp
+ )
 
 add_executable(navigation_client
  src/navigation_client.cpp)
+
+add_executable(walk_to_ball_client
+ src/walk_to_ball_client.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(navigation navigation_msgs)
 add_dependencies(navigation_client navigation_msgs)
+add_dependencies(walk_to_ball_client navigation_msgs)
 
 # Specify libraries to link a library or executable target against
 target_link_libraries(navigation
@@ -127,6 +134,10 @@ target_link_libraries(navigation
 )
 
 target_link_libraries(navigation_client
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(walk_to_ball_client
   ${catkin_LIBRARIES}
 )
 

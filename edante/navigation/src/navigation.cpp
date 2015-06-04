@@ -1,9 +1,11 @@
 #include "navigation/navigation_server.hpp"
+#include "navigation/walk_to_ball_server.hpp"
 
 int main(int argc, char** argv) {
   ros::init(argc, argv, "navigation");
   ROS_INFO("Running Navigation");
-  NavigateAction navigation(ros::this_node::getName());
+  // NavigateAction navigation(ros::this_node::getName());
+  WalkToBallAction walk_to_ball(ros::this_node::getName());
   ros::Rate r(10);
 
   while (ros::ok()) {
