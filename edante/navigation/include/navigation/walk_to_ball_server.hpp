@@ -28,20 +28,23 @@ class WalkToBallAction {
 
   ~WalkToBallAction(void);
 
+  void init();
+
   void goalCB(const vision_msgs::BallDetection::ConstPtr& msg);
 
   void executeCB(const navigation_msgs::WalkToBallGoalConstPtr& goal);
 
  private:
-  float target_distance;
-  float target_theta;
-  float theta_scalar;
-  float dist_scalar;
-  float theta_thresh;
-  float dist_thresh;
-  float the_theta;
+  bool ball_found_;
+
+  float target_distance_;
+  float target_theta_;
+  float theta_scalar_;
+  float dist_scalar_;
+  float theta_thresh_;
+  float dist_thresh_;
   ros::Subscriber ball_pos_sub_;
-  // geometry_msgs::Pose2D goal_msg_;
+  geometry_msgs::Point32 ball_pos_;
 
   motion_msgs::GetRobotPosition get_pose_srv_;
   motion_msgs::GetRobotPosition start_position_;

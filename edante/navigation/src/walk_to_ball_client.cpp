@@ -16,10 +16,7 @@ int main (int argc, char** argv) {
 
   ROS_INFO("%s started, sending goal.", ac_name.c_str());
   navigation_msgs::WalkToBallGoal goal;
-  goal.ball_pose.x = 0.2f;
-  goal.ball_pose.y = 0.0f;
-  goal.ball_pose.theta = 0.0f;
-  // goal.start_walk = true;
+  goal.start_walk = true;
   ac.sendGoal(goal);
 
   bool finished_before_timeout = ac.waitForResult(ros::Duration(30.0));
