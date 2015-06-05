@@ -163,7 +163,6 @@ void BallDetector::EstimateBallPos3D(
   cam_pos_3d *= kBallRadius / radius_z1m;
 
   // Transform the point from the optical camera frame to the Nao camera frame
-  Point3d pos_3d;
   ball.pos_camera.x = cam_pos_3d.z;
   ball.pos_camera.y = -cam_pos_3d.x;
   ball.pos_camera.z = -cam_pos_3d.y;
@@ -187,9 +186,15 @@ void BallDetector::EstimateBallPos3D(
 
   // Apply the transformation to get the ball in the robot frame.
   vector<float>& T = srv.response.transform;
-  ball.pos_robot.x = T[0] * pos_3d.x + T[1] * pos_3d.y + T[2] * pos_3d.z + T[3];
-  ball.pos_robot.y = T[4] * pos_3d.x + T[5] * pos_3d.y + T[6] * pos_3d.z + T[7];
-  ball.pos_robot.z = T[8] * pos_3d.x + T[9] * pos_3d.y + T[10] * pos_3d.z + T[11];
+  ball.pos_robot.x = T[0] * ball.pos_camera.x +
+                     T[1] * ball.pos_camera.y +
+                     T[2] * ball.pos_camera.z + T[3];
+  ball.pos_robot.y = T[4] * ball.pos_camera.x +
+                     T[5] * ball.pos_camera.y +
+                     T[6] * ball.pos_camera.z + T[7];
+  ball.pos_robot.z = T[8] * ball.pos_camera.x +
+                     T[9] * ball.pos_camera.y +
+                     T[10] * ball.pos_camera.z + T[11];
 }
 
 

@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   image_geometry
   image_transport
   camera
+  camera_msgs
   vision_msgs
   motion_msgs
 )
