@@ -20,95 +20,93 @@ WalkToBallAction::WalkToBallAction(std::string name) :
   move_init_client_.waitForExistence();
   start_position_.request.use_sensors = true;
   get_pose_srv_.request.use_sensors = true;
+  this->init();
   ROS_INFO("Starting WalkToBall server");
-  target_distance = 0.0f;
-  target_theta = 0.0f;
-  theta_scalar = 1.0f;
-  dist_scalar = 3.0f;
-  theta_thresh = 0.2f;
-  dist_thresh = 0.05f;
   as_.start();
 }
 
 WalkToBallAction::~WalkToBallAction(void) {
 }
 
+void WalkToBallAction::init() {
+  ball_found_ = false;
+  target_distance_ = 0.0f;
+  target_theta_ = 0.0f;
+  dist_scalar_ = 3.0f;
+  theta_scalar_ = 1.0f;
+  dist_thresh_ = 0.05f;
+  theta_thresh_ = 0.2f;
+}
+
 void WalkToBallAction::goalCB(const vision_msgs::BallDetection::ConstPtr& msg) {
-  ROS_INFO("New Goal Received");
-  target_distance = msg->pos_robot.x;
-  target_theta = msg->pos_robot.z;
+  ball_found_ = msg->is_detected;
+  ball_pos_.x = msg->pos_robot.x;
+  ball_pos_.y = msg->pos_robot.y;
 }
 
 void WalkToBallAction::executeCB(
   const navigation_msgs::WalkToBallGoalConstPtr& goal) {
   bool going = true;
-  bool success = true;
+  bool success = false;
   ROS_INFO("Executing goal for %s", action_name_.c_str());
-  get_pose_client_.call(start_position_);
+  // get_pose_client_.call(start_position_);
 
-  if (target_distance == 0.0f && target_theta == 0.0f) {
-    target_distance = goal->ball_pose.x;
-    target_theta = goal->ball_pose.theta;
-    ROS_ERROR("Ball position not available, using agent goal %f, %f",
-              target_distance, target_theta);
+  if (!ball_found_) {
+    ROS_ERROR("Walk to ball action waiting for ball...");
+    while (!ball_found_) {sleep(1);}
+  } else {
+    ROS_INFO("Ball found! Going towards x: %f, y: %f", ball_pos_.x, ball_pos_.y);
   }
 
-  // ROTATE FIRST, THEN STRAIGHT TO GOAL
-  // move_toward_srv_.request.control_points.resize(2);
-  // move_toward_srv_.request.control_points[0].x = 0.0f;
-  // move_toward_srv_.request.control_points[0].y = 0.0f;
-  // move_toward_srv_.request.control_points[0].theta = goal->target_pose.theta;
-  // move_toward_srv_.request.control_points[1].x = goal->target_pose.x;
-  // move_toward_srv_.request.control_points[1].y = 0.0f;
-  // move_toward_srv_.request.control_points[1].theta = 0.0f;
-  // move_toward_client_.call(move_toward_srv_);
-  while (going == true) {
+  while (going && ball_found_) {
     if (as_.isPreemptRequested() || !ros::ok()) {
       ROS_INFO("%s: Preempted", action_name_.c_str());
       as_.setPreempted();
-      success = false;
       going = false;
     }
-    get_pose_client_.call(get_pose_srv_);
+    // get_pose_client_.call(get_pose_srv_);
 
-    feedback_.curr_pose.x =
-      get_pose_srv_.response.position.x - start_position_.response.position.x;
-    feedback_.curr_pose.y =
-      get_pose_srv_.response.position.y - start_position_.response.position.y;
-    feedback_.curr_pose.theta =
-      get_pose_srv_.response.position.theta - start_position_.response.position.theta;
-    as_.publishFeedback(feedback_);
+    // FEEDBACK
+    // feedback_.curr_pose.x =
+    //   get_pose_srv_.response.position.x - start_position_.response.position.x;
+    // feedback_.curr_pose.y =
+    //   get_pose_srv_.response.position.y - start_position_.response.position.y;
+    // feedback_.curr_pose.theta =
+    //   get_pose_srv_.response.position.theta - start_position_.response.position.theta;
+    // as_.publishFeedback(feedback_);
+    // ROS_INFO("Current pos: %f, %f, %f",
+    //          feedback_.curr_pose.x,
+    //          feedback_.curr_pose.y,
+    //          feedback_.curr_pose.theta);
 
-    ROS_INFO("Current pos: %f, %f, %f",
-             feedback_.curr_pose.x,
-             feedback_.curr_pose.y,
-             feedback_.curr_pose.theta);
-    ROS_INFO("Target dis: %f, Target theta %f",
-             target_distance,
-             target_theta);
-    // float distance = sqrt(pow(feedback_.curr_pose.x, 2) +
-    //                       pow(feedback_.curr_pose.y, 2) );
-    // float distance_error = target_distance - distance;            // Absolute
-    // float theta_error = target_theta - feedback_.curr_pose.theta; // Absolute
-    float distance_error = target_distance; // Relative
-    float theta_error = target_theta;       // Relative
-    ROS_INFO("Distance_error: %f, Theta error: %f", distance_error, theta_error);
+    // Calculate Distance and Orientation error
+    target_distance_ = ball_pos_.x;
+    if (ball_pos_.x != 0.0f) {
+      target_theta_ = atan(ball_pos_.y / ball_pos_.x);
+    } else {
+      target_theta_ = 0.0f;
+    }
+    float distance_error = target_distance_; // Relative
+    float theta_error = target_theta_;       // Relative
+    ROS_INFO("Target dis: %f, Target theta %f", target_distance_, target_theta_);
+    // ROS_INFO("Distance_error: %f, Theta error: %f", distance_error, theta_error);
 
-    // ROTATE FIRST, THEN STRAIGHT TO GOAL
+    // Reset velocities in-case we have reached a threshold
     move_toward_srv_.request.norm_velocity.x = 0.0f;
     move_toward_srv_.request.norm_velocity.theta = 0.0f;
-    if (fabs(theta_error) > theta_thresh) {
+    // Rotate first...
+    if (fabs(theta_error) > theta_thresh_) {
       if (theta_error < 0) { ROS_INFO("Right"); } else { ROS_INFO("Left"); }
-      float theta_vel = theta_error * theta_scalar;
+      float theta_vel = theta_error * theta_scalar_;
       if (theta_vel < -1.0) {theta_vel = -1.0;}
       else if (theta_vel > 1.0) {theta_vel = 1.0;}
       move_toward_srv_.request.norm_velocity.theta = theta_vel;
       ROS_INFO("Rot. Speed: %f", move_toward_srv_.request.norm_velocity.theta);
       move_toward_client_.call(move_toward_srv_);
-
-    } else if (fabs(distance_error) > dist_thresh) {
+      // ...then straight to ball
+    } else if (fabs(distance_error) > dist_thresh_) {
       if (distance_error > 0) { ROS_INFO("Forward"); }
-      float forw_vel = distance_error * dist_scalar;
+      float forw_vel = distance_error * dist_scalar_;
       if (forw_vel < -1.0) {forw_vel = -1.0;}
       else if (forw_vel > 1.0) {forw_vel = 1.0;}
       move_toward_srv_.request.norm_velocity.x = forw_vel;
@@ -116,9 +114,11 @@ void WalkToBallAction::executeCB(
       move_toward_client_.call(move_toward_srv_);
     }
 
-    if ((fabs(distance_error) < dist_thresh) &&
-        (fabs(theta_error) < theta_thresh)) {
+    // Check if we are close enough to ball
+    if ((fabs(distance_error) < dist_thresh_) &&
+        (fabs(theta_error) < theta_thresh_)) {
       ROS_INFO("%s: Arrived", action_name_.c_str());
+      success = true;
       going = false;
     }
   }
@@ -132,6 +132,7 @@ void WalkToBallAction::executeCB(
   } else {
     result_.success = false;
     ROS_INFO("%s: Failed!", action_name_.c_str());
+    if (!ball_found_) {ROS_INFO("Ball Lost!");}
     as_.setSucceeded(result_);
   }
 
