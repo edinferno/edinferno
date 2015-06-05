@@ -95,24 +95,24 @@ void WalkToBallAction::executeCB(
     move_toward_srv_.request.norm_velocity.x = 0.0f;
     move_toward_srv_.request.norm_velocity.theta = 0.0f;
     // Rotate first...
-    if (fabs(theta_error) > theta_thresh_) {
-      if (theta_error < 0) { ROS_INFO("Right"); } else { ROS_INFO("Left"); }
-      float theta_vel = theta_error * theta_scalar_;
-      if (theta_vel < -1.0) {theta_vel = -1.0;}
-      else if (theta_vel > 1.0) {theta_vel = 1.0;}
-      move_toward_srv_.request.norm_velocity.theta = theta_vel;
-      ROS_INFO("Rot. Speed: %f", move_toward_srv_.request.norm_velocity.theta);
-      move_toward_client_.call(move_toward_srv_);
-      // ...then straight to ball
-    } else if (fabs(distance_error) > dist_thresh_) {
+    // if (fabs(theta_error) > theta_thresh_) {
+    if (theta_error < 0) { ROS_INFO("Right"); } else { ROS_INFO("Left"); }
+    float theta_vel = theta_error * theta_scalar_;
+    if (theta_vel < -1.0) {theta_vel = -1.0;}
+    else if (theta_vel > 1.0) {theta_vel = 1.0;}
+    move_toward_srv_.request.norm_velocity.theta = theta_vel;
+    ROS_INFO("Rot. Speed: %f", move_toward_srv_.request.norm_velocity.theta);
+    // ...then straight to ball
+    // } else
+    if (fabs(distance_error) > dist_thresh_) {
       if (distance_error > 0) { ROS_INFO("Forward"); }
       float forw_vel = distance_error * dist_scalar_;
       if (forw_vel < -1.0) {forw_vel = -1.0;}
       else if (forw_vel > 1.0) {forw_vel = 1.0;}
       move_toward_srv_.request.norm_velocity.x = forw_vel;
       ROS_INFO("Dist. Speed: %f", move_toward_srv_.request.norm_velocity.x);
-      move_toward_client_.call(move_toward_srv_);
     }
+    move_toward_client_.call(move_toward_srv_);
 
     // Check if we are close enough to ball
     if ((fabs(distance_error) < dist_thresh_) &&
