@@ -40,7 +40,7 @@ void VisionNode::Spin() {
   while (ros::ok()) {
     if (SharedMemoryToCamera(image, cam_info)) {
       ball_detector_.ProcessImage(image, cam_info);
-      head_tracker_.Track(ball_detector_.ball());
+      head_tracker_.Track(cam_info, ball_detector_.ball());
     }
     ros::spinOnce();
     rate.sleep();
