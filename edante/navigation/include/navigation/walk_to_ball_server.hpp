@@ -24,7 +24,7 @@ class WalkToBallAction {
   navigation_msgs::WalkToBallResult result_;
 
  public:
-  WalkToBallAction(std::string name);
+  WalkToBallAction(ros::NodeHandle nh, std::string name);
 
   ~WalkToBallAction(void);
 
