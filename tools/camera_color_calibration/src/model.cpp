@@ -9,10 +9,10 @@
 #include "camera_color_calibration/model.hpp"
 #include "camera_color_calibration/controller.hpp"
 
-#include "camera/SetActiveCamera.h"
-#include "camera/SetColorSpace.h"
-#include "camera/SetColorTable.h"
-#include "camera/GetColorTable.h"
+#include <camera_msgs/SetActiveCamera.h>
+#include <camera_msgs/SetColorSpace.h>
+#include <camera_msgs/SetColorTable.h>
+#include <camera_msgs/GetColorTable.h>
 
 Model::Model(Controller* controller) {
   controller_ = controller;
@@ -41,16 +41,16 @@ void Model::SetupCamera() {
 
   // Set color space to be YUV422
   ros::ServiceClient client =
-    nh_->serviceClient<camera::SetColorSpace>("set_color_space");
-  camera::SetColorSpace srv;
+    nh_->serviceClient<camera_msgs::SetColorSpace>("set_color_space");
+  camera_msgs::SetColorSpace srv;
   srv.request.color_space = 0;
   client.call(srv);
 }
 
 void Model::SwitchCamera() {
   ros::ServiceClient client =
-    nh_->serviceClient<camera::SetActiveCamera>("set_active_camera");
-  camera::SetActiveCamera srv;
+    nh_->serviceClient<camera_msgs::SetActiveCamera>("set_active_camera");
+  camera_msgs::SetActiveCamera srv;
   srv.request.active_camera = (active_camera_ + 1) % 2;
   if (client.call(srv))
     active_camera_ = (active_camera_ + 1) % 2;
@@ -58,8 +58,8 @@ void Model::SwitchCamera() {
 
 bool Model::LoadTable() {
   ros::ServiceClient client =
-    nh_->serviceClient<camera::GetColorTable>("get_color_table");
-  camera::GetColorTable srv;
+    nh_->serviceClient<camera_msgs::GetColorTable>("get_color_table");
+  camera_msgs::GetColorTable srv;
   if (!client.call(srv)) {
     ROS_ERROR("Unable to receive color table.");
     return false;
@@ -92,8 +92,8 @@ bool Model::LoadTable() {
 
 bool Model::SendTable() {
   ros::ServiceClient client =
-    nh_->serviceClient<camera::SetColorTable>("set_color_table");
-  camera::SetColorTable srv;
+    nh_->serviceClient<camera_msgs::SetColorTable>("set_color_table");
+  camera_msgs::SetColorTable srv;
 
   PixelClass* table_ptr = reinterpret_cast<PixelClass*>(table_);
   for (size_t i = 0; i < kTableLen; ++i) {
