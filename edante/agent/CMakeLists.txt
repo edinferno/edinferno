@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   smach
   smach_ros
   actionlib
+  actionlib_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -83,7 +84,7 @@ catkin_python_setup()
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES agent
-#  CATKIN_DEPENDS rospy
+ CATKIN_DEPENDS rospy
 #  DEPENDS system_lib
 )
 
@@ -111,7 +112,7 @@ include_directories(
 # add_dependencies(agent_node agent_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(agent_node
+# target_link_libraries(agent
 #   ${catkin_LIBRARIES}
 # )
 
