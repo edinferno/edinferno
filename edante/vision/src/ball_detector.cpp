@@ -37,18 +37,17 @@ BallDetector::BallDetector(ros::NodeHandle& nh) :
  * @param image The image to be processed.
  * @param cam_info The camera calibration information.
  */
-void BallDetector::ProcessImage(
-  const sensor_msgs::Image& image,
-  const sensor_msgs::CameraInfo& cam_info) {
-  // Get a cv::Mat from the image message
-  GetMat(image, image_);
+void BallDetector::ProcessImage(const cv::Mat& image,
+                                const sensor_msgs::CameraInfo& cam_info) {
+  // Copy the input image
+  image_ = image.clone();
 
   // Make only ball pixels white
   ThresholdImage(image_);
 
   // Update the ball detection info
-  ball_detection_.header.stamp = image.header.stamp;
-  ball_detection_.header.frame_id = image.header.frame_id;
+  ball_detection_.header.stamp = cam_info.header.stamp;
+  ball_detection_.header.frame_id = cam_info.header.frame_id;
 
   // Find the ball in the thresholded image
   FindBall(image_, ball_detection_);
@@ -58,20 +57,6 @@ void BallDetector::ProcessImage(
 
   // Publish the detected ball info
   ball_detection_pub_.publish(ball_detection_);
-}
-/**
- * @brief Makes a cv::Mat object from an image by copying memory.
- *
- * @param image The input image
- * @param mat The output cv::Mat
- */
-void BallDetector::GetMat(const sensor_msgs::Image& image,
-                          cv::Mat& mat) {
-  if ((unsigned)mat.cols != image.width ||
-      (unsigned)mat.rows != image.height) {
-    mat = cv::Mat(image.height, image.width, CV_8UC1);
-  }
-  memcpy(mat.data, image.data.data(), image.data.size());
 }
 /**
  * @brief Threshold the image such that only 'Ball' pixels are white.

@@ -7,10 +7,15 @@
 */
 #include "vision/vision_node.hpp"
 
+// OpenCV
+#include <opencv2/core/core.hpp>
+
 using boost::interprocess::open_only;
 using boost::interprocess::read_only;
 using boost::interprocess::mapped_region;
 using boost::interprocess::named_mutex;
+
+using cv::Mat;
 
 using ros::serialization::IStream;
 using ros::serialization::Serializer;
@@ -25,6 +30,7 @@ VisionNode::VisionNode() :
   shdmem_(open_only, "camera_image", read_only),
   shdmem_mtx_(open_only, "camera_image_mutex"),
   ball_detector_(nh_),
+  line_detector_(nh_),
   head_tracker_(nh_) {
   shdmem_region_ = new mapped_region(shdmem_, read_only);
   shdmem_ptr_ = static_cast<uint8_t*>(shdmem_region_->get_address());
@@ -39,7 +45,10 @@ void VisionNode::Spin() {
   ros::Rate rate(30);
   while (ros::ok()) {
     if (SharedMemoryToCamera(image, cam_info)) {
-      ball_detector_.ProcessImage(image, cam_info);
+      // Get a shared cv::Mat from the image message
+      Mat mat = Mat(image.height, image.width, CV_8UC1, image.data.data());
+      ball_detector_.ProcessImage(mat, cam_info);
+      line_detector_.ProcessImage(mat, cam_info);
       head_tracker_.Track(cam_info, ball_detector_.ball());
     }
     ros::spinOnce();
