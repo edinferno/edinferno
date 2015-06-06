@@ -1,6 +1,7 @@
 #include "navigation/walk_to_ball_server.hpp"
 
-WalkToBallAction::WalkToBallAction(std::string name) :
+WalkToBallAction::WalkToBallAction(ros::NodeHandle nh, std::string name) :
+  nh_(nh),
   as_(nh_, name, boost::bind(&WalkToBallAction::executeCB, this, _1), false),
   action_name_(name) {
   // as_.registerGoalCallback(boost::bind(&WalkToBallAction::goalCB, this));
@@ -133,7 +134,7 @@ void WalkToBallAction::executeCB(
     result_.success = false;
     ROS_INFO("%s: Failed!", action_name_.c_str());
     if (!ball_found_) {ROS_INFO("Ball Lost!");}
-    as_.setSucceeded(result_);
+    as_.setAborted(result_);
   }
 
   move_init_client_.call(move_init_srv_);
