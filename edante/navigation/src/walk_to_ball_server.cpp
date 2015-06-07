@@ -19,6 +19,12 @@ WalkToBallAction::WalkToBallAction(ros::NodeHandle nh, std::string name) :
   move_init_client_ = nh_.serviceClient<std_srvs::Empty>(
                         "/motion/move_init", true);
   move_init_client_.waitForExistence();
+  start_head_track_client_ = nh_.serviceClient<vision_msgs::StartHeadTracking>(
+                               "/vision/start_head_tracking", true);
+  start_head_track_client_.waitForExistence();
+  stop_head_track_client_ = nh_.serviceClient<vision_msgs::StopHeadTracking>(
+                              "/vision/stop_head_tracking", true);
+  stop_head_track_client_.waitForExistence();
   start_position_.request.use_sensors = true;
   get_pose_srv_.request.use_sensors = true;
   this->init();
@@ -50,14 +56,10 @@ void WalkToBallAction::executeCB(
   bool going = true;
   bool success = false;
   ROS_INFO("Executing goal for %s", action_name_.c_str());
-  // get_pose_client_.call(start_position_);
 
-  // if (!ball_found_) {
-  //   ROS_ERROR("Walk to ball action waiting for ball...");
-  //   while (!ball_found_) {sleep(1);}
-  // } else {
-  //   ROS_INFO("Ball found! Going towards x: %f, y: %f", ball_pos_.x, ball_pos_.y);
-  // }
+  // Start tracking ball
+  start_head_track_srv_.request.object_type = 0;
+  start_head_track_client_.call(start_head_track_srv_);
 
   while (going && ball_found_) {
     if (as_.isPreemptRequested() || !ros::ok()) {
@@ -65,20 +67,6 @@ void WalkToBallAction::executeCB(
       as_.setPreempted();
       going = false;
     }
-    // get_pose_client_.call(get_pose_srv_);
-
-    // FEEDBACK
-    // feedback_.curr_pose.x =
-    //   get_pose_srv_.response.position.x - start_position_.response.position.x;
-    // feedback_.curr_pose.y =
-    //   get_pose_srv_.response.position.y - start_position_.response.position.y;
-    // feedback_.curr_pose.theta =
-    //   get_pose_srv_.response.position.theta - start_position_.response.position.theta;
-    // as_.publishFeedback(feedback_);
-    // ROS_INFO("Current pos: %f, %f, %f",
-    //          feedback_.curr_pose.x,
-    //          feedback_.curr_pose.y,
-    //          feedback_.curr_pose.theta);
 
     // Calculate Distance and Orientation error
     target_distance_ = ball_pos_.x;
@@ -89,7 +77,7 @@ void WalkToBallAction::executeCB(
     }
     float distance_error = target_distance_; // Relative
     float theta_error = target_theta_;       // Relative
-    ROS_INFO("Target dis: %f, Target theta %f", target_distance_, target_theta_);
+    // ROS_INFO("Target dis: %f, Target theta %f", target_distance_, target_theta_);
     // ROS_INFO("Distance_error: %f, Theta error: %f", distance_error, theta_error);
 
     // Reset velocities in-case we have reached a threshold
@@ -102,7 +90,7 @@ void WalkToBallAction::executeCB(
     if (theta_vel < -1.0) {theta_vel = -1.0;}
     else if (theta_vel > 1.0) {theta_vel = 1.0;}
     move_toward_srv_.request.norm_velocity.theta = theta_vel;
-    ROS_INFO("Rot. Speed: %f", move_toward_srv_.request.norm_velocity.theta);
+    // ROS_INFO("Rot. Speed: %f", move_toward_srv_.request.norm_velocity.theta);
     // ...then straight to ball
     // } else
     if (fabs(distance_error) > dist_thresh_) {
@@ -111,7 +99,7 @@ void WalkToBallAction::executeCB(
       if (forw_vel < -1.0) {forw_vel = -1.0;}
       else if (forw_vel > 1.0) {forw_vel = 1.0;}
       move_toward_srv_.request.norm_velocity.x = forw_vel;
-      ROS_INFO("Dist. Speed: %f", move_toward_srv_.request.norm_velocity.x);
+      // ROS_INFO("Dist. Speed: %f", move_toward_srv_.request.norm_velocity.x);
     }
     move_toward_client_.call(move_toward_srv_);
 
@@ -123,6 +111,9 @@ void WalkToBallAction::executeCB(
       going = false;
     }
   }
+  // Stop tracking ball
+  stop_head_track_srv_.request.object_type = 0;
+  stop_head_track_client_.call(stop_head_track_srv_);
 
   stop_move_client_.call(stop_move_srv_);
 

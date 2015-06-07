@@ -12,6 +12,8 @@
 #include <motion_msgs/GetRobotPosition.h>
 #include <navigation_msgs/WalkToBallAction.h>
 #include <vision_msgs/BallDetection.h>
+#include <vision_msgs/StartHeadTracking.h>
+#include <vision_msgs/StopHeadTracking.h>
 
 class WalkToBallAction {
  protected:
@@ -55,6 +57,10 @@ class WalkToBallAction {
   ros::ServiceClient stop_move_client_;
   std_srvs::Empty move_init_srv_;
   ros::ServiceClient move_init_client_;
+  vision_msgs::StartHeadTracking start_head_track_srv_;
+  ros::ServiceClient start_head_track_client_;
+  vision_msgs::StartHeadTracking stop_head_track_srv_;
+  ros::ServiceClient stop_head_track_client_;
 };
 
 
