@@ -6,13 +6,14 @@ project(visualiser)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  image_transport
   sensor_msgs
   vision_msgs
 )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
-
+find_package(OpenCV REQUIRED)
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -94,7 +95,9 @@ catkin_package(
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
+  include
   ${catkin_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
 )
 
 ## Declare a cpp library
@@ -103,16 +106,19 @@ include_directories(
 # )
 
 ## Declare a cpp executable
-# add_executable(visualiser_node src/visualiser_node.cpp)
+add_executable(visualiser
+  src/visualiser.cpp
+  src/visualise_vision.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 # add_dependencies(visualiser_node visualiser_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(visualiser_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(visualiser
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+)
 
 #############
 ## Install ##
