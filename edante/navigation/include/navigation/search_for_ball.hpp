@@ -16,6 +16,7 @@
 #include <motion_msgs/TaskResource.h>
 #include <navigation_msgs/SearchForBallAction.h>
 #include <vision_msgs/BallDetection.h>
+#include <camera_msgs/SetActiveCamera.h>
 // Navigation values
 #include "navigation/navigation_values.hpp"
 
@@ -38,7 +39,8 @@ class SearchForBallAction {
 
   void goalCB(const vision_msgs::BallDetection::ConstPtr& msg);
 
-  void scan();
+  void scan_right();
+  void scan_left();
 
   void executeCB(const navigation_msgs::SearchForBallGoalConstPtr& goal);
 
@@ -52,7 +54,8 @@ class SearchForBallAction {
 
   // Flags
   bool ball_found_;
-  bool scanning_;
+  bool scanning_right_;
+  bool scanning_left_;
   bool turning_;
   bool time_out_;
 
@@ -66,6 +69,8 @@ class SearchForBallAction {
   motion_msgs::AreResourcesAvailable resource_avail_srv_;
   motion_msgs::TaskResource kill_task_srv_;
   motion_msgs::IsEnabled move_is_active_srv_;
+  camera_msgs::SetActiveCamera bottom_camera_srv_;
+  camera_msgs::SetActiveCamera top_camera_srv_;
   ros::ServiceClient scan_client_;
   ros::ServiceClient turn_client_;
   std_srvs::Empty stop_move_srv_;
@@ -75,6 +80,7 @@ class SearchForBallAction {
   ros::ServiceClient resource_avail_client_;
   ros::ServiceClient move_is_active_client_;
   ros::ServiceClient kill_task_client_;
+  ros::ServiceClient camera_client_;
 };
 
 

@@ -12,6 +12,9 @@ SearchForBallAction::SearchForBallAction(ros::NodeHandle nh, std::string name) :
   turn_client_ = nh_.serviceClient<motion_msgs::MoveTo>(
                    "/motion/move_to", true);
   turn_client_.waitForExistence();
+  camera_client_ = nh_.serviceClient<camera_msgs::SetActiveCamera>(
+                     "/camera/set_active_camera", true);
+  camera_client_.waitForExistence();
   resource_avail_client_ = nh_.serviceClient<motion_msgs::AreResourcesAvailable>(
                              "/motion/are_resources_available", true);
   resource_avail_client_.waitForExistence();
@@ -32,12 +35,13 @@ SearchForBallAction::~SearchForBallAction(void) {
 void SearchForBallAction::init() {
   // Variables setup
   WAIT_100MS_ = 100000;
-  N_SCANS_ = 4;
+  N_SCANS_ = 1000;
   scan_no_ = 0;
 
   // Flags init
   ball_found_ = false;
-  scanning_ = false;
+  scanning_right_ = false;
+  scanning_left_ = false;
   turning_ = false;
   time_out_ = false;
 
@@ -94,6 +98,10 @@ void SearchForBallAction::init() {
   turn_right_srv_.request.control_points[0].x = 0.0;
   turn_right_srv_.request.control_points[0].y = 0.0;
   turn_right_srv_.request.control_points[0].theta = -HALF_PI;
+
+  // Prepare camera srvs
+  bottom_camera_srv_.request.active_camera = 1;
+  top_camera_srv_.request.active_camera = 0;
 }
 
 void SearchForBallAction::goalCB(const vision_msgs::BallDetection::ConstPtr&
@@ -103,9 +111,14 @@ void SearchForBallAction::goalCB(const vision_msgs::BallDetection::ConstPtr&
   // ball_pos_.y = msg->pos_robot.y;
 }
 
-void SearchForBallAction::scan() {
+void SearchForBallAction::scan_right() {
+  camera_client_.call(bottom_camera_srv_);
   scan_client_.call(look_left_srv_);
   scan_client_.call(scan_right_srv_);
+}
+
+void SearchForBallAction::scan_left() {
+  camera_client_.call(top_camera_srv_);
   scan_client_.call(scan_left_srv_);
 }
 
@@ -127,14 +140,20 @@ void SearchForBallAction::executeCB(
 
     // START SEARCH
     if (scan_no_ < N_SCANS_) {
-      if (!scanning_ && !turning_) {
-        // START SCAN
-        scanning_ = true;
-        this->scan();
-        ROS_INFO("Scanning...");
-      } else if (scanning_ && resource_avail_srv_.response.available) {
+      if (!scanning_right_ && !scanning_left_ && !turning_) {
+        // START SCAN RIGHT
+        scanning_right_ = true;
+        this->scan_right();
+        ROS_INFO("Scanning Right...");
+      } else if (scanning_right_ && resource_avail_srv_.response.available) {
+        // START SCAN LEFT
+        scanning_right_ = false;
+        scanning_left_ = true;
+        this->scan_left();
+        ROS_INFO("Scanning Left...");
+      } else if (scanning_left_ && resource_avail_srv_.response.available) {
         // START TURNING
-        scanning_ = false;
+        scanning_left_ = false;
         turning_ = true;
         turn_client_.call(turn_right_srv_);
         scan_client_.call(look_straight_srv_);
@@ -157,7 +176,6 @@ void SearchForBallAction::executeCB(
       success = true;
       going = false;
       kill_task_client_.call(kill_task_srv_);
-      scan_client_.call(look_straight_srv_);
     }
     usleep(WAIT_100MS_);
   }
