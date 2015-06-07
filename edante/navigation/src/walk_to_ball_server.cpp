@@ -52,12 +52,12 @@ void WalkToBallAction::executeCB(
   ROS_INFO("Executing goal for %s", action_name_.c_str());
   // get_pose_client_.call(start_position_);
 
-  if (!ball_found_) {
-    ROS_ERROR("Walk to ball action waiting for ball...");
-    while (!ball_found_) {sleep(1);}
-  } else {
-    ROS_INFO("Ball found! Going towards x: %f, y: %f", ball_pos_.x, ball_pos_.y);
-  }
+  // if (!ball_found_) {
+  //   ROS_ERROR("Walk to ball action waiting for ball...");
+  //   while (!ball_found_) {sleep(1);}
+  // } else {
+  //   ROS_INFO("Ball found! Going towards x: %f, y: %f", ball_pos_.x, ball_pos_.y);
+  // }
 
   while (going && ball_found_) {
     if (as_.isPreemptRequested() || !ros::ok()) {
