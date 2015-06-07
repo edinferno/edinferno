@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 ##
-# @file      game.py
+# @file      adhoc.py
 # @brief     Agent game state machine
 # @author    Alejandro Bordallo <alex.bordallo@ed.ac.uk>
 # @date      2015-06-05
@@ -13,6 +13,7 @@ import smach_ros
 from actionlib import *
 from actionlib_msgs.msg import *
 from navigation_msgs.msg import WalkToBallAction, WalkToBallGoal
+from navigation_msgs.msg import SearchForBallAction, SearchForBallGoal
 
 # import agent # import all the package from src/agent
 # needs the __init__.py well-formatted to work
@@ -25,13 +26,22 @@ def main():
     sm0 = smach.StateMachine(outcomes=['succeeded','aborted','preempted'])
     # Open the container
     with sm0:
-        # Add states to the container
+        # Search for ball
+        smach.StateMachine.add('SEARCH_FOR_BALL',
+                smach_ros.SimpleActionState('navigation/search_for_ball',
+                    SearchForBallAction,
+                    goal = SearchForBallGoal(start_search=True)),
+               {'succeeded':'WALK_TO_BALL',
+               'aborted':'SEARCH_FOR_BALL',
+               'preempted':'preempted'})
+
+        # Walk to ball
         smach.StateMachine.add('WALK_TO_BALL',
                 smach_ros.SimpleActionState('navigation/walk_to_ball',
                     WalkToBallAction,
                     goal = WalkToBallGoal(start_walk=True)),
                {'succeeded':'succeeded',
-               'aborted':'aborted',
+               'aborted':'SEARCH_FOR_BALL',
                'preempted':'preempted'})
 
     # Create and start the introspection server

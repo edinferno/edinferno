@@ -92,6 +92,9 @@ void LocomotionControl::rosSetup(ros::NodeHandle* nh) {
   srv_set_walk_arms_enabled_ =
     nh_->advertiseService("set_walk_arms_enabled",
                           &LocomotionControl::setWalkArmsEnabled, this);
+  srv_move_is_active_ =
+    nh_->advertiseService("move_is_active",
+                          &LocomotionControl::moveIsActive, this);
   this->checkMoveActive();
 }
 
@@ -426,4 +429,14 @@ bool LocomotionControl::setWalkArmsEnabled(
 void LocomotionControl::checkMoveActive() {
   move_active.data = mProxy_.moveIsActive();
   moving_pub_.publish(move_active);
+}
+
+/**
+ * @brief Responde whether current move is Active
+ * @details This is a service call instead of publisher */
+bool LocomotionControl::moveIsActive(
+  motion_msgs::IsEnabled::Request& req,
+  motion_msgs::IsEnabled::Response& res) {
+  res.is_enabled = mProxy_.moveIsActive();
+  return true;
 }
