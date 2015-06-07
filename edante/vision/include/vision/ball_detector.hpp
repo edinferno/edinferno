@@ -36,7 +36,7 @@ class BallDetector {
    * @param image The image to be processed.
    * @param cam_info The camera calibration information.
    */
-  void ProcessImage(const sensor_msgs::Image& image,
+  void ProcessImage(const cv::Mat& image,
                     const sensor_msgs::CameraInfo& cam_info);
   /**
    * @brief Getter of the current ball detection
@@ -60,13 +60,6 @@ class BallDetector {
   // Persistent client used to obtain the camera to robot frame transformation
   ros::ServiceClient transform_client_;
 
-  /**
-   * @brief Makes a cv::Mat object from an image by copying memory.
-   *
-   * @param image The input image
-   * @param mat The output cv::Mat
-   */
-  void GetMat(const sensor_msgs::Image& image, cv::Mat& mat);
   /**
    * @brief Threshold the image such that only 'Ball' pixels are white.
    *

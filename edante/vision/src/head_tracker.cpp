@@ -80,7 +80,7 @@ void HeadTracker::Track(const sensor_msgs::CameraInfo& cam_info,
     change_angles_srv_.request.changes[1] = -0.5;
     change_angles_client_.call(change_angles_srv_);
     // Wait for movement - we do not want to process empty frames.
-    ros::Duration d(0.2);
+    ros::Duration d(0.4);
     d.sleep();
     return;
   }
@@ -95,7 +95,7 @@ void HeadTracker::Track(const sensor_msgs::CameraInfo& cam_info,
     change_angles_srv_.request.changes[1] = 0.5;
     change_angles_client_.call(change_angles_srv_);
     // Wait for movement - we do not want to process empty frames.
-    ros::Duration d(0.2);
+    ros::Duration d(0.4);
     d.sleep();
     return;
   }

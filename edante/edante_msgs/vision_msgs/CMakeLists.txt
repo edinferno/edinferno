@@ -47,6 +47,8 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   BallDetection.msg
+  LineDetection.msg
+  LineDetections.msg
 )
 
 ## Generate services in the 'srv' folder
