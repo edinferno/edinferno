@@ -1,22 +1,19 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(camera_color_calibration)
+project(visualiser)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
-  sensor_msgs
-  roslib
   image_transport
-  camera
-  camera_msgs
+  sensor_msgs
+  vision_msgs
 )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(gtkmm gtkmm-3.0)
+find_package(OpenCV REQUIRED)
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -71,7 +68,7 @@ pkg_check_modules(gtkmm gtkmm-3.0)
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   sensor_msgs#   std_msgs
+#   sensor_msgs#   vision_msgs
 # )
 
 ###################################
@@ -85,15 +82,14 @@ pkg_check_modules(gtkmm gtkmm-3.0)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES camera_calibration
-#  CATKIN_DEPENDS roscpp sensor_msgs std_msgs
+#  LIBRARIES visualiser
+#  CATKIN_DEPENDS roscpp sensor_msgs vision_msgs
 #  DEPENDS system_lib
 )
 
 ###########
 ## Build ##
 ###########
-set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall" )
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
@@ -101,32 +97,27 @@ set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall" )
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-  ${gtkmm_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
 )
 
 ## Declare a cpp library
-# add_library(camera_calibration
-#   src/${PROJECT_NAME}/camera_calibration.cpp
+# add_library(visualiser
+#   src/${PROJECT_NAME}/visualiser.cpp
 # )
 
 ## Declare a cpp executable
-add_executable(camera_color_calibration
-  src/camera_color_calibration.cpp
-  src/model.cpp
-  src/view.cpp
-  src/controller.cpp)
+add_executable(visualiser
+  src/visualiser.cpp
+  src/visualise_vision.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(camera_calibration_node camera_calibration_generate_messages_cpp)
+# add_dependencies(visualiser_node visualiser_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(camera_calibration_node
-#   ${catkin_LIBRARIES}
-# )
-target_link_libraries(camera_color_calibration
+target_link_libraries(visualiser
   ${catkin_LIBRARIES}
-  ${gtkmm_LIBRARIES}
+  ${OpenCV_LIBRARIES}
 )
 
 #############
@@ -144,7 +135,7 @@ target_link_libraries(camera_color_calibration
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS camera_calibration camera_calibration_node
+# install(TARGETS visualiser visualiser_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -169,7 +160,7 @@ target_link_libraries(camera_color_calibration
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_camera_calibration.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_visualiser.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

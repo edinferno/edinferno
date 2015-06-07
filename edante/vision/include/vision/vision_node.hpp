@@ -21,6 +21,7 @@
 #include <sensor_msgs/CameraInfo.h>
 
 #include "vision/ball_detector.hpp"
+#include "vision/line_detector.hpp"
 #include "vision/head_tracker.hpp"
 
 /**
@@ -52,6 +53,9 @@ class VisionNode {
 
   // Detects the ball and publishes information
   BallDetector ball_detector_;
+
+  // Detectes lines and publishes information
+  LineDetector line_detector_;
 
   // Head tracking
   HeadTracker head_tracker_;
