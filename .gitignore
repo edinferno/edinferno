@@ -33,6 +33,9 @@ doc/
 *.out
 *.app
 
+# Python
+*.pyc
+
 # Mac Hidden temporary files
 *._*.cpp
 *._*.h
