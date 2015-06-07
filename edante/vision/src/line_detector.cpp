@@ -21,7 +21,7 @@ LineDetector::LineDetector(ros::NodeHandle& nh) :
 void LineDetector::ProcessImage(const cv::Mat& image,
                                 const sensor_msgs::CameraInfo& cam_info) {
   ++frames_count_;
-  if (frames_count_ % 2 != 1) {
+  if (frames_count_ % 30 != 1) {
     return;
   }
 
