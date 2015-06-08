@@ -43,6 +43,7 @@ void View::Build(int argc, char** argv,
   ConnectRadioToolButton("green");
   ConnectRadioToolButton("red");
   ConnectRadioToolButton("blue");
+  ConnectToolButton("clear");
   ConnectToolButton("switch");
   ConnectToolButton("send");
 
@@ -225,6 +226,8 @@ void View::OnToolbarButtonClicked(std::string name) {
     current_class_ = TeamBlue;
     statusbar_->push("Blue team", context_id_);
 
+  } else if (name == "clear") {
+    controller_->OnClearTable();
   } else if (name == "switch") {
     controller_->OnSwitchCamera();
   } else if (name == "send") {

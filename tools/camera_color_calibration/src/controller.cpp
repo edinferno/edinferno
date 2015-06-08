@@ -34,7 +34,9 @@ bool Controller::SpinOnce() {
 void Controller::OnNewPixelClass(double x, double y, PixelClass pixel_class) {
   model_->AddNewPixelClass(x, y, pixel_class);
 }
-
+void Controller::OnClearTable() {
+  model_->ClearTable();
+}
 void Controller::OnSwitchCamera() {
   model_->SwitchCamera();
 }
