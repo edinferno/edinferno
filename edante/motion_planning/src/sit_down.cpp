@@ -56,7 +56,7 @@ void SitDownAction::executeCB(const motion_planning_msgs::SitDownGoalConstPtr&
     going = false;
   }
 
-  // Check what posture family we are on (NOT postur)
+  // Check what posture family we are on (NOT posture)
   get_posture_family_client_.call(get_posture_family_srv_);
   curr_pos = get_posture_family_srv_.response.posture_family;
   ROS_INFO("Feedback: %s", curr_pos.c_str());
