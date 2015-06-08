@@ -1,5 +1,5 @@
 /**
- * @file      motion_values.hpp
+ * @file      navigation_values.hpp
  * @brief     Define common motion values
  * @author    Alejandro Bordallo <alex.bordallo@ed.ac.uk>
  * @date      2015-05-19

@@ -36,6 +36,7 @@
 #include <motion_msgs/GetRobotVelocity.h>
 #include <motion_msgs/GetWalkArmsEnabled.h>
 #include <motion_msgs/SetWalkArmsEnabled.h>
+#include <motion_msgs/IsEnabled.h>
 
 using std::vector;
 
@@ -76,9 +77,8 @@ class LocomotionControl : public AL::ALModule  {
                           motion_msgs::GetWalkArmsEnabled::Response& res);
   bool setWalkArmsEnabled(motion_msgs::SetWalkArmsEnabled::Request& req,
                           motion_msgs::SetWalkArmsEnabled::Response& res);
-
-  // ROS publisher
-  void checkMoveActive();
+  bool moveIsActive(motion_msgs::IsEnabled::Request& req,
+                    motion_msgs::IsEnabled::Response& res);
 
  private:
   // ROS
@@ -96,8 +96,7 @@ class LocomotionControl : public AL::ALModule  {
   ros::ServiceServer srv_get_robot_velocity_;
   ros::ServiceServer srv_get_walk_arms_enabled_;
   ros::ServiceServer srv_set_walk_arms_enabled_;
-  std_msgs::Bool move_active;
-
+  ros::ServiceServer srv_move_is_active_;
 
   // NAOqi
   boost::shared_ptr<AL::ALMutex> fCallbackMutex;

@@ -1,5 +1,5 @@
 #goal definition
-bool goal
+bool sit_rest
 ---
 #result definition
 bool success

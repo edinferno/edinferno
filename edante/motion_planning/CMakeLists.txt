@@ -108,22 +108,16 @@ include_directories(
 ## Declare a cpp executable
 add_executable(motion_planning
  src/motion_planning.cpp
- src/stand_server.cpp
- src/sit_server.cpp)
-
-add_executable(motion_planning_client
- src/motion_planning_client.cpp)
+ src/stand_up.cpp
+ src/sit_down.cpp
+ src/sit_rest.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(motion_planning motion_msgs)
-add_dependencies(motion_planning_client motion_msgs)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(motion_planning
-  ${catkin_LIBRARIES}
-)
-target_link_libraries(motion_planning_client
   ${catkin_LIBRARIES}
 )
 

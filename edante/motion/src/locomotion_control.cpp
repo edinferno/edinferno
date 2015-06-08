@@ -53,8 +53,6 @@ void LocomotionControl::init() {
  */
 void LocomotionControl::rosSetup(ros::NodeHandle* nh) {
   nh_ = nh;
-  ROS_INFO_STREAM("Setting up Locomotion Control publishers");
-  moving_pub_ = nh_->advertise<std_msgs::Bool>("is_moving", 10, true);
   ROS_INFO_STREAM("Setting up Locomotion Control services");
   srv_move_ =
     nh_->advertiseService("move",
@@ -92,7 +90,9 @@ void LocomotionControl::rosSetup(ros::NodeHandle* nh) {
   srv_set_walk_arms_enabled_ =
     nh_->advertiseService("set_walk_arms_enabled",
                           &LocomotionControl::setWalkArmsEnabled, this);
-  this->checkMoveActive();
+  srv_move_is_active_ =
+    nh_->advertiseService("move_is_active",
+                          &LocomotionControl::moveIsActive, this);
 }
 
 /**
@@ -133,7 +133,6 @@ bool LocomotionControl::move(motion_msgs::Move::Request& req,
   } else {
     res.res = false;
   }
-  this->checkMoveActive();
   return true;
 }
 
@@ -192,7 +191,6 @@ bool LocomotionControl::moveTo(motion_msgs::MoveTo::Request& req,
   } else {
     res.res = false;
   }
-  this->checkMoveActive();
   return true;
 }
 
@@ -234,7 +232,6 @@ bool LocomotionControl::moveToward(motion_msgs::MoveToward::Request& req,
   } else {
     res.res = false;
   }
-  this->checkMoveActive();
   return true;
 }
 
@@ -251,7 +248,6 @@ bool LocomotionControl::moveToward(motion_msgs::MoveToward::Request& req,
 bool LocomotionControl::moveInit(std_srvs::Empty::Request& req,
                                  std_srvs::Empty::Response& res) {
   mProxy_.post.moveInit();
-  this->checkMoveActive();
   return true;
 }
 
@@ -269,7 +265,6 @@ bool LocomotionControl::waitUntilMoveIsFinished(
   std_srvs::Empty::Request& req,
   std_srvs::Empty::Response& res) {
   mProxy_.waitUntilMoveIsFinished();
-  this->checkMoveActive();
   return true;
 }
 
@@ -286,7 +281,6 @@ bool LocomotionControl::waitUntilMoveIsFinished(
 bool LocomotionControl::stopMove(std_srvs::Empty::Request& req,
                                  std_srvs::Empty::Response& res) {
   mProxy_.stopMove();
-  this->checkMoveActive();
   return true;
 }
 
@@ -311,7 +305,6 @@ bool LocomotionControl::getMoveConfig(motion_msgs::GetMoveConfig::Request& req,
     res.move_configuration.names[i] = move_configuration[i][0].toString();
     res.move_configuration.values[i] = move_configuration[i][1];
   }
-  this->checkMoveActive();
   return true;
 }
 
@@ -332,7 +325,6 @@ bool LocomotionControl::getRobotPosition(
   res.position.x = pose[0];
   res.position.y = pose[1];
   res.position.theta = pose[2];
-  this->checkMoveActive();
   return true;
 }
 
@@ -355,7 +347,6 @@ bool LocomotionControl::getNextRobotPosition(
   res.next_position.x = pose[0];
   res.next_position.y = pose[1];
   res.next_position.theta = pose[2];
-  this->checkMoveActive();
   return true;
 }
 
@@ -376,7 +367,6 @@ bool LocomotionControl::getRobotVelocity(
   res.velocity.x = velocity[0];
   res.velocity.y = velocity[1];
   res.velocity.theta = velocity[2];
-  this->checkMoveActive();
   return true;
 }
 
@@ -397,7 +387,6 @@ bool LocomotionControl::getWalkArmsEnabled(
   res.arm_motions.resize(2);
   res.arm_motions[0] = static_cast<bool>(result[0]);
   res.arm_motions[1] = static_cast<bool>(result[1]);
-  this->checkMoveActive();
   return true;
 }
 
@@ -416,14 +405,15 @@ bool LocomotionControl::setWalkArmsEnabled(
   motion_msgs::SetWalkArmsEnabled::Request& req,
   motion_msgs::SetWalkArmsEnabled::Response& res) {
   mProxy_.setWalkArmsEnabled(req.left_arm_enable, req.right_arm_enable);
-  this->checkMoveActive();
   return true;
 }
 
 /**
- * @brief Publish whether current move is Active
- * @details This function is called automatically after any LocomotionControl srv call */
-void LocomotionControl::checkMoveActive() {
-  move_active.data = mProxy_.moveIsActive();
-  moving_pub_.publish(move_active);
+ * @brief Responde whether current move is Active
+ * @details This is a service call instead of publisher */
+bool LocomotionControl::moveIsActive(
+  motion_msgs::IsEnabled::Request& req,
+  motion_msgs::IsEnabled::Response& res) {
+  res.is_enabled = mProxy_.moveIsActive();
+  return true;
 }

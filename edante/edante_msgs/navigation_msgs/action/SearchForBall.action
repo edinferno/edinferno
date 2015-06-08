@@ -1,8 +1,8 @@
 #goal definition
-bool goal
+bool start_search
 ---
 #result definition
 bool success
 ---
 #feedback
-bool feedback
+geometry_msgs/Pose2D curr_pose

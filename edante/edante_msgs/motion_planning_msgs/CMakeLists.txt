@@ -59,8 +59,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate actions in the 'action' folder
 add_action_files(
   FILES
-  Stand.action
-  Sit.action
+  StandUp.action
+  SitDown.action
+  SitRest.action
 )
 
 ## Generate added messages and services with any dependencies listed here

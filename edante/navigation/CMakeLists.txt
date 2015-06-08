@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   motion_msgs
   navigation_msgs
+  vision_msgs
   std_msgs
 )
 
@@ -114,6 +115,7 @@ add_executable(navigation
  src/navigation.cpp
  src/navigation_server.cpp
  src/walk_to_ball_server.cpp
+ src/search_for_ball.cpp
  )
 
 add_executable(navigation_client
