@@ -19,6 +19,8 @@
 #include <ros/serialization.h>
 #include <sensor_msgs/image_encodings.h>
 
+using std::vector;
+
 using boost::interprocess::open_or_create;
 using boost::interprocess::read_write;
 using boost::interprocess::mapped_region;
@@ -68,6 +70,7 @@ CameraNode::CameraNode(boost::shared_ptr<AL::ALBroker> broker,
   AL::ALModule(broker, module_name),
   module_name_(module_name),
   camera_proxy_(new AL::ALVideoDeviceProxy(broker)),
+  motion_proxy_(new AL::ALMotionProxy(broker)),
   shdmem_(open_or_create, "camera_image", read_write) {
   Init();
 }
@@ -151,6 +154,7 @@ void CameraNode::Init() {
   active_color_space_ = AL::kYUV422ColorSpace;
   active_fps_ = 30;
   active_rate_ = new ros::Rate(active_fps_);
+  active_camera_frame_name_ = "CameraTop";
 
   // Subscribe to the active Nao camera
   module_name_ = camera_proxy_->subscribeCamera(
@@ -223,9 +227,15 @@ void CameraNode::LoadColorTable() {
  */
 void CameraNode::Spin() {
   AL::ALImage* alimage;
+  vector<float> transform;
   while (!is_module_closing_) {
     // Read the camera frame
     alimage = (AL::ALImage*)(camera_proxy_->getImageLocal(module_name_));
+
+    transform = motion_proxy_->getTransform(active_camera_frame_name_,
+                                            2,  // FRAME_ROBOT
+                                            true);
+
     // Copy the image into the pre-allocated message
     image_.header.stamp = ros::Time::now();
     memcpy(image_.data.data(), alimage->getData(), image_.data.size());
@@ -244,7 +254,7 @@ void CameraNode::Spin() {
     segmented_image_pub_.publish(segmented_image_, active_cam_info_);
 
     // Move image and camera info to shared memory
-    CameraToSharedMemory(segmented_image_, active_cam_info_);
+    CameraToSharedMemory(segmented_image_, active_cam_info_, transform);
 
     // Publish segmented RGB image if necessary
     if (segmented_rgb_image_pub_.getNumSubscribers() > 0) {
@@ -273,9 +283,11 @@ void CameraNode::Spin() {
  *
  * @param image The image to be copied to memory
  * @param cam_info The camera info to be copied to memory
+ * @param transform The camera frame transformation to be copied to memory
  */
 void CameraNode::CameraToSharedMemory(const sensor_msgs::Image& image,
-                                      const sensor_msgs::CameraInfo& cam_info) {
+                                      const sensor_msgs::CameraInfo& cam_info,
+                                      const std::vector<float> transform) {
   // Gain access to the shared memory
   shdmem_mtx_->lock();
   uint8_t* ptr = shdmem_ptr_;
@@ -298,6 +310,10 @@ void CameraNode::CameraToSharedMemory(const sensor_msgs::Image& image,
   // Write the image
   OStream image_stream(ptr, image_size);
   Serializer<sensor_msgs::Image>::write(image_stream, image);
+  ptr += image_size;
+
+  // Write the frame transformation
+  memcpy(ptr, transform.data(), transform.size());
 
   // Release the shared memory
   shdmem_mtx_->unlock();
@@ -491,14 +507,17 @@ bool CameraNode::set_active_camera(camera_msgs::SetActiveCamera::Request&  req,
                                    camera_msgs::SetActiveCamera::Response& res) {
   int new_active_cam_id;
   Camera* new_active_cam;
+  std::string new_active_cam_frame;
   switch (req.active_camera) {
     case 0:
       new_active_cam_id = AL::kTopCamera;
       new_active_cam = top_cam_;
+      new_active_cam_frame = "CameraTop";
       break;
     case 1:
       new_active_cam_id = AL::kBottomCamera;
       new_active_cam = bot_cam_;
+      new_active_cam_frame = "CameraBottom";
       break;
     default:
       res.result = false;
@@ -509,6 +528,7 @@ bool CameraNode::set_active_camera(camera_msgs::SetActiveCamera::Request&  req,
 
   if (res.result) {
     active_cam_ = new_active_cam;
+    active_camera_frame_name_ = new_active_cam_frame;
     camera_proxy_->setColorSpace(module_name_, active_color_space_);
     camera_proxy_->setResolution(module_name_, active_resolution_);
     camera_proxy_->setFrameRate(module_name_, active_fps_);
