@@ -1,0 +1,24 @@
+#!/sbin/runscript
+
+depend () {
+  need dbus localmount
+  provide ros
+}
+
+start() {
+  ebegin "Starting roscore"
+  source /opt/openrobots/etc/ros/setup.sh
+  start-stop-daemon --background --start --quiet --exec /opt/openrobots/bin/roscore \
+                    --make-pidfile --pidfile /var/run/ros.pid
+  einfo "Waiting for the rosmaster"
+  sleep 10
+  eend $?
+}
+
+stop() {
+  ebegin "Stoping roscore"
+  start-stop-daemon --stop --exec /usr/bin/python2.7 --name /opt/openrobots/bin/roscore \
+                    --pidfile /var/run/ros.pid
+  eend $?
+}
+
