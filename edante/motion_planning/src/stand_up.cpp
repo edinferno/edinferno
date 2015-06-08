@@ -14,13 +14,14 @@ StandUpAction::StandUpAction(ros::NodeHandle nh, std::string name) :
   action_name_(name) {
   awake_sub_ = nh_.subscribe("/motion/is_awake", 1, &StandUpAction::awakeCB,
                              this);
-  wake_up_client_ = nh_.serviceClient<std_srvs::Empty>("motion/wake_up", true);
+  wake_up_client_ = nh_.serviceClient<std_srvs::Empty>("/motion/wake_up", true);
+  wake_up_client_.waitForExistence();
   get_posture_family_client_ = nh_.serviceClient<motion_msgs::GetPostureFamily>(
                                  "/motion/get_posture_family", true);
   get_posture_family_client_.waitForExistence();
-  stopMoveClient = nh_.serviceClient<std_srvs::Empty>(
-                     "/motion/stop_move", true);
-  stopMoveClient.waitForExistence();
+  stop_move_client_ = nh_.serviceClient<std_srvs::Empty>(
+                        "/motion/stop_move", true);
+  stop_move_client_.waitForExistence();
   set_posture_client_ = nh_.serviceClient<motion_msgs::SetPosture>(
                           "/motion/goto_posture", true);
   set_posture_client_.waitForExistence();
@@ -44,10 +45,9 @@ void StandUpAction::awakeCB(const std_msgs::Bool::ConstPtr& msg) {
 
 void StandUpAction::executeCB(
   const motion_planning_msgs::StandUpGoalConstPtr& goal) {
+  ROS_INFO("Executing goal for %s", action_name_.c_str());
   bool going = true;
   bool success = true;
-  std::string curr_pos;
-  ROS_INFO("Executing goal for %s", action_name_.c_str());
 
   if (as_.isPreemptRequested() || !ros::ok()) {
     ROS_INFO("%s: Preempted", action_name_.c_str());
@@ -57,13 +57,17 @@ void StandUpAction::executeCB(
   }
 
   // Check what posture family we are on (NOT posture)
+  std::string curr_pos;
   get_posture_family_client_.call(get_posture_family_srv_);
   curr_pos = get_posture_family_srv_.response.posture_family;
   ROS_INFO("Feedback: %s", curr_pos.c_str());
 
   // If robot is not awake, wake it up with full stiffness
   if (!is_awake_ && going) {
+    ROS_INFO("Stand Up!");
     wake_up_client_.call(wake_up_srv_);
+  } else {
+    stop_move_client_.call(stop_move_srv_);
   }
 
   // If not already standing, stand up using behaviour

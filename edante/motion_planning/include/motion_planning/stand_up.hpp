@@ -54,8 +54,8 @@ class StandUpAction {
   ros::ServiceClient wake_up_client_;
   motion_msgs::GetPostureFamily get_posture_family_srv_;
   ros::ServiceClient get_posture_family_client_;
-  std_srvs::Empty stopSrv;
-  ros::ServiceClient stopMoveClient;
+  std_srvs::Empty stop_move_srv_;
+  ros::ServiceClient stop_move_client_;
   motion_msgs::SetPosture set_posture_srv_;
   ros::ServiceClient set_posture_client_;
 
