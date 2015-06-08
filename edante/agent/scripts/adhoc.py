@@ -14,6 +14,8 @@ from actionlib import *
 from actionlib_msgs.msg import *
 from navigation_msgs.msg import WalkToBallAction, WalkToBallGoal
 from navigation_msgs.msg import SearchForBallAction, SearchForBallGoal
+from motion_planning_msgs.msg import StandUpAction, StandUpGoal
+from motion_planning_msgs.msg import SitDownAction, SitDownGoal
 
 # import agent # import all the package from src/agent
 # needs the __init__.py well-formatted to work
@@ -26,6 +28,24 @@ def main():
     sm0 = smach.StateMachine(outcomes=['succeeded','aborted','preempted'])
     # Open the container
     with sm0:
+        # Stand up
+        smach.StateMachine.add('STAND_UP',
+                smach_ros.SimpleActionState('motion_planning/stand_up',
+                    StandUpAction,
+                    goal = StandUpGoal(stand_up=True)),
+               {'succeeded':'SEARCH_FOR_BALL',
+               'aborted':'STAND_UP',
+               'preempted':'preempted'})
+
+        # Sit down
+        smach.StateMachine.add('SIT_DOWN',
+                smach_ros.SimpleActionState('motion_planning/sit_down',
+                    SitDownAction,
+                    goal = SitDownGoal(sit_down=True)),
+               {'succeeded':'succeeded',
+               'aborted':'aborted',
+               'preempted':'preempted'})
+
         # Search for ball
         smach.StateMachine.add('SEARCH_FOR_BALL',
                 smach_ros.SimpleActionState('navigation/search_for_ball',
@@ -40,7 +60,7 @@ def main():
                 smach_ros.SimpleActionState('navigation/walk_to_ball',
                     WalkToBallAction,
                     goal = WalkToBallGoal(start_walk=True)),
-               {'succeeded':'succeeded',
+               {'succeeded':'SIT_DOWN',
                'aborted':'SEARCH_FOR_BALL',
                'preempted':'preempted'})
 

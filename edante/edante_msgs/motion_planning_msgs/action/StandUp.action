@@ -1,5 +1,5 @@
 #goal definition
-bool goal
+bool stand_up
 ---
 #result definition
 bool success

@@ -1,18 +1,20 @@
-/*
-* @Copyright: Copyright[2015]<Alejandro Bordallo>
-* @Date:      2015-05-22
-* @Email:     alex.bordallo@ed.ac.uk
-* @Desc:      Main motion planning node
-*/
+/**
+ * @file      motion_planning.cpp
+ * @brief     Main motion planning node
+ * @author    Alejandro Bordallo <alex.bordallo@ed.ac.uk>
+ * @date      2015-06-08
+ * @copyright (MIT) 2015 Edinferno
+ */
 
-#include "motion_planning/stand_server.hpp"
-#include "motion_planning/sit_server.hpp"
+#include "motion_planning/stand_up.hpp"
+#include "motion_planning/sit_down.hpp"
 
 int main(int argc, char** argv) {
   ros::init(argc, argv, "motion_planning");
+  ros::NodeHandle nh("motion_planning");
   ROS_INFO("Running Motion Planning");
-  StandAction stand("stand_up_action");
-  SitAction sit("sit_down_action");
+  StandUpAction stand(nh, "stand_up");
+  SitDownAction sit(nh, "sit_down");
   ros::Rate r(10);
 
   while (ros::ok()) {

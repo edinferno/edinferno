@@ -1,15 +1,19 @@
-/*
-* @Copyright: Copyright[2015]<Alejandro Bordallo>
-* @Date:      2015-05-22
-* @Email:     alex.bordallo@ed.ac.uk
-* @Desc:      Sit down action server
-*/
+/**
+ * @file      sit_down.cpp
+ * @brief     Sit down action server
+ * @author    Alejandro Bordallo <alex.bordallo@ed.ac.uk>
+ * @date      2015-06-08
+ * @copyright (MIT) 2015 Edinferno
+ */
 
-#include "motion_planning/sit_server.hpp"
+#include "motion_planning/sit_down.hpp"
 
-SitAction::SitAction(std::string name) :
-  as_(nh_, name, boost::bind(&SitAction::executeCB, this, _1), false),
+SitDownAction::SitDownAction(ros::NodeHandle nh, std::string name) :
+  nh_(nh),
+  as_(nh_, name, boost::bind(&SitDownAction::executeCB, this, _1), false),
   action_name_(name) {
+  awake_sub_ = nh_.subscribe("/motion/is_awake", 1, &SitDownAction::awakeCB,
+                             this);
   wake_up_client_ = nh_.serviceClient<std_srvs::Empty>("motion/wake_up", true);
   get_posture_family_client_ = nh_.serviceClient<motion_msgs::GetPostureFamily>(
                                  "/motion/get_posture_family", true);
@@ -20,23 +24,30 @@ SitAction::SitAction(std::string name) :
   set_posture_client_ = nh_.serviceClient<motion_msgs::SetPosture>(
                           "/motion/goto_posture", true);
   set_posture_client_.waitForExistence();
-  set_posture_srv_.request.posture_name = "Crouch";
-  set_posture_srv_.request.speed = 0.5f;
-  ROS_INFO("Starting Sit up action server");
+  ROS_INFO("Starting Sit down action server");
+  this->init();
   as_.start();
 }
 
-SitAction::~SitAction(void) {
+SitDownAction::~SitDownAction(void) {
 }
 
-void SitAction::executeCB(const motion_planning_msgs::SitGoalConstPtr& goal) {
+void SitDownAction::init() {
+  is_awake_ = false;
+  set_posture_srv_.request.posture_name = "Crouch";
+  set_posture_srv_.request.speed = 0.5f;
+}
+
+void SitDownAction::awakeCB(const std_msgs::Bool::ConstPtr& msg) {
+  is_awake_ = msg->data;
+}
+
+void SitDownAction::executeCB(const motion_planning_msgs::SitDownGoalConstPtr&
+                              goal) {
   bool going = true;
   bool success = true;
   std::string curr_pos;
   ROS_INFO("Executing goal for %s", action_name_.c_str());
-  get_posture_family_client_.call(get_posture_family_srv_);
-  curr_pos = get_posture_family_srv_.response.posture_family;
-  ROS_INFO("Feedback: %s", curr_pos.c_str());
 
   if (as_.isPreemptRequested() || !ros::ok()) {
     ROS_INFO("%s: Preempted", action_name_.c_str());
@@ -45,16 +56,22 @@ void SitAction::executeCB(const motion_planning_msgs::SitGoalConstPtr& goal) {
     going = false;
   }
 
+  // Check what posture family we are on (NOT postur)
+  get_posture_family_client_.call(get_posture_family_srv_);
+  curr_pos = get_posture_family_srv_.response.posture_family;
+  ROS_INFO("Feedback: %s", curr_pos.c_str());
+
+  // If robot is not awake, wake it up with full stiffness
+  if (!is_awake_ && going) {
+    wake_up_client_.call(wake_up_srv_);
+  }
+
+  // If not already crouching, crouch using behaviour
   if ((curr_pos.compare("Crouch") == 0) && going == true) {
-    ROS_INFO("Already Crouching!");
-    get_posture_family_client_.call(get_posture_family_srv_);
-    curr_pos = get_posture_family_srv_.response.posture_family;
-    ROS_INFO("Feedback: %s", curr_pos.c_str());
     going = false;
   } else if ( (curr_pos.compare("Crouch") != 0) && going == true) {
-    ROS_INFO("Initiate sit down from %s", curr_pos.c_str());
     set_posture_client_.call(set_posture_srv_);
-    success = true;
+    success = set_posture_srv_.response.success;
     going = false;
   } else { success = false;}
 
