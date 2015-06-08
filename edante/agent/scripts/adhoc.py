@@ -16,6 +16,7 @@ from navigation_msgs.msg import WalkToBallAction, WalkToBallGoal
 from navigation_msgs.msg import SearchForBallAction, SearchForBallGoal
 from motion_planning_msgs.msg import StandUpAction, StandUpGoal
 from motion_planning_msgs.msg import SitDownAction, SitDownGoal
+from motion_planning_msgs.msg import SitRestAction, SitRestGoal
 
 # import agent # import all the package from src/agent
 # needs the __init__.py well-formatted to work
@@ -42,6 +43,15 @@ def main():
                 smach_ros.SimpleActionState('motion_planning/sit_down',
                     SitDownAction,
                     goal = SitDownGoal(sit_down=True)),
+               {'succeeded':'succeeded',
+               'aborted':'aborted',
+               'preempted':'preempted'})
+
+        # Sit rest
+        smach.StateMachine.add('SIT_REST',
+                smach_ros.SimpleActionState('motion_planning/sit_rest',
+                    SitRestAction,
+                    goal = SitRestGoal(sit_rest=True)),
                {'succeeded':'succeeded',
                'aborted':'aborted',
                'preempted':'preempted'})

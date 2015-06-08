@@ -61,6 +61,7 @@ add_action_files(
   FILES
   StandUp.action
   SitDown.action
+  SitRest.action
 )
 
 ## Generate added messages and services with any dependencies listed here

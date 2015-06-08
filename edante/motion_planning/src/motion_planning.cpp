@@ -8,6 +8,7 @@
 
 #include "motion_planning/stand_up.hpp"
 #include "motion_planning/sit_down.hpp"
+#include "motion_planning/sit_rest.hpp"
 
 int main(int argc, char** argv) {
   ros::init(argc, argv, "motion_planning");
@@ -15,6 +16,7 @@ int main(int argc, char** argv) {
   ROS_INFO("Running Motion Planning");
   StandUpAction stand(nh, "stand_up");
   SitDownAction sit(nh, "sit_down");
+  SitRestAction rest(nh, "sit_rest");
   ros::Rate r(10);
 
   while (ros::ok()) {

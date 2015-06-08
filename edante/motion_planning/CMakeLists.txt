@@ -109,7 +109,8 @@ include_directories(
 add_executable(motion_planning
  src/motion_planning.cpp
  src/stand_up.cpp
- src/sit_down.cpp)
+ src/sit_down.cpp
+ src/sit_rest.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
