@@ -49,7 +49,7 @@ start() {
     "${BINARY}" --daemon --pid "${LOCK_FILE}" ${ARGS}
   else
     #we want a dbus session
-    su -c ". /opt/openrobots/etc/ros/setup.sh; . /etc/profile.d/dbus-session.sh; ${BINARY} --daemon --pid ${LOCK_FILE} ${ARGS}" - nao
+    su -c ". /home/nao/.bash_profile; . /etc/profile.d/dbus-session.sh; ${BINARY} --daemon --pid ${LOCK_FILE} ${ARGS}" - nao
   fi
   eend $? "cannot start naoqi"
 }
