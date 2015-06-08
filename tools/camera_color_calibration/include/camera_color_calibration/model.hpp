@@ -26,6 +26,7 @@ class Model {
   void SwitchCamera();
   bool LoadTable();
   bool SendTable();
+  void ClearTable();
   void AddNewPixelClass(double x, double y, PixelClass pixel_class);
 
  private:

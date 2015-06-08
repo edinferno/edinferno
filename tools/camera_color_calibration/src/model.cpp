@@ -55,7 +55,12 @@ void Model::SwitchCamera() {
   if (client.call(srv))
     active_camera_ = (active_camera_ + 1) % 2;
 }
-
+void Model::ClearTable() {
+  PixelClass* table_ptr = reinterpret_cast<PixelClass*>(table_);
+  for (size_t i = 0; i < kTableLen; ++i) {
+    table_ptr[i] = Nothing;
+  }
+}
 bool Model::LoadTable() {
   ros::ServiceClient client =
     nh_->serviceClient<camera_msgs::GetColorTable>("get_color_table");
