@@ -1,0 +1,239 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "facab960_59812b49",
+        "filename": "edante/net/src/NetReceiverWrapper.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-06-08T20:04:37Z",
+      "side": 1,
+      "message": "See comment in NetSender.h. These should be switched. The use case is the following:\n\n0. Higher-level Local robot structures (World model/etc.) publish to the Local robot\u0027s ROS network knowledge elements (ball position, robot position, etc.)\n1. CommunicationWrapper subscribes to these and passes them to Communication\n2. Communication assembles the data in a SPLStandardMessage structure and CommunicationWrapper publishes that to \"comms/spl_std_msg\" (or whatever we chose)\n3. NetSenderWrapper - **this file** - subscribes to \"comms/spl_std_msg\" and passes the SPLStandardMessage to NetSender\n4. NetSender sends the message over WiFi to all Foreign robots in the team",
+      "range": {
+        "startLine": 4,
+        "startChar": 10,
+        "endLine": 4,
+        "endChar": 21
+      },
+      "revId": "f272b93114795c34d9bc564909d693e138837605",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "facab960_f9eaff0d",
+        "filename": "edante/net/src/NetReceiverWrapper.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-06-08T20:04:37Z",
+      "side": 1,
+      "message": "I think we have a ROS message describing standard SPL messages... change the String to that",
+      "range": {
+        "startLine": 7,
+        "startChar": 8,
+        "endLine": 7,
+        "endChar": 24
+      },
+      "revId": "f272b93114795c34d9bc564909d693e138837605",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "facab960_19eec322",
+        "filename": "edante/net/src/NetReceiverWrapper.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-06-08T20:04:37Z",
+      "side": 1,
+      "message": "Invoke NetSender.send(\u003cmessage\u003e) instead",
+      "revId": "f272b93114795c34d9bc564909d693e138837605",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "facab960_7997cf90",
+        "filename": "edante/net/src/NetReceiverWrapper.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-06-08T20:04:37Z",
+      "side": 1,
+      "message": "sender",
+      "range": {
+        "startLine": 19,
+        "startChar": 27,
+        "endLine": 19,
+        "endChar": 39
+      },
+      "revId": "f272b93114795c34d9bc564909d693e138837605",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "facab960_9992d39d",
+        "filename": "edante/net/src/NetReceiverWrapper.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-06-08T20:04:37Z",
+      "side": 1,
+      "message": "Remove dead code",
+      "revId": "f272b93114795c34d9bc564909d693e138837605",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "facab960_b991579b",
+        "filename": "edante/net/src/NetReceiverWrapper.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-06-08T20:04:37Z",
+      "side": 1,
+      "message": "comms",
+      "range": {
+        "startLine": 22,
+        "startChar": 39,
+        "endLine": 22,
+        "endChar": 46
+      },
+      "revId": "f272b93114795c34d9bc564909d693e138837605",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "facab960_d98c5b82",
+        "filename": "edante/net/src/NetReceiverWrapper.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-06-08T20:04:37Z",
+      "side": 1,
+      "message": "remove dead code",
+      "range": {
+        "startLine": 23,
+        "startChar": 13,
+        "endLine": 28,
+        "endChar": 7
+      },
+      "revId": "f272b93114795c34d9bc564909d693e138837605",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "facab960_d95e1b12",
+        "filename": "edante/net/src/NetSenderWrapper.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-06-08T20:04:37Z",
+      "side": 1,
+      "message": "I think this should be the receiver: remember the diagram:\n\n0. Foreign robot sends data over WiFi\n1. NetReceiver receives data from WiFi\n2. NetReceiverWrapper **publishes** the data to Local robot\u0027s ROS network\n3. CommunicationWrapper subscribes to the data from NetReceiverWrapper\n4. Communication decodes and propagates the received data to the higher-level structures",
+      "range": {
+        "startLine": 4,
+        "startChar": 10,
+        "endLine": 4,
+        "endChar": 19
+      },
+      "revId": "f272b93114795c34d9bc564909d693e138837605",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "facab960_f99cbfc2",
+        "filename": "edante/net/src/NetSenderWrapper.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-06-08T20:04:37Z",
+      "side": 1,
+      "message": "Keep this \"net\"",
+      "range": {
+        "startLine": 17,
+        "startChar": 46,
+        "endLine": 17,
+        "endChar": 53
+      },
+      "revId": "f272b93114795c34d9bc564909d693e138837605",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "facab960_39a7070e",
+        "filename": "edante/net/test/TestReceive.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-06-08T20:04:37Z",
+      "side": 1,
+      "message": "Perhaps, we should include a header /* multi-line comment */ explaining how to run the test. Something along the lines:\n\n/*******************************************************\n * To run tests:\n * \n * 1. open console and run TestReceive bla bla bla\n * 2. open another console and run TestSend bla bla bla\n *\n ******************************************************/",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 1
+      },
+      "revId": "f272b93114795c34d9bc564909d693e138837605",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "facab960_59aa0bd5",
+        "filename": "edante/net/test/TestSend.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1003670
+      },
+      "writtenOn": "2015-06-08T20:04:37Z",
+      "side": 1,
+      "message": "See TestReceive",
+      "revId": "f272b93114795c34d9bc564909d693e138837605",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
