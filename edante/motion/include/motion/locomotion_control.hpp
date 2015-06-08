@@ -80,9 +80,6 @@ class LocomotionControl : public AL::ALModule  {
   bool moveIsActive(motion_msgs::IsEnabled::Request& req,
                     motion_msgs::IsEnabled::Response& res);
 
-  // ROS publisher
-  void checkMoveActive();
-
  private:
   // ROS
   ros::NodeHandle* nh_;
@@ -100,8 +97,6 @@ class LocomotionControl : public AL::ALModule  {
   ros::ServiceServer srv_get_walk_arms_enabled_;
   ros::ServiceServer srv_set_walk_arms_enabled_;
   ros::ServiceServer srv_move_is_active_;
-  std_msgs::Bool move_active;
-
 
   // NAOqi
   boost::shared_ptr<AL::ALMutex> fCallbackMutex;
