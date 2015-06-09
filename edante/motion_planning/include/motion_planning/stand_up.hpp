@@ -6,8 +6,8 @@
  * @copyright (MIT) 2015 Edinferno
  */
 
-#ifndef STAND_UP_SERVER_HPP
-#define STAND_UP_SERVER_HPP
+#ifndef STAND_UP_HPP
+#define STAND_UP_HPP
 
 // System
 #include <cmath>
@@ -62,4 +62,4 @@ class StandUpAction {
 };
 
 
-#endif /* STAND_UP_SERVER_HPP */
+#endif /* STAND_UP_HPP */

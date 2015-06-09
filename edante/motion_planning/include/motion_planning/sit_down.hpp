@@ -6,8 +6,8 @@
  * @copyright (MIT) 2015 Edinferno
  */
 
-#ifndef SIT_DOWN_SERVER_HPP
-#define SIT_DOWN_SERVER_HPP
+#ifndef SIT_DOWN_HPP
+#define SIT_DOWN_HPP
 
 // System
 #include <cmath>
@@ -63,4 +63,4 @@ class SitDownAction {
 };
 
 
-#endif /* SIT_DOWN_SERVER_HPP */
+#endif /* SIT_DOWN_HPP */

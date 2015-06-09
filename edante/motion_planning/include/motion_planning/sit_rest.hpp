@@ -6,8 +6,8 @@
  * @copyright (MIT) 2015 Edinferno
  */
 
-#ifndef SIT_REST_SERVER_HPP
-#define SIT_REST_SERVER_HPP
+#ifndef SIT_REST_HPP
+#define SIT_REST_HPP
 
 // System
 #include <cmath>
@@ -58,4 +58,4 @@ class SitRestAction {
 };
 
 
-#endif /* SIT_REST_SERVER_HPP */
+#endif /* SIT_REST_HPP */
