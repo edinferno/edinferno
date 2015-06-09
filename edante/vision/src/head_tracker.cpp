@@ -45,11 +45,9 @@ HeadTracker::HeadTracker(ros::NodeHandle& nh) :
  * @details The object of interest is selected based on the value of
  *          object_type_. Currently, only ball is supported.
  *
- * @param cam_info The information of the camera used for detection.
  * @param ball The detected ball by the ball detector.
  */
-void HeadTracker::Track(const sensor_msgs::CameraInfo& cam_info,
-                        const vision_msgs::BallDetection& ball) {
+void HeadTracker::Track(const vision_msgs::BallDetection& ball) {
   if (!is_enabled_) return;
 
   // Check where should the head look
@@ -71,7 +69,7 @@ void HeadTracker::Track(const sensor_msgs::CameraInfo& cam_info,
   // Check if a camera switch is needed.
   // If the head is tilted down too much and the top camera is used
   // then switch to bottom camera.
-  if (yaw > 0.45 && cam_info.header.frame_id == "top_camera") {
+  if (yaw > 0.45 && ball.header.frame_id == "top_camera") {
     // Activate bottom camera
     set_active_camera_srv_.request.active_camera = 1;
     set_active_camera_client_.call(set_active_camera_srv_);
@@ -86,7 +84,7 @@ void HeadTracker::Track(const sensor_msgs::CameraInfo& cam_info,
   }
   // If the head is tilted up too much and the bottom camera is used
   // then switch to top camera.
-  if (yaw < -0.4 && cam_info.header.frame_id == "bottom_camera") {
+  if (yaw < -0.4 && ball.header.frame_id == "bottom_camera") {
     // Activate top camera
     set_active_camera_srv_.request.active_camera = 0;
     set_active_camera_client_.call(set_active_camera_srv_);

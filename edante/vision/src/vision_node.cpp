@@ -7,6 +7,9 @@
 */
 #include "vision/vision_node.hpp"
 
+// ROS
+#include <image_geometry/pinhole_camera_model.h>
+
 // OpenCV
 #include <opencv2/core/core.hpp>
 
@@ -31,6 +34,7 @@ VisionNode::VisionNode() :
   nh_("vision"),
   shdmem_(open_only, "camera_image", read_only),
   shdmem_mtx_(open_only, "camera_image_mutex"),
+  horizon_estimator_(nh_),
   ball_detector_(nh_),
   line_detector_(nh_),
   head_tracker_(nh_) {
@@ -43,16 +47,27 @@ VisionNode::VisionNode() :
 void VisionNode::Spin() {
   sensor_msgs::Image image;
   sensor_msgs::CameraInfo cam_info;
+  image_geometry::PinholeCameraModel cam_model;
   vector<float> transform(16);
+  int horizon_level;
+
   // Use rate as the maximum fps which is 30
   ros::Rate rate(30);
   while (ros::ok()) {
     if (SharedMemoryToCamera(image, cam_info, transform)) {
+      // Update the camera model
+      cam_model.fromCameraInfo(cam_info);
+
+      // Calculate the horizon level
+      horizon_estimator_.HorizonLevel(5, cam_model, transform, horizon_level);
+
       // Get a shared cv::Mat from the image message
       Mat mat = Mat(image.height, image.width, CV_8UC1, image.data.data());
-      ball_detector_.ProcessImage(mat, cam_info, transform);
-      line_detector_.ProcessImage(mat, cam_info);
-      head_tracker_.Track(cam_info, ball_detector_.ball());
+      ball_detector_.ProcessImage(mat, image.header, cam_model, transform);
+      head_tracker_.Track(ball_detector_.ball());
+
+      // Disable line tracking for now
+      // line_detector_.ProcessImage(mat, cam_mode);
     }
     ros::spinOnce();
     rate.sleep();

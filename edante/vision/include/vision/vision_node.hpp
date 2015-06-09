@@ -23,6 +23,7 @@
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/CameraInfo.h>
 
+#include "vision/horizon_estimator.hpp"
 #include "vision/ball_detector.hpp"
 #include "vision/line_detector.hpp"
 #include "vision/head_tracker.hpp"
@@ -53,6 +54,9 @@ class VisionNode {
   boost::interprocess::mapped_region* shdmem_region_;
   uint8_t* shdmem_ptr_;
   boost::interprocess::named_mutex shdmem_mtx_;
+
+  // Estimates the level of the horizon in the image
+  HorizonEstimator horizon_estimator_;
 
   // Detects the ball and publishes information
   BallDetector ball_detector_;

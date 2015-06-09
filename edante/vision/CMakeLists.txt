@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   image_geometry
   image_transport
   camera
+  std_msgs
   camera_msgs
   vision_msgs
   motion_msgs
@@ -114,6 +115,7 @@ include_directories(
 add_executable(vision
   src/vision.cpp
   src/vision_node.cpp
+  src/horizon_estimator.cpp
   src/ball_detector.cpp
   src/line_detector.cpp
   src/head_tracker.cpp

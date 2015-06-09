@@ -34,12 +34,16 @@ BallDetector::BallDetector(ros::NodeHandle& nh) :
  * @brief Detect the ball in the image.
  *
  * @param image The image to be processed.
- * @param cam_info The camera calibration information.
+ * @param header The header which will be used for the published
+ *               ball detection.
+ * @param cam_model The calibrated camera model.
  * @param transform The camera frame transformation at frame capture
  */
-void BallDetector::ProcessImage(const cv::Mat& image,
-                                const sensor_msgs::CameraInfo& cam_info,
-                                const std::vector<float>& transform) {
+void BallDetector::ProcessImage(
+  const cv::Mat& image,
+  const std_msgs::Header& header,
+  const image_geometry::PinholeCameraModel& cam_model,
+  const std::vector<float>& transform) {
   // Copy the input image
   image_ = image.clone();
 
@@ -47,14 +51,14 @@ void BallDetector::ProcessImage(const cv::Mat& image,
   ThresholdImage(image_);
 
   // Update the ball detection info
-  ball_detection_.header.stamp = cam_info.header.stamp;
-  ball_detection_.header.frame_id = cam_info.header.frame_id;
+  ball_detection_.header.stamp = header.stamp;
+  ball_detection_.header.frame_id = header.frame_id;
 
   // Find the ball in the thresholded image
   FindBall(image_, ball_detection_);
 
   // Calculate the 3D ball position
-  EstimateBallPos3D(cam_info, transform, ball_detection_);
+  EstimateBallPos3D(cam_model, transform, ball_detection_);
 
   // Publish the detected ball info
   ball_detection_pub_.publish(ball_detection_);
@@ -125,30 +129,27 @@ void BallDetector::FindBall(cv::Mat& image,
 /**
  * @brief Estimate the 3D ball position based on the known size of the ball.
  *
- * @param cam_info Calibration information for the camera which captured
- *                 the image.
+ * @param cam_model The calibrated camera model.
  * @param transform The camera frame transformation at the time of capturing
  *                  the frame.
  * @param ball The estimated 3D position will be stored here.
  */
 void BallDetector::EstimateBallPos3D(
-  const sensor_msgs::CameraInfo& cam_info,
+  const image_geometry::PinholeCameraModel& cam_model,
   const std::vector<float>& transform,
   vision_msgs::BallDetection& ball) {
-  // Update the camera model
-  cam_model_.fromCameraInfo(cam_info);
   // Calculate the undistorted 2d position
-  Point2d pos_2d = cam_model_.rectifyPoint(
+  Point2d pos_2d = cam_model.rectifyPoint(
                      Point2d(ball.pos_image.x,
                              ball.pos_image.y));
   // Project the point to the z = 1m plane
-  Point3d cam_pos_3d = cam_model_.projectPixelTo3dRay(pos_2d);
+  Point3d cam_pos_3d = cam_model.projectPixelTo3dRay(pos_2d);
 
   // Calculate the physical radius of a ball at 1m distance (z = 1m) with
   // the same size in pixels as the detected one. After undistortion the
   // pinhole model is linear, so we should simply rescale such that the
   // resulting size is the same as the actual ball.
-  double radius_z1m = cam_model_.getDeltaX(ball.radius, 1.0);
+  double radius_z1m = cam_model.getDeltaX(ball.radius, 1.0);
   cam_pos_3d *= kBallRadius / radius_z1m;
 
   // Transform the point from the optical camera frame to the Nao camera frame

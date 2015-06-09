@@ -12,7 +12,6 @@
 #include <camera_msgs/SetActiveCamera.h>
 #include <motion_msgs/ChangeAngles.h>
 #include <motion_msgs/GetAngles.h>
-#include <sensor_msgs/CameraInfo.h>
 #include <vision_msgs/BallDetection.h>
 #include <vision_msgs/StartHeadTracking.h>
 #include <vision_msgs/StopHeadTracking.h>
@@ -34,11 +33,9 @@ class HeadTracker {
    * @details The object of interest is selected based on the value of
    *          object_type_. Currently, only ball is supported.
    *
-   * @param cam_info The information of the camera used for detection.
    * @param ball The detected ball by the ball detector.
    */
-  void Track(const sensor_msgs::CameraInfo& cam_info,
-             const vision_msgs::BallDetection& ball);
+  void Track(const vision_msgs::BallDetection& ball);
 
  private:
   // Service servers
