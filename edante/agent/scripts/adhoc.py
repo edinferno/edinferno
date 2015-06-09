@@ -14,6 +14,7 @@ from actionlib import *
 from actionlib_msgs.msg import *
 from navigation_msgs.msg import WalkToBallAction, WalkToBallGoal
 from navigation_msgs.msg import SearchForBallAction, SearchForBallGoal
+from motion_planning_msgs.msg import SetupAction, SetupGoal
 from motion_planning_msgs.msg import StandUpAction, StandUpGoal
 from motion_planning_msgs.msg import SitDownAction, SitDownGoal
 from motion_planning_msgs.msg import SitRestAction, SitRestGoal
@@ -22,17 +23,32 @@ from motion_planning_msgs.msg import SitRestAction, SitRestGoal
 # needs the __init__.py well-formatted to work
 
 # define state StateSetup
-class StateSetup(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['complete'])
+# class StateSetup(smach.State):
+#     def __init__(self):
+#         smach.State.__init__(self, outcomes=['complete'])
 
-    def execute(self, userdata):
-        rospy.loginfo('Executing state SETUP')
-        return 'complete'
+#     def execute(self, userdata):
+#         rospy.loginfo('Executing state SETUP')
+#         return 'complete'
+
+            # # Setup
+            # smach.StateMachine.add('SETUP',
+            #         smach_ros.SimpleActionState('agent/setup',
+            #             SetupAction,
+            #             goal = SetupGoal(state=GameState.PLAYING_STATE)),
+            #        {'succeeded':'STAND_UP'})
 
 # main
 def main():
     rospy.init_node('agent_game_smach')
+
+    # GAME STATES
+    INITIAL = 0
+    READY=1
+    SET=2
+    PENALIZED=3
+    PLAYING=4
+    FINISHED=5
 
     # Create a SMACH state machine
     game_sm = smach.StateMachine(outcomes=['succeeded','aborted','preempted'])
@@ -40,48 +56,60 @@ def main():
     with game_sm:
 
         # Create the Initial SMACH state machine
-        initial_sm = smach.StateMachine(outcomes=['penalized', 'ready'])
+        initial_sm = smach.StateMachine(outcomes=['penalized', 'ready', 'succeeded', 'aborted', 'preempted'])
 
         with initial_sm:
             # Initial state setup
-            smach.StateMachine.add('SETUP', StateSetup(),
-                                   transitions={'complete':'ready'})
+            smach.StateMachine.add('SETUP',
+                    smach_ros.SimpleActionState('motion_planning/setup',
+                        SetupAction,
+                        goal = SetupGoal(state=INITIAL)),
+                   {'succeeded':'ready'})
         # Initial state machine description
         smach.StateMachine.add('INITIAL', initial_sm,
                                transitions={'penalized':'PENALIZED',
                                             'ready':'READY'})
 
         # Create the Ready SMACH state machine
-        ready_sm = smach.StateMachine(outcomes=['penalized', 'set'])
+        ready_sm = smach.StateMachine(outcomes=['penalized', 'set', 'succeeded','aborted','preempted'])
 
         with ready_sm:
             # Ready state setup
-            smach.StateMachine.add('SETUP', StateSetup(),
-                                   transitions={'complete':'set'})
+            smach.StateMachine.add('SETUP',
+                    smach_ros.SimpleActionState('motion_planning/setup',
+                        SetupAction,
+                        goal = SetupGoal(state=READY)),
+                   {'succeeded':'set'})
         # Ready state machine description
         smach.StateMachine.add('READY', ready_sm,
                                transitions={'penalized':'PENALIZED',
                                             'set':'SET'})
 
         # Create the Set SMACH state machine
-        set_sm = smach.StateMachine(outcomes=['penalized', 'playing'])
+        set_sm = smach.StateMachine(outcomes=['penalized', 'playing', 'succeeded','aborted','preempted'])
 
         with set_sm:
             # Set state setup
-            smach.StateMachine.add('SETUP', StateSetup(),
-                                   transitions={'complete':'playing'})
+            smach.StateMachine.add('SETUP',
+                    smach_ros.SimpleActionState('motion_planning/setup',
+                        SetupAction,
+                        goal = SetupGoal(state=SET)),
+                   {'succeeded':'playing'})
         # Set state machine description
         smach.StateMachine.add('SET', set_sm,
                                transitions={'penalized':'PENALIZED',
                                             'playing':'PLAYING'})
 
         # Create the Penalized SMACH state machine
-        penalized_sm = smach.StateMachine(outcomes=['ready', 'set', 'playing'])
+        penalized_sm = smach.StateMachine(outcomes=['ready', 'set', 'playing', 'succeeded','aborted','preempted'])
 
         with penalized_sm:
             # Penalized state setup
-            smach.StateMachine.add('SETUP', StateSetup(),
-                                   transitions={'complete':'playing'})
+            smach.StateMachine.add('SETUP',
+                    smach_ros.SimpleActionState('motion_planning/setup',
+                        SetupAction,
+                        goal = SetupGoal(state=PENALIZED)),
+                   {'succeeded':'playing'})
         # Penalized state machine description
         smach.StateMachine.add('PENALIZED', penalized_sm,
                                transitions={'ready':'READY',
@@ -89,23 +117,30 @@ def main():
                                             'playing':'PLAYING'})
 
         # Create the Finished SMACH state machine
-        finished_sm = smach.StateMachine(outcomes=['complete'])
+        finished_sm = smach.StateMachine(outcomes=['succeeded','aborted','preempted'])
 
         with finished_sm:
             # Initial state setup
-            smach.StateMachine.add('SETUP', StateSetup(),
-                                   transitions={'complete':'complete'})
+            smach.StateMachine.add('SETUP',
+                    smach_ros.SimpleActionState('motion_planning/setup',
+                        SetupAction,
+                        goal = SetupGoal(state=FINISHED)),
+                   {'succeeded':'succeeded'})
         # Initial state machine description
         smach.StateMachine.add('FINISHED', finished_sm,
-                               transitions={'complete':'succeeded'})
+                               transitions={'succeeded':'succeeded'})
 
         # Create the Playing SMACH state machine
-        playing_sm = smach.StateMachine(outcomes=['succeeded','aborted','preempted', 'ready', 'penalized'])
+        playing_sm = smach.StateMachine(outcomes=['ready', 'penalized', 'succeeded','aborted','preempted'])
 
         with playing_sm:
             # Playing state setup
-            smach.StateMachine.add('SETUP', StateSetup(),
-                                   transitions={'complete':'STAND_UP'})
+            smach.StateMachine.add('SETUP',
+                    smach_ros.SimpleActionState('motion_planning/setup',
+                        SetupAction,
+                        goal = SetupGoal(state=PLAYING)),
+                   {'succeeded':'STAND_UP'})
+
             # Stand up
             smach.StateMachine.add('STAND_UP',
                     smach_ros.SimpleActionState('motion_planning/stand_up',

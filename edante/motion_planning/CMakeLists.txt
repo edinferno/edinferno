@@ -108,6 +108,7 @@ include_directories(
 ## Declare a cpp executable
 add_executable(motion_planning
  src/motion_planning.cpp
+ src/setup.cpp
  src/stand_up.cpp
  src/sit_down.cpp
  src/sit_rest.cpp)
