@@ -1,5 +1,5 @@
-#ifndef NAVIGATION_SERVER_HPP
-#define NAVIGATION_SERVER_HPP
+#ifndef MOVE_TO_HPP
+#define MOVE_TO_HPP
 
 // System
 #include <cmath>
@@ -10,28 +10,34 @@
 #include <std_srvs/Empty.h>
 #include <motion_msgs/MoveTo.h>
 #include <motion_msgs/GetRobotPosition.h>
-#include <navigation_msgs/NavigateAction.h>
+#include <navigation_msgs/MoveToAction.h>
 
 
 
-class NavigateAction {
+class MoveToAction {
  protected:
   ros::NodeHandle nh_;
   // NodeHandle instance must be created before this line.
   // Otherwise strange error may occur.
-  actionlib::SimpleActionServer<navigation_msgs::NavigateAction> as_;
+  actionlib::SimpleActionServer<navigation_msgs::MoveToAction> as_;
   std::string action_name_;
-  navigation_msgs::NavigateFeedback feedback_;
-  navigation_msgs::NavigateResult result_;
+  navigation_msgs::MoveToFeedback feedback_;
+  navigation_msgs::MoveToResult result_;
 
  public:
-  NavigateAction(std::string name);
+  MoveToAction(ros::NodeHandle nh, std::string name);
 
-  ~NavigateAction(void);
+  ~MoveToAction(void);
 
-  void executeCB(const navigation_msgs::NavigateGoalConstPtr& goal);
+  void init();
+
+  void executeCB(const navigation_msgs::MoveToGoalConstPtr& goal);
 
  private:
+  // Variables
+  float thresh;
+
+  // ROS
   motion_msgs::GetRobotPosition get_pose_srv_;
   motion_msgs::GetRobotPosition start_position_;
   ros::ServiceClient get_pose_client_;
@@ -44,5 +50,5 @@ class NavigateAction {
 };
 
 
-#endif /* NAVIGATION_SERVER_HPP */
+#endif /* MOVE_TO_HPP */
 
