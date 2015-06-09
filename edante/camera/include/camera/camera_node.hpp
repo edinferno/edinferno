@@ -163,17 +163,20 @@ class CameraNode : public AL::ALModule {
   */
   void Spin();
   /**
-  * @brief Copy the captured image and camera info to shared memory
-  * @details Copy the captured image and camera info to shared memory in order
-  *          to optimize access time for locally running nodes.
+  * @brief Write the captured data to shared memory
+  * @details Copy the captured image, camera info, camera frame transformation
+  *          and head angles to shared memory in orderto optimize access time
+  *          for locally running nodes.
   *
   * @param image The image to be copied to memory
   * @param cam_info The camera info to be copied to memory
   * @param transform The camera frame transformation to be copied to memory
+  * @param transform The head angles to be copied to memory
   */
-  void CameraToSharedMemory(const sensor_msgs::Image& image,
-                            const sensor_msgs::CameraInfo& cam_info,
-                            const std::vector<float> transform);
+  void WriteToSharedMemory(const sensor_msgs::Image& image,
+                           const sensor_msgs::CameraInfo& cam_info,
+                           const std::vector<float>& transform,
+                           const std::vector<float>& head_angles);
   /**
   * @brief Segments the image using the color look up table
   * @details The 3 color channels of a pixel are used as indecies to the color

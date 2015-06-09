@@ -30,12 +30,15 @@ class HorizonEstimator {
    * @param cam_model The calibrated camera model used for projecting back on
    *                  the image.
    * @param transform The camera frame transform when the image was captured.
+   * @param head_yaw The head yaw angle when the image was captured.
    * @param horizon_level The calculated horizon level (image row) in the image.
    */
   void HorizonLevel(float distance,
                     const image_geometry::PinholeCameraModel& cam_model,
                     const std::vector<float>& transform,
+                    float head_yaw,
                     int& horizon_level);
+
  private:
   ros::Publisher horizon_pub_;
 };

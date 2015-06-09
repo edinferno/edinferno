@@ -20,6 +20,7 @@
 #include <sensor_msgs/image_encodings.h>
 
 using std::vector;
+using std::string;
 
 using boost::interprocess::open_or_create;
 using boost::interprocess::read_write;
@@ -231,6 +232,11 @@ void CameraNode::LoadColorTable() {
 void CameraNode::Spin() {
   AL::ALImage* alimage;
   vector<float> transform;
+  vector<float> head_angles;
+  vector<string> joint_names;
+  joint_names.push_back("HeadYaw");
+  joint_names.push_back("HeadPitch");
+
   while (!is_module_closing_) {
     // Read the camera frame
     alimage = (AL::ALImage*)(camera_proxy_->getImageLocal(module_name_));
@@ -238,6 +244,7 @@ void CameraNode::Spin() {
     transform = motion_proxy_->getTransform(active_camera_frame_name_,
                                             2,  // FRAME_ROBOT
                                             true);
+    head_angles = motion_proxy_->getAngles(joint_names, true);
 
     // Copy the image into the pre-allocated message
     image_.header.stamp = ros::Time::now();
@@ -257,7 +264,8 @@ void CameraNode::Spin() {
     segmented_image_pub_.publish(segmented_image_, active_cam_info_);
 
     // Move image and camera info to shared memory
-    CameraToSharedMemory(segmented_image_, active_cam_info_, transform);
+    WriteToSharedMemory(segmented_image_, active_cam_info_,
+                        transform, head_angles);
 
     // Publish segmented RGB image if necessary
     if (segmented_rgb_image_pub_.getNumSubscribers() > 0) {
@@ -280,17 +288,20 @@ void CameraNode::Spin() {
   camera_proxy_->unsubscribe(module_name_);
 }
 /**
- * @brief Copy the captured image and camera info to shared memory
- * @details Copy the captured image and camera info to shared memory in order
- *          to optimize access time for locally running nodes.
+ * @brief Write the captured data to shared memory
+ * @details Copy the captured image, camera info, camera frame transformation
+ *          and head angles to shared memory in orderto optimize access time
+ *          for locally running nodes.
  *
  * @param image The image to be copied to memory
  * @param cam_info The camera info to be copied to memory
  * @param transform The camera frame transformation to be copied to memory
+ * @param transform The head angles to be copied to memory
  */
-void CameraNode::CameraToSharedMemory(const sensor_msgs::Image& image,
-                                      const sensor_msgs::CameraInfo& cam_info,
-                                      const std::vector<float> transform) {
+void CameraNode::WriteToSharedMemory(const sensor_msgs::Image& image,
+                                     const sensor_msgs::CameraInfo& cam_info,
+                                     const std::vector<float>& transform,
+                                     const std::vector<float>& head_angles) {
   // Gain access to the shared memory
   shdmem_mtx_->lock();
   uint8_t* ptr = shdmem_ptr_;
@@ -317,6 +328,10 @@ void CameraNode::CameraToSharedMemory(const sensor_msgs::Image& image,
 
   // Write the frame transformation
   memcpy(ptr, transform.data(), sizeof(float) * transform.size());
+  ptr += sizeof(float) * transform.size();
+
+  // Write the head angles
+  memcpy(ptr, head_angles.data(), sizeof(float) * head_angles.size());
 
   // Release the shared memory
   shdmem_mtx_->unlock();

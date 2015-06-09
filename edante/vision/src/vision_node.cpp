@@ -49,22 +49,28 @@ void VisionNode::Spin() {
   sensor_msgs::CameraInfo cam_info;
   image_geometry::PinholeCameraModel cam_model;
   vector<float> transform(16);
+  vector<float> head_angles(2);  // yaw, pitch
   int horizon_level;
 
   // Use rate as the maximum fps which is 30
   ros::Rate rate(30);
   while (ros::ok()) {
-    if (SharedMemoryToCamera(image, cam_info, transform)) {
+    if (ReadFromSharedMemory(image, cam_info, transform, head_angles)) {
+
       // Update the camera model
       cam_model.fromCameraInfo(cam_info);
 
       // Calculate the horizon level
-      horizon_estimator_.HorizonLevel(5, cam_model, transform, horizon_level);
+      horizon_estimator_.HorizonLevel(5,  // 5m
+                                      cam_model,
+                                      transform,
+                                      head_angles[0],  // yaw
+                                      horizon_level);
 
       // Get a shared cv::Mat from the image message
       Mat mat = Mat(image.height, image.width, CV_8UC1, image.data.data());
       ball_detector_.ProcessImage(mat, image.header, cam_model, transform);
-      head_tracker_.Track(ball_detector_.ball());
+      head_tracker_.Track(ball_detector_.ball(), head_angles[1]);
 
       // Disable line tracking for now
       // line_detector_.ProcessImage(mat, cam_mode);
@@ -75,18 +81,21 @@ void VisionNode::Spin() {
 }
 /**
  * @brief Retrieves the camera data stored in the shared memory.
- * @details Retreives the current camera info and image stored
- *          in the shared memory segment by the camera node.
+ * @details Retreives the current image, camera info, camera frame
+ *          transform, and head angles stored in the shared memory
+ *          segment by the camera node.
  *
  * @param image The retreived image.
  * @param cam_info The retreived camera_info.
- * @param transform The camera frame transform during image capture
+ * @param transform The retreived camera frame transform.
+ * @param head_angles The retreived head angles.
  *
  * @return [description]
  */
-bool VisionNode::SharedMemoryToCamera(sensor_msgs::Image& image,
+bool VisionNode::ReadFromSharedMemory(sensor_msgs::Image& image,
                                       sensor_msgs::CameraInfo& cam_info,
-                                      std::vector<float>& transform) {
+                                      std::vector<float>& transform,
+                                      std::vector<float>& head_angles) {
   if (!shdmem_mtx_.try_lock()) return false;
   uint8_t* ptr = shdmem_ptr_;
 
@@ -107,6 +116,9 @@ bool VisionNode::SharedMemoryToCamera(sensor_msgs::Image& image,
   ptr += image_size;
 
   memcpy(transform.data(), ptr, sizeof(float) * transform.size());
+  ptr += sizeof(float) * transform.size();
+
+  memcpy(head_angles.data(), ptr, sizeof(float) * head_angles.size());
   shdmem_mtx_.unlock();
 
   return true;

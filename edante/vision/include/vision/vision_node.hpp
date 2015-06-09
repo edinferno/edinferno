@@ -69,18 +69,21 @@ class VisionNode {
 
   /**
    * @brief Retrieves the camera data stored in the shared memory.
-   * @details Retreives the current camera info and image stored
-   *          in the shared memory segment by the camera node.
+   * @details Retreives the current image, camera info, camera frame
+   *          transform, and head angles stored in the shared memory
+   *          segment by the camera node.
    *
    * @param image The retreived image.
    * @param cam_info The retreived camera_info.
-   * @param transform The camera frame transform during image capture
+   * @param transform The retreived camera frame transform.
+   * @param head_angles The retreived head angles.
    *
    * @return [description]
    */
-  bool SharedMemoryToCamera(sensor_msgs::Image& image,
+  bool ReadFromSharedMemory(sensor_msgs::Image& image,
                             sensor_msgs::CameraInfo& cam_info,
-                            std::vector<float>& transform);
+                            std::vector<float>& transform,
+                            std::vector<float>& head_angles);
 };
 
 #endif

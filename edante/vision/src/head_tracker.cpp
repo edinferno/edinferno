@@ -23,16 +23,10 @@ HeadTracker::HeadTracker(ros::NodeHandle& nh) :
   set_active_camera_client_(
     nh.serviceClient<camera_msgs::SetActiveCamera>("/camera/set_active_camera",
                                                    true)),
-  get_angles_client_(
-    nh.serviceClient<motion_msgs::GetAngles>("/motion/get_angles",
-                                             true)),
   change_angles_client_(
     nh.serviceClient<motion_msgs::ChangeAngles>("/motion/change_angles",
                                                 true)),
   is_enabled_(false) {
-  // Preallocate the GetAngles message
-  get_angles_srv_.request.names.push_back("HeadPitch");
-  get_angles_srv_.request.use_sensors = true;
   // Preallocate the ChangeAngles message
   change_angles_srv_.request.names.push_back("HeadYaw");
   change_angles_srv_.request.names.push_back("HeadPitch");
@@ -46,8 +40,10 @@ HeadTracker::HeadTracker(ros::NodeHandle& nh) :
  *          object_type_. Currently, only ball is supported.
  *
  * @param ball The detected ball by the ball detector.
+ * @param head_pitch The current pitch angle of the head.
  */
-void HeadTracker::Track(const vision_msgs::BallDetection& ball) {
+void HeadTracker::Track(const vision_msgs::BallDetection& ball,
+                        float head_pitch) {
   if (!is_enabled_) return;
 
   // Check where should the head look
@@ -63,13 +59,10 @@ void HeadTracker::Track(const vision_msgs::BallDetection& ball) {
       return;
   }
 
-  // Get current angles
-  get_angles_client_.call(get_angles_srv_);
-  float yaw = get_angles_srv_.response.joint_angles[0];
   // Check if a camera switch is needed.
   // If the head is tilted down too much and the top camera is used
   // then switch to bottom camera.
-  if (yaw > 0.45 && ball.header.frame_id == "top_camera") {
+  if (head_pitch > 0.45 && ball.header.frame_id == "top_camera") {
     // Activate bottom camera
     set_active_camera_srv_.request.active_camera = 1;
     set_active_camera_client_.call(set_active_camera_srv_);
@@ -84,7 +77,7 @@ void HeadTracker::Track(const vision_msgs::BallDetection& ball) {
   }
   // If the head is tilted up too much and the bottom camera is used
   // then switch to top camera.
-  if (yaw < -0.4 && ball.header.frame_id == "bottom_camera") {
+  if (head_pitch < -0.4 && ball.header.frame_id == "bottom_camera") {
     // Activate top camera
     set_active_camera_srv_.request.active_camera = 0;
     set_active_camera_client_.call(set_active_camera_srv_);
@@ -103,8 +96,8 @@ void HeadTracker::Track(const vision_msgs::BallDetection& ball) {
   float d_pitch = atan2(track_pos.z, track_pos.x);
   // Apply proportional control. Those coefficiants lead to
   // slighly underdamped behaviour, but provide fast reaction.
-  change_angles_srv_.request.changes[0] = 0.20 * d_yaw;
-  change_angles_srv_.request.changes[1] = -0.20 * d_pitch;
+  change_angles_srv_.request.changes[0] = 0.1 * d_yaw;
+  change_angles_srv_.request.changes[1] = -0.1 * d_pitch;
   // Send the command to motion
   change_angles_client_.call(change_angles_srv_);
 }

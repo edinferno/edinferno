@@ -17,33 +17,43 @@ using cv::Point2d;
 using cv::Point3d;
 
 /**
-   * @brief Initialises the horizon publisher.
-   *
-   * @param nh The ROS node handle which is used to advertise the publisher.
-   */
+ * @brief Initialises the horizon publisher.
+ *
+ * @param nh The ROS node handle which is used to advertise the publisher.
+ */
 HorizonEstimator::HorizonEstimator(ros::NodeHandle& nh) :
   horizon_pub_(nh.advertise<std_msgs::Int32>("horizon", 1)) {
 }
 /**
-   * @brief Calculate the level of the horizon line in the image at a given
-   *        distance.
-   *
-   * @param distance The distance at which the horizon level to be calculated
-   * @param cam_model The calibrated camera model used for projecting back on
-   *                  the image.
-   * @param transform The camera frame transform when the image was captured.
-   * @param horizon_level The calculated horizon level (image row) in the image.
-   */
+ * @brief Calculate the level of the horizon line in the image at a given
+ *        distance.
+ *
+ * @param distance The distance at which the horizon level to be calculated
+ * @param cam_model The calibrated camera model used for projecting back on
+ *                  the image.
+ * @param transform The camera frame transform when the image was captured.
+ * @param head_yaw The head yaw angle when the image was captured.
+ * @param horizon_level The calculated horizon level (image row) in the image.
+ */
 void HorizonEstimator::HorizonLevel(
   float distance,
   const image_geometry::PinholeCameraModel& cam_model,
   const std::vector<float>& transform,
+  float head_yaw,
   int& horizon_level) {
   // Get the robot frame point (distance, 0, 0) into camera frame coordinates.
+  Point3d robot_frame;
+  robot_frame.x = cos(head_yaw) * distance;
+  robot_frame.y = sin(head_yaw) * distance;
+  robot_frame.z = 0;
+
   Point3d cam_frame;
-  cam_frame.x = transform[0] * distance - transform[3];
-  cam_frame.y = transform[1] * distance - transform[7];
-  cam_frame.z = transform[2] * distance - transform[11];
+  cam_frame.x = transform[0] * robot_frame.x +
+                transform[4] * robot_frame.y - transform[3];
+  cam_frame.y = transform[1] * robot_frame.x +
+                transform[5] * robot_frame.y - transform[7];
+  cam_frame.z = transform[2] * robot_frame.x +
+                transform[6] * robot_frame.y - transform[11];
 
   // Get the camera frame point into optical camera frame coordinates.
   Point3d optical_frame;
