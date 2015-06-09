@@ -55,6 +55,7 @@ add_service_files(
   CreateLedGroup.srv
   EarLedsSetAngle.srv
   Fade.srv
+  FadeRGB.srv
   GetNames.srv
   RotateEyes.srv
   SetIntensity.srv
