@@ -48,7 +48,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
-  SPLStandardMessage.msg
+  SPLStdMsg.msg
 #   Message1.msg
 #   Message2.msg
 )
@@ -84,7 +84,7 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
  INCLUDE_DIRS include
-#  LIBRARIES comms
+ LIBRARIES SPLStdMsgLib
  CATKIN_DEPENDS roscpp message_runtime
 #  DEPENDS system_lib
 )
@@ -101,9 +101,9 @@ include_directories(
 )
 
 ## Declare a cpp library
-# add_library(comms
-#   src/${PROJECT_NAME}/comms.cpp
-# )
+ add_library(SPLStdMsgLib
+     src/SPLStandardMessage.cpp
+)
 
 ## Declare a cpp executable
 add_executable(comms

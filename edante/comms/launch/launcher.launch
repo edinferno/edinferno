@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+
+<launch>
+    <node name="net_receiver" pkg="net" type="net_receiver" output="screen"/>
+    <node name="net_sender" pkg="net" type="net_sender" output="screen"/>
+    <node name="comms" pkg="comms" type="comms" output="screen"/>
+</launch>

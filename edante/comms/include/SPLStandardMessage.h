@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <iomanip>
 #include <ostream>
+//#include <>
 
 #define SPL_STANDARD_MESSAGE_STRUCT_HEADER  "SPL "
 #define SPL_STANDARD_MESSAGE_STRUCT_VERSION 6
@@ -152,42 +153,13 @@ struct SPLStandardMessage
       suggestion[i] = -1;
   }
 
-  friend std::ostream& operator<<(std::ostream& stream, const SPLStandardMessage& obj) {
-    stream << "Pose: " << obj.pose[0] << " " << obj.pose[1] << " " << obj.pose[2] << std::endl;
-    stream << "Walking To: " << obj.walkingTo[0] << " " << obj.walkingTo[1] << std::endl;
-    stream << "Shooting To: " << obj.shootingTo[0] << " " << obj.shootingTo[1] << std::endl;
-
-    stream << "Ball Age: " << obj.ballAge << std::endl;
-    stream << "Ball Position: " << obj.ball[0] << " " << obj.ball[1] << std::endl;
-    stream << "Ball Velocity: " << obj.ballVel[0] << " " << obj.ballVel[1] << std::endl;
-
-    stream << "Suggestions: ";
-    for (int i = 0; i < SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS; i++) {
-        stream << (int)obj.suggestion[i] << " ";
-    }
-    stream << std::endl;
-    stream << "Intention: " << (int)obj.intention << std::endl;
-
-    stream << "Average Walking Speed: " << obj.averageWalkSpeed << std::endl;
-    stream << "Max Kick Distance: " << obj.maxKickDistance << std::endl;
-
-    stream << "Current Position Confidence: " << (int)obj.currentPositionConfidence << std::endl;
-    stream << "Current Side Confidence: " << (int)obj.currentSideConfidence << std::endl;
-
-    stream << "Number of Data Bytes: " << obj.numOfDataBytes << std::endl;
-    stream << "Data: " ;
-    for (int i = 0; i < obj.numOfDataBytes; i++) {
-      stream << std::hex << (int)obj.data[i] << " ";
-    }
-    stream << std::endl;
-    return stream;
-  }
+  friend std::ostream& operator<<(std::ostream& stream, const SPLStandardMessage& obj);
 #endif
 };
 
-#include "comms/SPLStandardMessage.h"
+#include "comms/SPLStdMsg.h" // which file is called
 
-comms::SPLStandardMessage convertToROS(const SPLStandardMessage& msg);
-SPLStandardMessage convertFromROS(const comms::SPLStandardMessage& msg);
+comms::SPLStdMsg convertToROS(const SPLStandardMessage& msg);
+SPLStandardMessage convertFromROS(const comms::SPLStdMsg& msg);
 
 #endif // SPLSTANDARDMESSAGE_H

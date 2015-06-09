@@ -1,8 +1,7 @@
 #include "SPLStandardMessage.h"
 
-
-comms::SPLStdMsg convertToROS(const SPLStandardMessage& msg) {
-    comms::SPLStdMsg msg_;
+comms::SPLStandardMessage convertToROS(const SPLStandardMessage& msg) {
+    comms::SPLStandardMessage msg_;
 
     msg_.pose[0] = msg.pose[0];
     msg_.pose[1] = msg.pose[1];
@@ -32,8 +31,7 @@ comms::SPLStdMsg convertToROS(const SPLStandardMessage& msg) {
     return msg_;
 }
 
-
-SPLStandardMessage convertFromROS(const comms::SPLStdMsg& msg) {
+SPLStandardMessage convertFromROS(comms::SPLStandardMessage msg) {
     SPLStandardMessage msg_;
 
     msg_.pose[0] = msg.pose[0];

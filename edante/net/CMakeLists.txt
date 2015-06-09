@@ -47,11 +47,11 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
+#add_message_files(
 #   FILES
 #   Message1.msg
 #   Message2.msg
-# )
+#)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -68,10 +68,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
+#generate_messages(
 #   DEPENDENCIES
 #   std_msgs
-# )
+#)
 
 ###################################
 ## catkin specific configuration ##
@@ -85,7 +85,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
  INCLUDE_DIRS include
 #  LIBRARIES net
-#  CATKIN_DEPENDS roscpp rospy std_msgs
+# CATKIN_DEPENDS roscpp message_runtime
 #  DEPENDS system_lib
 )
 
@@ -111,7 +111,7 @@ add_executable(net_sender src/NetSender.cpp src/NetSenderWrapper.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(net net_generate_messages_cpp)
+# add_dependencies(comms comms_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(net_receiver
