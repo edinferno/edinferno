@@ -12,6 +12,7 @@
 #include <signalling_msgs/CreateLedGroup.h>
 #include <signalling_msgs/EarLedsSetAngle.h>
 #include <signalling_msgs/Fade.h>
+#include <signalling_msgs/FadeRGB.h>
 #include <signalling_msgs/GetNames.h>
 #include <signalling_msgs/RotateEyes.h>
 #include <signalling_msgs/SetIntensity.h>
@@ -30,6 +31,8 @@ class Led {
                        signalling_msgs::EarLedsSetAngle::Response& res);
   bool fade(signalling_msgs::Fade::Request& req,
             signalling_msgs::Fade::Response& res);
+  bool fadeRGB(signalling_msgs::FadeRGB::Request& req,
+               signalling_msgs::FadeRGB::Response& res);
   bool listGroups(signalling_msgs::GetNames::Request& req,
                   signalling_msgs::GetNames::Response& res);
   bool listLEDs(signalling_msgs::GetNames::Request& req,
@@ -45,6 +48,7 @@ class Led {
   ros::ServiceServer srv_create_group_;
   ros::ServiceServer srv_led_angle_;
   ros::ServiceServer srv_fade_;
+  ros::ServiceServer srv_fade_rgb_;
   ros::ServiceServer srv_list_groups_;
   ros::ServiceServer srv_list_leds_;
   ros::ServiceServer srv_rotate_eyes_;

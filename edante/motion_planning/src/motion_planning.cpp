@@ -6,6 +6,7 @@
  * @copyright (MIT) 2015 Edinferno
  */
 
+#include "motion_planning/setup.hpp"
 #include "motion_planning/stand_up.hpp"
 #include "motion_planning/sit_down.hpp"
 #include "motion_planning/sit_rest.hpp"
@@ -14,6 +15,7 @@ int main(int argc, char** argv) {
   ros::init(argc, argv, "motion_planning");
   ros::NodeHandle nh("motion_planning");
   ROS_INFO("Running Motion Planning");
+  SetupAction setup(nh, "setup");
   StandUpAction stand(nh, "stand_up");
   SitDownAction sit(nh, "sit_down");
   SitRestAction rest(nh, "sit_rest");

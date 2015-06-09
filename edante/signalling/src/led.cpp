@@ -17,6 +17,8 @@ Led::Led(ros::NodeHandle* nh) {
                                          &Led::earLedsSetAngle, this);
   srv_fade_ = nh_->advertiseService("fade",
                                     &Led::fade, this);
+  srv_fade_rgb_ = nh_->advertiseService("fade_rgb",
+                                        &Led::fadeRGB, this);
   srv_list_groups_ = nh_->advertiseService("list_groups",
                                            &Led::listGroups, this);
   srv_list_leds_ = nh_->advertiseService("list_leds",
@@ -45,6 +47,12 @@ bool Led::earLedsSetAngle(signalling_msgs::EarLedsSetAngle::Request& req,
 bool Led::fade(signalling_msgs::Fade::Request& req,
                signalling_msgs::Fade::Response& res) {
   leds_->fade(req.name, req.intensity, req.duration);
+  return true;
+}
+
+bool Led::fadeRGB(signalling_msgs::FadeRGB::Request& req,
+                  signalling_msgs::FadeRGB::Response& res) {
+  leds_->fadeRGB(req.name, req.rgb, req.duration);
   return true;
 }
 

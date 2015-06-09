@@ -45,8 +45,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 # add_message_files(
 #   FILES
-#   Message1.msg
-#   Message2.msg
+#   GameState.msg
 # )
 
 ## Generate services in the 'srv' folder
@@ -59,6 +58,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate actions in the 'action' folder
 add_action_files(
   FILES
+  Setup.action
   StandUp.action
   SitDown.action
   SitRest.action

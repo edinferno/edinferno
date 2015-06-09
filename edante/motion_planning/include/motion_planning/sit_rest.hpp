@@ -6,8 +6,8 @@
  * @copyright (MIT) 2015 Edinferno
  */
 
-#ifndef SIT_REST_SERVER_HPP
-#define SIT_REST_SERVER_HPP
+#ifndef SIT_REST_HPP
+#define SIT_REST_HPP
 
 // System
 #include <cmath>
@@ -20,8 +20,6 @@
 #include <std_srvs/Empty.h>
 #include <std_msgs/Bool.h>
 #include <motion_planning_msgs/SitRestAction.h>
-#include <motion_msgs/GetPostureFamily.h>
-#include <motion_msgs/SetPosture.h>
 
 class SitRestAction {
  protected:
@@ -53,14 +51,9 @@ class SitRestAction {
   ros::Subscriber awake_sub_;
   std_srvs::Empty rest_srv_;
   ros::ServiceClient rest_client_;
-  motion_msgs::GetPostureFamily get_posture_family_srv_;
-  ros::ServiceClient get_posture_family_client_;
   std_srvs::Empty stop_move_srv_;
   ros::ServiceClient stop_move_client_;
-  // motion_msgs::SetPosture set_posture_srv_;
-  // ros::ServiceClient set_posture_client_;
-
 };
 
 
-#endif /* SIT_REST_SERVER_HPP */
+#endif /* SIT_REST_HPP */

@@ -1,0 +1,4 @@
+string name
+int32 rgb
+float32 duration
+---
