@@ -1,4 +1,4 @@
-#include "navigation/walk_to_ball_server.hpp"
+#include "navigation/walk_to_ball.hpp"
 
 WalkToBallAction::WalkToBallAction(ros::NodeHandle nh, std::string name) :
   nh_(nh),
