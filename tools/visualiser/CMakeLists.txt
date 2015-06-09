@@ -7,6 +7,7 @@ project(visualiser)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   image_transport
+  std_msgs
   sensor_msgs
   vision_msgs
 )
