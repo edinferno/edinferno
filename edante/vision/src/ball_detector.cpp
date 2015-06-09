@@ -5,6 +5,7 @@
 *      @desc: The class finds the ball in a segmented image.
 */
 #include "vision/ball_detector.hpp"
+
 // Camera
 #include <camera/color_table.hpp>
 
@@ -27,18 +28,22 @@ const double BallDetector::kBallRadius = 0.03;
  * @param nh The node handle to be used.
  */
 BallDetector::BallDetector(ros::NodeHandle& nh) :
-  ball_detection_pub_(nh.advertise<vision_msgs::BallDetection>("ball", 5)),
-  transform_client_(nh.serviceClient<motion_msgs::GetTransform>(
-                      "/motion/get_transform", true)) {
+  ball_detection_pub_(nh.advertise<vision_msgs::BallDetection>("ball", 5)) {
 }
 /**
  * @brief Detect the ball in the image.
  *
  * @param image The image to be processed.
- * @param cam_info The camera calibration information.
+ * @param header The header which will be used for the published
+ *               ball detection.
+ * @param cam_model The calibrated camera model.
+ * @param transform The camera frame transformation at frame capture
  */
-void BallDetector::ProcessImage(const cv::Mat& image,
-                                const sensor_msgs::CameraInfo& cam_info) {
+void BallDetector::ProcessImage(
+  const cv::Mat& image,
+  const std_msgs::Header& header,
+  const image_geometry::PinholeCameraModel& cam_model,
+  const std::vector<float>& transform) {
   // Copy the input image
   image_ = image.clone();
 
@@ -46,14 +51,14 @@ void BallDetector::ProcessImage(const cv::Mat& image,
   ThresholdImage(image_);
 
   // Update the ball detection info
-  ball_detection_.header.stamp = cam_info.header.stamp;
-  ball_detection_.header.frame_id = cam_info.header.frame_id;
+  ball_detection_.header.stamp = header.stamp;
+  ball_detection_.header.frame_id = header.frame_id;
 
   // Find the ball in the thresholded image
   FindBall(image_, ball_detection_);
 
   // Calculate the 3D ball position
-  EstimateBallPos3D(cam_info, ball_detection_);
+  EstimateBallPos3D(cam_model, transform, ball_detection_);
 
   // Publish the detected ball info
   ball_detection_pub_.publish(ball_detection_);
@@ -124,27 +129,27 @@ void BallDetector::FindBall(cv::Mat& image,
 /**
  * @brief Estimate the 3D ball position based on the known size of the ball.
  *
- * @param cam_info Calibration information for the camera which captured
- *                 the image.
+ * @param cam_model The calibrated camera model.
+ * @param transform The camera frame transformation at the time of capturing
+ *                  the frame.
  * @param ball The estimated 3D position will be stored here.
  */
 void BallDetector::EstimateBallPos3D(
-  const sensor_msgs::CameraInfo& cam_info,
+  const image_geometry::PinholeCameraModel& cam_model,
+  const std::vector<float>& transform,
   vision_msgs::BallDetection& ball) {
-  // Update the camera model
-  cam_model_.fromCameraInfo(cam_info);
   // Calculate the undistorted 2d position
-  Point2d pos_2d = cam_model_.rectifyPoint(
+  Point2d pos_2d = cam_model.rectifyPoint(
                      Point2d(ball.pos_image.x,
                              ball.pos_image.y));
   // Project the point to the z = 1m plane
-  Point3d cam_pos_3d = cam_model_.projectPixelTo3dRay(pos_2d);
+  Point3d cam_pos_3d = cam_model.projectPixelTo3dRay(pos_2d);
 
   // Calculate the physical radius of a ball at 1m distance (z = 1m) with
   // the same size in pixels as the detected one. After undistortion the
   // pinhole model is linear, so we should simply rescale such that the
   // resulting size is the same as the actual ball.
-  double radius_z1m = cam_model_.getDeltaX(ball.radius, 1.0);
+  double radius_z1m = cam_model.getDeltaX(ball.radius, 1.0);
   cam_pos_3d *= kBallRadius / radius_z1m;
 
   // Transform the point from the optical camera frame to the Nao camera frame
@@ -152,25 +157,8 @@ void BallDetector::EstimateBallPos3D(
   ball.pos_camera.y = -cam_pos_3d.x;
   ball.pos_camera.z = -cam_pos_3d.y;
 
-  // Get the camera frame to robot frame transformation
-  motion_msgs::GetTransform srv;
-  if (ball.header.frame_id == "top_camera") {
-    srv.request.name = "CameraTop";
-  } else {
-    srv.request.name = "CameraBottom";
-  }
-  srv.request.space = 2;  // FRAME_ROBOT
-  srv.request.use_sensor_values = true;
-
-  if (!transform_client_.call(srv)) {
-    ROS_WARN("Unable to call get_transform.");
-    // Set invalid ball position
-    ball.pos_robot.x = ball.pos_robot.y = ball.pos_robot.z = 0;
-    return;
-  }
-
   // Apply the transformation to get the ball in the robot frame.
-  vector<float>& T = srv.response.transform;
+  const vector<float>& T = transform;
   ball.pos_robot.x = T[0] * ball.pos_camera.x +
                      T[1] * ball.pos_camera.y +
                      T[2] * ball.pos_camera.z + T[3];
@@ -181,5 +169,3 @@ void BallDetector::EstimateBallPos3D(
                      T[9] * ball.pos_camera.y +
                      T[10] * ball.pos_camera.z + T[11];
 }
-
-

@@ -10,10 +10,12 @@
 
 // System
 #include <string>
+#include <vector>
 
 // NaoQi
 #include <alcommon/almodule.h>
 #include <alproxies/alvideodeviceproxy.h>
+#include <alproxies/almotionproxy.h>
 
 // Boost
 #include <boost/interprocess/mapped_region.hpp>
@@ -86,6 +88,7 @@ class CameraNode : public AL::ALModule {
 
   // NaoQi related members
   AL::ALVideoDeviceProxy* camera_proxy_;
+  AL::ALMotionProxy* motion_proxy_;
 
   // Camera instances
   Camera* top_cam_;
@@ -114,6 +117,9 @@ class CameraNode : public AL::ALModule {
   // Camera calibration info
   sensor_msgs::CameraInfo active_cam_info_;
 
+  // Camera frame name
+  std::string active_camera_frame_name_;
+
   // ROS service servers
   ros::ServiceServer set_active_camera_server_;
   ros::ServiceServer set_resolution_server_;
@@ -136,61 +142,66 @@ class CameraNode : public AL::ALModule {
   boost::interprocess::named_mutex* shdmem_mtx_;
 
   /**
-   * @brief Initialised the module
-   * @details The function initialises all components of the modue.
-   *          It initialises ROS and advertises the supported services and
-   *          topics. Allocates memory for the current images and eventually
-   *          starts the spinning thread.
-   */
+  * @brief Initialised the module
+  * @details The function initialises all components of the modue.
+  *          It initialises ROS and advertises the supported services and
+  *          topics. Allocates memory for the current images and eventually
+  *          starts the spinning thread.
+  */
   void Init();
   /**
-   * @brief Loads the color table from a file.
-   * @details Loads the color table from a file into the table array.
-   *          The location of the file is stored in table_file_name_.
-   *          Currently it is set to /home/nao/config/camera/table.c64
-   */
+  * @brief Loads the color table from a file.
+  * @details Loads the color table from a file into the table array.
+  *          The location of the file is stored in table_file_name_.
+  *          Currently it is set to /home/nao/config/camera/table.c64
+  */
   void LoadColorTable();
   /**
-   * @brief Worker function of the module
-   * @details The function reads images from the camera, applies segmentation
-   *          and then publishes them over ROS. It runs on a separate thread.
-   */
+  * @brief Worker function of the module
+  * @details The function reads images from the camera, applies segmentation
+  *          and then publishes them over ROS. It runs on a separate thread.
+  */
   void Spin();
   /**
-   * @brief Copy the captured image and camera info to shared memory
-   * @details Copy the captured image and camera info to shared memory in order
-   *          to optimize access time for locally running nodes.
-   *
-   * @param image The image to be copied to memory
-   * @param cam_info The camera info to be copied to memory
-   */
-  void CameraToSharedMemory(const sensor_msgs::Image& image,
-                            const sensor_msgs::CameraInfo& cam_info);
+  * @brief Write the captured data to shared memory
+  * @details Copy the captured image, camera info, camera frame transformation
+  *          and head angles to shared memory in orderto optimize access time
+  *          for locally running nodes.
+  *
+  * @param image The image to be copied to memory
+  * @param cam_info The camera info to be copied to memory
+  * @param transform The camera frame transformation to be copied to memory
+  * @param transform The head angles to be copied to memory
+  */
+  void WriteToSharedMemory(const sensor_msgs::Image& image,
+                           const sensor_msgs::CameraInfo& cam_info,
+                           const std::vector<float>& transform,
+                           const std::vector<float>& head_angles);
   /**
-   * @brief Segments the image using the color look up table
-   * @details The 3 color channels of a pixel are used as indecies to the color
-   *          lookup table in order to classify them.
-   * @param raw A YUV442 encoded input image.
-   * @param seg The segmented image in MONO8 encoding. The values are determined
-   *            by the PixelClass enumeration.
-   */
+  * @brief Segments the image using the color look up table
+  * @details The 3 color channels of a pixel are used as indecies to the color
+  *          lookup table in order to classify them.
+  * @param raw A YUV442 encoded input image.
+  * @param seg The segmented image in MONO8 encoding. The values are determined
+  *            by the PixelClass enumeration.
+  */
   void SegmentImage(const sensor_msgs::Image& raw, sensor_msgs::Image& seg);
   /**
-   * @brief Color the segmented image for visualisation only.
-   * @details Each pixel is colored according to its class.
-   *
-   * @param seg The input segmented image. It should be in MONO8 encoding.
-   * @param rgb The output color image.
-   */
+  * @brief Color the segmented image for visualisation only.
+  * @details Each pixel is colored according to its class.
+  *
+  * @param seg The input segmented image. It should be in MONO8 encoding.
+  * @param rgb The output color image.
+  */
   void ColorSegmentedImage(const sensor_msgs::Image& seg,
                            sensor_msgs::Image& rgb);
   /**
-   * @brief Updates the manually allocated images and camera_info.
-   */
+  * @brief Updates the manually allocated images and camera_info.
+  */
   void Update();
   /**
-   * @brief Updates the allocated images to reflect the currently active camera settings.
-   */
+  * @brief Updates the allocated images to reflect the currently active camera settings.
+  */
   void UpdateImage();
   /**
   * @brief Updates the currently active camera_info to reflect the active camera settings.
@@ -199,23 +210,23 @@ class CameraNode : public AL::ALModule {
 
   // Service callbacks
   /**
-   * @brief Set the currently active camera (top or bottom).
-   *
-   * @param req Service request.
-   * @param res Service response.
-   *
-   * @return Return true on successful completion.
-   */
+  * @brief Set the currently active camera (top or bottom).
+  *
+  * @param req Service request.
+  * @param res Service response.
+  *
+  * @return Return true on successful completion.
+  */
   bool set_active_camera(camera_msgs::SetActiveCamera::Request&  req,
                          camera_msgs::SetActiveCamera::Response& res);
   /**
-   * @brief Set the currently active resolution.
-   *
-   * @param req Service request.
-   * @param res Service response.
-   *
-   * @return Return true on successful completion.
-   */
+  * @brief Set the currently active resolution.
+  *
+  * @param req Service request.
+  * @param res Service response.
+  *
+  * @return Return true on successful completion.
+  */
   bool set_resolution(camera_msgs::SetResolution::Request&  req,
                       camera_msgs::SetResolution::Response& res);
   /**
@@ -239,28 +250,28 @@ class CameraNode : public AL::ALModule {
   bool set_color_space(camera_msgs::SetColorSpace::Request&  req,
                        camera_msgs::SetColorSpace::Response& res);
   /**
-   * @brief Set the color table to be used.
-   * @details The service receives a serialised color table and stores
-   *          it to a file. The filename is stored in table_file_name_
-   *          and currently is /home/nao/config/camera/table.c64
-   *          Once the file is created, the table is loaded from there.
-   *
-   * @param req Service request.
-   * @param res Service response.
-   *
-   * @return Return true on successful completion.
-   */
+  * @brief Set the color table to be used.
+  * @details The service receives a serialised color table and stores
+  *          it to a file. The filename is stored in table_file_name_
+  *          and currently is /home/nao/config/camera/table.c64
+  *          Once the file is created, the table is loaded from there.
+  *
+  * @param req Service request.
+  * @param res Service response.
+  *
+  * @return Return true on successful completion.
+  */
   bool set_color_table(camera_msgs::SetColorTable::Request&  req,
                        camera_msgs::SetColorTable::Response& res);
   /**
-   * @brief Returns the currently used color table.
-   * @details The current color table is serialised and sent back.
-   *
-   * @param req Service request.
-   * @param res Service response.
-   *
-   * @return Return true on successful completion.
-   */
+  * @brief Returns the currently used color table.
+  * @details The current color table is serialised and sent back.
+  *
+  * @param req Service request.
+  * @param res Service response.
+  *
+  * @return Return true on successful completion.
+  */
   bool get_color_table(camera_msgs::GetColorTable::Request&  req,
                        camera_msgs::GetColorTable::Response& res);
 };

@@ -11,8 +11,6 @@
 
 #include <camera_msgs/SetActiveCamera.h>
 #include <motion_msgs/ChangeAngles.h>
-#include <motion_msgs/GetAngles.h>
-#include <sensor_msgs/CameraInfo.h>
 #include <vision_msgs/BallDetection.h>
 #include <vision_msgs/StartHeadTracking.h>
 #include <vision_msgs/StopHeadTracking.h>
@@ -34,26 +32,20 @@ class HeadTracker {
    * @details The object of interest is selected based on the value of
    *          object_type_. Currently, only ball is supported.
    *
-   * @param cam_info The information of the camera used for detection.
    * @param ball The detected ball by the ball detector.
+   * @param head_pitch The current pitch angle of the head.
    */
-  void Track(const sensor_msgs::CameraInfo& cam_info,
-             const vision_msgs::BallDetection& ball);
+  void Track(const vision_msgs::BallDetection& ball, float head_pitch);
 
  private:
   // Service servers
   ros::ServiceServer start_head_tracking_server_;
   ros::ServiceServer stop_head_tracking_server_;
   ros::ServiceClient set_active_camera_client_;
-  ros::ServiceClient get_angles_client_;
   ros::ServiceClient change_angles_client_;
   // Preallocated messages
   camera_msgs::SetActiveCamera set_active_camera_srv_;
-  motion_msgs::GetAngles get_angles_srv_;
   motion_msgs::ChangeAngles change_angles_srv_;
-
-
-
 
   // Whether tracking is enabled
   bool is_enabled_;

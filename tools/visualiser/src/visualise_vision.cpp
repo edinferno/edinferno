@@ -12,17 +12,25 @@ using cv::Scalar;
 VisualiseVision::VisualiseVision(ros::NodeHandle& nh) :
   it_(image_transport::ImageTransport(nh)),
   image_sub_(
-    it_.subscribe("/camera/image", 1, &VisualiseVision::ImageCallback, this)),
+    it_.subscribe("/camera/image", 1,
+                  &VisualiseVision::ImageCallback, this)),
   image_pub_(
     nh.advertise<sensor_msgs::Image>("vision", 1)),
+  horizon_sub_(
+    nh.subscribe("/vision/horizon", 1,
+                 &VisualiseVision::HorizonCallback, this)),
   ball_sub_(
-    nh.subscribe("/vision/ball", 1, &VisualiseVision::BallCallback, this)),
+    nh.subscribe("/vision/ball", 1,
+                 &VisualiseVision::BallCallback, this)),
   lines_sub_(
-    nh.subscribe("/vision/lines", 1, &VisualiseVision::LinesCallback, this)) {
+    nh.subscribe("/vision/lines", 1,
+                 &VisualiseVision::LinesCallback, this)),
+  horizon_(-1) {
 }
 
 void VisualiseVision::Spin() {
   YUVImageToBGRMat(image_, mat_);
+  DrawHorizon(horizon_, mat_);
   DrawBall(ball_, mat_);
   DrawLines(lines_, mat_);
   PublishVisualisation(image_.header, mat_);
@@ -31,6 +39,10 @@ void VisualiseVision::Spin() {
 void VisualiseVision::ImageCallback(
   const sensor_msgs::ImageConstPtr& image) {
   image_ = *image;
+}
+void VisualiseVision::HorizonCallback(
+  const std_msgs::Int32ConstPtr& horizon) {
+  horizon_ = horizon->data;
 }
 void VisualiseVision::BallCallback(
   const vision_msgs::BallDetectionConstPtr& ball) {
@@ -81,6 +93,10 @@ void VisualiseVision::PublishVisualisation(const std_msgs::Header& header,
   msg.data.resize(msg.height * msg.step);
   memcpy(msg.data.data(), mat.data, msg.data.size());
   image_pub_.publish(msg);
+}
+
+void VisualiseVision::DrawHorizon(int level, cv::Mat& mat) {
+  cv::line(mat, Point(0, level), Point(mat.cols, level), Scalar(64, 255, 64));
 }
 
 void VisualiseVision::DrawBall(const vision_msgs::BallDetection& ball,

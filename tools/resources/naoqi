@@ -44,7 +44,7 @@ start() {
   done
 
   if [ nao = $(whoami) ]; then
-    source /opt/openrobots/etc/ros/setup.sh
+    source /home/nao/.bash_profile
     #user nao, already have a dbus session
     "${BINARY}" --daemon --pid "${LOCK_FILE}" ${ARGS}
   else
