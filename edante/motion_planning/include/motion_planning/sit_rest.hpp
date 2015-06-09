@@ -20,8 +20,6 @@
 #include <std_srvs/Empty.h>
 #include <std_msgs/Bool.h>
 #include <motion_planning_msgs/SitRestAction.h>
-#include <motion_msgs/GetPostureFamily.h>
-#include <motion_msgs/SetPosture.h>
 
 class SitRestAction {
  protected:
