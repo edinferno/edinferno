@@ -10,6 +10,8 @@
 // OpenCV
 #include <opencv2/core/core.hpp>
 
+using std::vector;
+
 using boost::interprocess::open_only;
 using boost::interprocess::read_only;
 using boost::interprocess::mapped_region;
@@ -41,13 +43,14 @@ VisionNode::VisionNode() :
 void VisionNode::Spin() {
   sensor_msgs::Image image;
   sensor_msgs::CameraInfo cam_info;
+  vector<float> transform(16);
   // Use rate as the maximum fps which is 30
   ros::Rate rate(30);
   while (ros::ok()) {
-    if (SharedMemoryToCamera(image, cam_info)) {
+    if (SharedMemoryToCamera(image, cam_info, transform)) {
       // Get a shared cv::Mat from the image message
       Mat mat = Mat(image.height, image.width, CV_8UC1, image.data.data());
-      ball_detector_.ProcessImage(mat, cam_info);
+      ball_detector_.ProcessImage(mat, cam_info, transform);
       line_detector_.ProcessImage(mat, cam_info);
       head_tracker_.Track(cam_info, ball_detector_.ball());
     }
@@ -62,11 +65,13 @@ void VisionNode::Spin() {
  *
  * @param image The retreived image.
  * @param cam_info The retreived camera_info.
+ * @param transform The camera frame transform during image capture
  *
  * @return [description]
  */
 bool VisionNode::SharedMemoryToCamera(sensor_msgs::Image& image,
-                                      sensor_msgs::CameraInfo& cam_info) {
+                                      sensor_msgs::CameraInfo& cam_info,
+                                      std::vector<float>& transform) {
   if (!shdmem_mtx_.try_lock()) return false;
   uint8_t* ptr = shdmem_ptr_;
 
@@ -84,6 +89,9 @@ bool VisionNode::SharedMemoryToCamera(sensor_msgs::Image& image,
 
   IStream image_stream(ptr, image_size);
   Serializer<sensor_msgs::Image>::read(image_stream, image);
+  ptr += image_size;
+
+  memcpy(transform.data(), ptr, sizeof(float) * transform.size());
   shdmem_mtx_.unlock();
 
   return true;

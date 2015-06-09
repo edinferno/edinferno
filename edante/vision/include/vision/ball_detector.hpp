@@ -35,9 +35,11 @@ class BallDetector {
    *
    * @param image The image to be processed.
    * @param cam_info The camera calibration information.
+   * @param transform The camera frame transformation at frame capture
    */
   void ProcessImage(const cv::Mat& image,
-                    const sensor_msgs::CameraInfo& cam_info);
+                    const sensor_msgs::CameraInfo& cam_info,
+                    const std::vector<float>& transform);
   /**
    * @brief Getter of the current ball detection
    */
@@ -57,8 +59,6 @@ class BallDetector {
   ros::Publisher ball_detection_pub_;
   // Camera model used for estimating 3D ball position
   image_geometry::PinholeCameraModel cam_model_;
-  // Persistent client used to obtain the camera to robot frame transformation
-  ros::ServiceClient transform_client_;
 
   /**
    * @brief Threshold the image such that only 'Ball' pixels are white.
@@ -84,9 +84,12 @@ class BallDetector {
    *
    * @param cam_info Calibration information for the camera which captured
    *                 the image.
+   * @param transform The camera frame transformation at the time of capturing
+   *                  the frame.
    * @param ball The estimated 3D position will be stored here.
    */
   void EstimateBallPos3D(const sensor_msgs::CameraInfo& cam_info,
+                         const std::vector<float>& transform,
                          vision_msgs::BallDetection& ball);
 };
 #endif

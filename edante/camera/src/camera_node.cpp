@@ -313,7 +313,7 @@ void CameraNode::CameraToSharedMemory(const sensor_msgs::Image& image,
   ptr += image_size;
 
   // Write the frame transformation
-  memcpy(ptr, transform.data(), transform.size());
+  memcpy(ptr, transform.data(), sizeof(float) * transform.size());
 
   // Release the shared memory
   shdmem_mtx_->unlock();

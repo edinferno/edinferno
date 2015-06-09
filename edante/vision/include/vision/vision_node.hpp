@@ -8,6 +8,9 @@
 #ifndef VISION_NODE_HPP
 #define VISION_NODE_HPP
 
+// System
+#include <vector>
+
 // Boost
 #include <boost/interprocess/mapped_region.hpp>
 #include <boost/interprocess/shared_memory_object.hpp>
@@ -67,11 +70,13 @@ class VisionNode {
    *
    * @param image The retreived image.
    * @param cam_info The retreived camera_info.
+   * @param transform The camera frame transform during image capture
    *
    * @return [description]
    */
   bool SharedMemoryToCamera(sensor_msgs::Image& image,
-                            sensor_msgs::CameraInfo& cam_info);
+                            sensor_msgs::CameraInfo& cam_info,
+                            std::vector<float>& transform);
 };
 
 #endif
