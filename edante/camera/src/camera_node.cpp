@@ -185,15 +185,18 @@ void CameraNode::Init() {
  *          Currently it is set to /home/nao/config/camera/table.c64
  */
 void CameraNode::LoadColorTable() {
+  PixelClass* table_ptr = reinterpret_cast<PixelClass*>(table_);
+
   std::ifstream table_file;
   table_file.open(table_file_name_, std::ios::binary);
 
   if (!table_file.is_open()) {
-    ROS_ERROR("Unable to open color table file.");
+    ROS_WARN("Unable to open color table file. Using empty color table.");
+    for (size_t i = 0; i < kTableLen; ++i) { table_ptr[i] = Nothing; }
     return;
   }
 
-  PixelClass* table_ptr = reinterpret_cast<PixelClass*>(table_);
+
   size_t table_pos = 0;
   do {
     // Read the sequence length
