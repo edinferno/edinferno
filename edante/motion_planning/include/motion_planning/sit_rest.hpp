@@ -53,13 +53,8 @@ class SitRestAction {
   ros::Subscriber awake_sub_;
   std_srvs::Empty rest_srv_;
   ros::ServiceClient rest_client_;
-  motion_msgs::GetPostureFamily get_posture_family_srv_;
-  ros::ServiceClient get_posture_family_client_;
   std_srvs::Empty stop_move_srv_;
   ros::ServiceClient stop_move_client_;
-  // motion_msgs::SetPosture set_posture_srv_;
-  // ros::ServiceClient set_posture_client_;
-
 };
 
 
