@@ -21,6 +21,7 @@
 #include <std_msgs/Bool.h>
 #include <motion_planning_msgs/SetupAction.h>
 #include <signalling_msgs/FadeRGB.h>
+// #include <signalling_msgs/signalling_values.hpp>
 
 class SetupAction {
  protected:
@@ -39,10 +40,17 @@ class SetupAction {
 
   void init();
 
-  void executeCB(const motion_planning_msgs::SetupGoalConstPtr& goal);
+  void goalCB();
+
+  void preemptCB();
+
+  void executeCB();
 
  private:
   // Flags
+
+  // Variables
+  uint8_t state_;
 
   // Constants
   static const int BLACK = 0x000000;

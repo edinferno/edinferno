@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   actionlib
   roscpp
   motion_msgs
+  signalling_msgs
   motion_planning_msgs
 )
 
@@ -111,7 +112,8 @@ add_executable(motion_planning
  src/setup.cpp
  src/stand_up.cpp
  src/sit_down.cpp
- src/sit_rest.cpp)
+ src/sit_rest.cpp
+ src/await_transition.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
