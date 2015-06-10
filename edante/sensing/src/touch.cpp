@@ -115,7 +115,7 @@ void Touch::init() {
 void Touch::rosSetup(ros::NodeHandle* nh) {
   nh_ = nh;
   bumpers_pub_ = nh_->advertise<sensing_msgs::Bumpers>("bumpers", 10);
-  chest_pub_ = nh_->advertise<std_msgs::String>("chest", 10);
+  chest_pub_ = nh_->advertise<std_msgs::UInt8>("chest", 10);
   head_pub_ = nh_->advertise<sensing_msgs::Head>("head", 10);
   right_hand_pub_ = nh_->advertise<sensing_msgs::Hand>("right_hand", 10);
   left_hand_pub_ = nh_->advertise<sensing_msgs::Hand>("left_hand", 10);
@@ -145,19 +145,19 @@ void Touch::leftBumperPressed() {
 
 void Touch::singleChestClick() {
   AL::ALCriticalSection section(fCallbackMutex);
-  chestMsg_.data = "single";
+  chestMsg_.data = 1;
   chest_pub_.publish(chestMsg_);
 }
 
 void Touch::doubleChestClick() {
   AL::ALCriticalSection section(fCallbackMutex);
-  chestMsg_.data = "double";
+  chestMsg_.data = 2;
   chest_pub_.publish(chestMsg_);
 }
 
 void Touch::tripleChestClick() {
   AL::ALCriticalSection section(fCallbackMutex);
-  chestMsg_.data = "triple";
+  chestMsg_.data = 3;
   chest_pub_.publish(chestMsg_);
 }
 

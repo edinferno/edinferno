@@ -25,6 +25,7 @@
 // Messages
 #include <std_msgs/Bool.h>
 #include <std_msgs/String.h>
+#include <std_msgs/UInt8.h>
 #include <sensing_msgs/Bumpers.h>
 #include <sensing_msgs/Hand.h>
 #include <sensing_msgs/Head.h>
@@ -68,7 +69,7 @@ class Touch : public AL::ALModule {
   ros::Publisher right_hand_pub_;
   ros::Publisher left_hand_pub_;
   sensing_msgs::Bumpers bumperMsg_;
-  std_msgs::String chestMsg_;
+  std_msgs::UInt8 chestMsg_;
   sensing_msgs::Head headMsg_;
   sensing_msgs::Hand rightHandMsg_;
   sensing_msgs::Hand leftHandMsg_;

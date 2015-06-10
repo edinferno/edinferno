@@ -1,0 +1,13 @@
+#goal definition
+# INITIAL=0
+# READY=1
+# SET=2
+# PENALIZED=3
+# PLAYING=4
+# FINISHED=5
+uint8 state
+---
+#result definition
+bool success
+---
+#feedback

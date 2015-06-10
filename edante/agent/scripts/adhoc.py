@@ -18,25 +18,7 @@ from motion_planning_msgs.msg import SetupAction, SetupGoal
 from motion_planning_msgs.msg import StandUpAction, StandUpGoal
 from motion_planning_msgs.msg import SitDownAction, SitDownGoal
 from motion_planning_msgs.msg import SitRestAction, SitRestGoal
-
-# import agent # import all the package from src/agent
-# needs the __init__.py well-formatted to work
-
-# define state StateSetup
-# class StateSetup(smach.State):
-#     def __init__(self):
-#         smach.State.__init__(self, outcomes=['complete'])
-
-#     def execute(self, userdata):
-#         rospy.loginfo('Executing state SETUP')
-#         return 'complete'
-
-            # # Setup
-            # smach.StateMachine.add('SETUP',
-            #         smach_ros.SimpleActionState('agent/setup',
-            #             SetupAction,
-            #             goal = SetupGoal(state=GameState.PLAYING_STATE)),
-            #        {'succeeded':'STAND_UP'})
+from motion_planning_msgs.msg import AwaitTransitionAction, AwaitTransitionGoal
 
 # main
 def main():
@@ -50,26 +32,32 @@ def main():
     PLAYING=4
     FINISHED=5
 
-    # Create a SMACH state machine
+    # Create the main game SMACH state machine
     game_sm = smach.StateMachine(outcomes=['succeeded','aborted','preempted'])
-    # Open the container
     with game_sm:
-
+        # ======================================================================
         # Create the Initial SMACH state machine
         initial_sm = smach.StateMachine(outcomes=['penalized', 'ready', 'succeeded', 'aborted', 'preempted'])
-
         with initial_sm:
             # Initial state setup
             smach.StateMachine.add('SETUP',
                     smach_ros.SimpleActionState('motion_planning/setup',
                         SetupAction,
                         goal = SetupGoal(state=INITIAL)),
-                   {'succeeded':'ready'})
+                   {'succeeded':'AWAIT_TRANSITION'})
+
+            # Initial state setup
+            smach.StateMachine.add('AWAIT_TRANSITION',
+                    smach_ros.SimpleActionState('motion_planning/await_transition',
+                        AwaitTransitionAction,
+                        goal = AwaitTransitionGoal(state=INITIAL)),
+                   {'succeeded':'penalized'})
         # Initial state machine description
         smach.StateMachine.add('INITIAL', initial_sm,
                                transitions={'penalized':'PENALIZED',
                                             'ready':'READY'})
 
+        # ======================================================================
         # Create the Ready SMACH state machine
         ready_sm = smach.StateMachine(outcomes=['penalized', 'set', 'succeeded','aborted','preempted'])
 
@@ -85,9 +73,9 @@ def main():
                                transitions={'penalized':'PENALIZED',
                                             'set':'SET'})
 
+        # ======================================================================
         # Create the Set SMACH state machine
         set_sm = smach.StateMachine(outcomes=['penalized', 'playing', 'succeeded','aborted','preempted'])
-
         with set_sm:
             # Set state setup
             smach.StateMachine.add('SETUP',
@@ -100,15 +88,21 @@ def main():
                                transitions={'penalized':'PENALIZED',
                                             'playing':'PLAYING'})
 
+        # ======================================================================
         # Create the Penalized SMACH state machine
         penalized_sm = smach.StateMachine(outcomes=['ready', 'set', 'playing', 'succeeded','aborted','preempted'])
-
         with penalized_sm:
             # Penalized state setup
             smach.StateMachine.add('SETUP',
                     smach_ros.SimpleActionState('motion_planning/setup',
                         SetupAction,
                         goal = SetupGoal(state=PENALIZED)),
+                   {'succeeded':'AWAIT_TRANSITION'})
+            # Await button or game controller transition
+            smach.StateMachine.add('AWAIT_TRANSITION',
+                    smach_ros.SimpleActionState('motion_planning/await_transition',
+                        AwaitTransitionAction,
+                        goal = AwaitTransitionGoal(state=PENALIZED)),
                    {'succeeded':'playing'})
         # Penalized state machine description
         smach.StateMachine.add('PENALIZED', penalized_sm,
@@ -116,6 +110,7 @@ def main():
                                             'set':'SET',
                                             'playing':'PLAYING'})
 
+        # ======================================================================
         # Create the Finished SMACH state machine
         finished_sm = smach.StateMachine(outcomes=['succeeded','aborted','preempted'])
 
@@ -130,6 +125,7 @@ def main():
         smach.StateMachine.add('FINISHED', finished_sm,
                                transitions={'succeeded':'succeeded'})
 
+        # ======================================================================
         # Create the Playing SMACH state machine
         playing_sm = smach.StateMachine(outcomes=['ready', 'penalized', 'succeeded','aborted','preempted'])
 
@@ -140,7 +136,12 @@ def main():
                         SetupAction,
                         goal = SetupGoal(state=PLAYING)),
                    {'succeeded':'STAND_UP'})
-
+            # Await button or game controller transition
+            smach.StateMachine.add('AWAIT_TRANSITION',
+                    smach_ros.SimpleActionState('motion_planning/await_transition',
+                        AwaitTransitionAction,
+                        goal = AwaitTransitionGoal(state=PLAYING)),
+                   {'succeeded':'penalized'})
             # Stand up
             smach.StateMachine.add('STAND_UP',
                     smach_ros.SimpleActionState('motion_planning/stand_up',
@@ -190,7 +191,7 @@ def main():
                                transitions={'succeeded':'FINISHED',
                                             'penalized':'PENALIZED',
                                             'ready':'READY'})
-
+        # ======================================================================
     # Create and start the introspection server
     sis = smach_ros.IntrospectionServer('smach_viewer', game_sm, '/AGENT_GAME')
     sis.start()

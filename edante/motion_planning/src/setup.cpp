@@ -10,8 +10,11 @@
 
 SetupAction::SetupAction(ros::NodeHandle nh, std::string name) :
   nh_(nh),
-  as_(nh_, name, boost::bind(&SetupAction::executeCB, this, _1), false),
+  as_(nh_, name, false),
   action_name_(name) {
+  //register the goal and feeback callbacks
+  as_.registerGoalCallback(boost::bind(&SetupAction::goalCB, this));
+  as_.registerPreemptCallback(boost::bind(&SetupAction::preemptCB, this));
   fade_rgb_client_ = nh_.serviceClient<signalling_msgs::FadeRGB>(
                        "/signalling/fade_rgb", true);
   fade_rgb_client_.waitForExistence();
@@ -44,8 +47,19 @@ void SetupAction::init() {
   finished_rgb_srv_.request.duration = 0.0;
 }
 
-void SetupAction::executeCB(const motion_planning_msgs::SetupGoalConstPtr&
-                            goal) {
+void SetupAction::goalCB() {
+  ROS_INFO("New Goal");
+  state_ = as_.acceptNewGoal()->state;
+  ROS_INFO("State: %i", state_);
+  this->executeCB();
+}
+
+void SetupAction::preemptCB() {
+  ROS_INFO("Preempt");
+}
+
+
+void SetupAction::executeCB() {
   ROS_INFO("Executing goal for %s", action_name_.c_str());
   bool going = true;
   bool success = true;
@@ -58,22 +72,22 @@ void SetupAction::executeCB(const motion_planning_msgs::SetupGoalConstPtr&
   }
 
   if (going) {
-    if (goal->state == INITIAL) {
+    if (state_ == INITIAL) {
       ROS_INFO("INITIAL!");
       fade_rgb_client_.call(initial_rgb_srv_);
-    } else if (goal->state == READY) {
+    } else if (state_ == READY) {
       ROS_INFO("READY!");
       fade_rgb_client_.call(ready_rgb_srv_);
-    } else if (goal->state == SET) {
+    } else if (state_ == SET) {
       ROS_INFO("SET!");
       fade_rgb_client_.call(set_rgb_srv_);
-    } else if (goal->state == PENALIZED) {
+    } else if (state_ == PENALIZED) {
       ROS_INFO("PENALIZED!");
       fade_rgb_client_.call(penalized_rgb_srv_);
-    } else if (goal->state == PLAYING) {
+    } else if (state_ == PLAYING) {
       ROS_INFO("PLAYING!");
       fade_rgb_client_.call(playing_rgb_srv_);
-    } else if (goal->state == FINISHED) {
+    } else if (state_ == FINISHED) {
       ROS_INFO("FINISHED!");
       fade_rgb_client_.call(finished_rgb_srv_);
     }
