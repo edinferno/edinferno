@@ -20,6 +20,76 @@ from motion_planning_msgs.msg import SitDownAction, SitDownGoal
 from motion_planning_msgs.msg import SitRestAction, SitRestGoal
 from motion_planning_msgs.msg import AwaitTransitionAction, AwaitTransitionGoal
 
+# gets called when ANY child state terminates
+def playing_child_term_cb(outcome_map):
+
+  # terminate all running states if FOO finished with outcome 'outcome3'
+  if outcome_map['AWAIT_TRANSITION'] == 'ready':
+    return True
+
+  # terminate all running states if BAR finished
+  if outcome_map['AWAIT_TRANSITION'] == 'penalized':
+    return True
+
+  # in all other case, just keep running, don't terminate anything
+  return False
+
+
+# gets called when ALL child states are terminated
+def playing_all_term_cb(outcome_map):
+    if outcome_map['AWAIT_TRANSITION'] == 'ready':
+        return 'ready'
+    else:
+        return 'penalized'
+
+class Playing_sm(smach.StateMachine):
+    def __init__(self):
+        smach.StateMachine.__init__(self,outcomes=['succeeded','aborted', 'preempted'])
+        with self:
+            # Stand up
+            smach.StateMachine.add('STAND_UP',
+                    smach_ros.SimpleActionState('motion_planning/stand_up',
+                        StandUpAction,
+                        goal = StandUpGoal(stand_up=True)),
+                   {'succeeded':'succeeded',
+                   'aborted':'STAND_UP',
+                   'preempted':'preempted'})
+            # Sit down
+            smach.StateMachine.add('SIT_DOWN',
+                    smach_ros.SimpleActionState('motion_planning/sit_down',
+                        SitDownAction,
+                        goal = SitDownGoal(sit_down=True)),
+                   {'succeeded':'succeeded',
+                   'aborted':'aborted',
+                   'preempted':'preempted'})
+
+            # Sit rest
+            smach.StateMachine.add('SIT_REST',
+                    smach_ros.SimpleActionState('motion_planning/sit_rest',
+                        SitRestAction,
+                        goal = SitRestGoal(sit_rest=True)),
+                   {'succeeded':'succeeded',
+                   'aborted':'aborted',
+                   'preempted':'preempted'})
+
+            # Search for ball
+            smach.StateMachine.add('SEARCH_FOR_BALL',
+                    smach_ros.SimpleActionState('navigation/search_for_ball',
+                        SearchForBallAction,
+                        goal = SearchForBallGoal(start_search=True)),
+                   {'succeeded':'WALK_TO_BALL',
+                   'aborted':'SEARCH_FOR_BALL',
+                   'preempted':'preempted'})
+
+            # Walk to ball
+            smach.StateMachine.add('WALK_TO_BALL',
+                    smach_ros.SimpleActionState('navigation/walk_to_ball',
+                        WalkToBallAction,
+                        goal = WalkToBallGoal(start_walk=True)),
+                   {'succeeded':'SIT_DOWN',
+                   'aborted':'SEARCH_FOR_BALL',
+                   'preempted':'preempted'})
+
 # main
 def main():
     rospy.init_node('agent_game_smach')
@@ -127,67 +197,41 @@ def main():
 
         # ======================================================================
         # Create the Playing SMACH state machine
-        playing_sm = smach.StateMachine(outcomes=['ready', 'penalized', 'succeeded','aborted','preempted'])
+        play_state_sm = smach.StateMachine(outcomes=['ready', 'penalized', 'succeeded','aborted','preempted'])
 
-        with playing_sm:
+        with play_state_sm:
             # Playing state setup
             smach.StateMachine.add('SETUP',
                     smach_ros.SimpleActionState('motion_planning/setup',
                         SetupAction,
                         goal = SetupGoal(state=PLAYING)),
-                   {'succeeded':'STAND_UP'})
-            # Await button or game controller transition
-            smach.StateMachine.add('AWAIT_TRANSITION',
+                   {'succeeded':'PLAY_CC'})
+
+            # creating the concurrence state machine
+            play_cc = smach.Concurrence(outcomes=['ready', 'penalized', 'succeeded'],
+                             default_outcome='penalized',
+                             # input_keys=['sm_input'],
+                             # output_keys=['sm_output'],
+                             child_termination_cb = playing_child_term_cb,
+                             outcome_cb = playing_all_term_cb)
+
+            with play_cc:
+
+                smach.Concurrence.add('AWAIT_TRANSITION',
                     smach_ros.SimpleActionState('motion_planning/await_transition',
                         AwaitTransitionAction,
                         goal = AwaitTransitionGoal(state=PLAYING)),
-                   {'succeeded':'penalized'})
-            # Stand up
-            smach.StateMachine.add('STAND_UP',
-                    smach_ros.SimpleActionState('motion_planning/stand_up',
-                        StandUpAction,
-                        goal = StandUpGoal(stand_up=True)),
-                   {'succeeded':'SEARCH_FOR_BALL',
-                   'aborted':'STAND_UP',
-                   'preempted':'preempted'})
+                   {'ready':'ready',
+                   'penalized':'penalized'})
 
-            # Sit down
-            smach.StateMachine.add('SIT_DOWN',
-                    smach_ros.SimpleActionState('motion_planning/sit_down',
-                        SitDownAction,
-                        goal = SitDownGoal(sit_down=True)),
-                   {'succeeded':'succeeded',
-                   'aborted':'aborted',
-                   'preempted':'preempted'})
+                smach.Concurrence.add('PLAYING_SM', Playing_sm())
 
-            # Sit rest
-            smach.StateMachine.add('SIT_REST',
-                    smach_ros.SimpleActionState('motion_planning/sit_rest',
-                        SitRestAction,
-                        goal = SitRestGoal(sit_rest=True)),
-                   {'succeeded':'succeeded',
-                   'aborted':'aborted',
-                   'preempted':'preempted'})
+            smach.StateMachine.add('PLAY_CC', play_cc,
+                               transitions={'penalized':'penalized',
+                                            'ready':'ready'})
 
-            # Search for ball
-            smach.StateMachine.add('SEARCH_FOR_BALL',
-                    smach_ros.SimpleActionState('navigation/search_for_ball',
-                        SearchForBallAction,
-                        goal = SearchForBallGoal(start_search=True)),
-                   {'succeeded':'WALK_TO_BALL',
-                   'aborted':'SEARCH_FOR_BALL',
-                   'preempted':'preempted'})
-
-            # Walk to ball
-            smach.StateMachine.add('WALK_TO_BALL',
-                    smach_ros.SimpleActionState('navigation/walk_to_ball',
-                        WalkToBallAction,
-                        goal = WalkToBallGoal(start_walk=True)),
-                   {'succeeded':'SIT_DOWN',
-                   'aborted':'SEARCH_FOR_BALL',
-                   'preempted':'preempted'})
         # Playing state machine description
-        smach.StateMachine.add('PLAYING', playing_sm,
+        smach.StateMachine.add('PLAYING', play_state_sm,
                                transitions={'succeeded':'FINISHED',
                                             'penalized':'PENALIZED',
                                             'ready':'READY'})
