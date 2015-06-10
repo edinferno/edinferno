@@ -45,17 +45,19 @@ void SetupAction::init() {
   finished_rgb_srv_.request.name = "ChestLeds";
   finished_rgb_srv_.request.rgb = BLACK;
   finished_rgb_srv_.request.duration = 0.0;
+  reset_rgb_srv_.request.name = "ChestLeds";
+  reset_rgb_srv_.request.rgb = BLACK;
+  reset_rgb_srv_.request.duration = 0.0;
 }
 
 void SetupAction::goalCB() {
-  ROS_INFO("New Goal");
   state_ = as_.acceptNewGoal()->state;
-  ROS_INFO("State: %i", state_);
   this->executeCB();
 }
 
 void SetupAction::preemptCB() {
   ROS_INFO("Preempt");
+  as_.setPreempted();
 }
 
 
@@ -77,15 +79,19 @@ void SetupAction::executeCB() {
       fade_rgb_client_.call(initial_rgb_srv_);
     } else if (state_ == READY) {
       ROS_INFO("READY!");
+      fade_rgb_client_.call(reset_rgb_srv_);
       fade_rgb_client_.call(ready_rgb_srv_);
     } else if (state_ == SET) {
       ROS_INFO("SET!");
+      fade_rgb_client_.call(reset_rgb_srv_);
       fade_rgb_client_.call(set_rgb_srv_);
     } else if (state_ == PENALIZED) {
       ROS_INFO("PENALIZED!");
+      fade_rgb_client_.call(reset_rgb_srv_);
       fade_rgb_client_.call(penalized_rgb_srv_);
     } else if (state_ == PLAYING) {
       ROS_INFO("PLAYING!");
+      fade_rgb_client_.call(reset_rgb_srv_);
       fade_rgb_client_.call(playing_rgb_srv_);
     } else if (state_ == FINISHED) {
       ROS_INFO("FINISHED!");
