@@ -13,6 +13,11 @@
 // OpenCV
 #include <opencv2/core/core.hpp>
 
+#include "vision/pose_particle.hpp"
+
+// TODO(svepe): Remove the include
+#include "vision_msgs/ProjectedModel.h"
+
 using std::vector;
 
 using boost::interprocess::open_only;
@@ -40,6 +45,8 @@ VisionNode::VisionNode() :
   head_tracker_(nh_) {
   shdmem_region_ = new mapped_region(shdmem_, read_only);
   shdmem_ptr_ = static_cast<uint8_t*>(shdmem_region_->get_address());
+
+  ROS_INFO_STREAM("Model: " << field_model_.lines.size());
 }
 /**
  * @brief Checks for a new frame and processes it.
@@ -52,6 +59,17 @@ void VisionNode::Spin() {
   vector<float> head_angles(2);  // yaw, pitch
   int horizon_level;
 
+  cv::Point2f pos;
+  pos.x = FieldModel::kFieldLength / 2 - FieldModel::kPenaltyMarkDistance;
+  pos.y = 0;
+  PoseParticle particle(pos, 0);
+  std::vector<cv::Point2i> lines;
+  std::vector<cv::Point2i> field;
+  ros::Publisher model_pub =
+    nh_.advertise<vision_msgs::ProjectedModel>("model", 1);
+
+  vision_msgs::ProjectedModel proj_model;
+
   // Use rate as the maximum fps which is 30
   ros::Rate rate(30);
   while (ros::ok()) {
@@ -60,17 +78,33 @@ void VisionNode::Spin() {
       // Update the camera model
       cam_model.fromCameraInfo(cam_info);
 
+      lines.clear();
+      field.clear();
+      particle.Project(field_model_, cam_model, transform, lines, field);
+      proj_model.lines.resize(lines.size());
+      for (size_t i = 0; i < lines.size(); ++i) {
+        proj_model.lines[i].x = lines[i].x;
+        proj_model.lines[i].y = lines[i].y;
+      }
+
+      proj_model.field.resize(field.size());
+      for (size_t i = 0; i < field.size(); ++i) {
+        proj_model.field[i].x = field[i].x;
+        proj_model.field[i].y = field[i].y;
+      }
+      model_pub.publish(proj_model);
+
       // Calculate the horizon level
-      horizon_estimator_.HorizonLevel(5,  // 5m
-                                      cam_model,
-                                      transform,
-                                      head_angles[0],  // yaw
-                                      horizon_level);
+      // horizon_estimator_.HorizonLevel(5,  // 5m
+      //                                 cam_model,
+      //                                 transform,
+      //                                 head_angles[0],  // yaw
+      //                                 horizon_level);
 
       // Get a shared cv::Mat from the image message
-      Mat mat = Mat(image.height, image.width, CV_8UC1, image.data.data());
-      ball_detector_.ProcessImage(mat, image.header, cam_model, transform);
-      head_tracker_.Track(ball_detector_.ball(), head_angles[1]);
+      // Mat mat = Mat(image.height, image.width, CV_8UC1, image.data.data());
+      // ball_detector_.ProcessImage(mat, image.header, cam_model, transform);
+      // head_tracker_.Track(ball_detector_.ball(), head_angles[1]);
 
       // Disable line tracking for now
       // line_detector_.ProcessImage(mat, cam_mode);

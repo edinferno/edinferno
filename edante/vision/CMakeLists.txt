@@ -119,7 +119,9 @@ add_executable(vision
   src/ball_detector.cpp
   src/line_detector.cpp
   src/head_tracker.cpp
-  src/lsd_opencv.cpp)
+  src/lsd_opencv.cpp
+  src/field_model.cpp
+  src/pose_particle.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes

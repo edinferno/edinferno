@@ -47,6 +47,7 @@ void HorizonEstimator::HorizonLevel(
   robot_frame.y = sin(head_yaw) * distance;
   robot_frame.z = 0;
 
+  // Use the inverse transform i.e. from robot frame to camera frame
   Point3d cam_frame;
   cam_frame.x = transform[0] * robot_frame.x +
                 transform[4] * robot_frame.y - transform[3];

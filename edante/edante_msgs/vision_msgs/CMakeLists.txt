@@ -49,6 +49,7 @@ add_message_files(
   BallDetection.msg
   LineDetection.msg
   LineDetections.msg
+  ProjectedModel.msg
 )
 
 ## Generate services in the 'srv' folder

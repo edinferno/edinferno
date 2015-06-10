@@ -27,6 +27,7 @@
 #include "vision/ball_detector.hpp"
 #include "vision/line_detector.hpp"
 #include "vision/head_tracker.hpp"
+#include "vision/field_model.hpp"
 
 /**
  * @brief Reads the segmented image and the corresponding camera infro
@@ -66,6 +67,9 @@ class VisionNode {
 
   // Head tracking
   HeadTracker head_tracker_;
+
+  // Field model
+  FieldModel field_model_;
 
   /**
    * @brief Retrieves the camera data stored in the shared memory.
