@@ -1,13 +1,13 @@
 /**
- * @file      await_transition.hpp
- * @brief     AwaitTransition action server
+ * @file      transition.hpp
+ * @brief     Transition action server
  * @author    Alejandro Bordallo <alex.bordallo@ed.ac.uk>
  * @date      2015-06-07
  * @copyright (MIT) 2015 Edinferno
  */
 
-#ifndef AWAIT_TRANSITION_HPP
-#define AWAIT_TRANSITION_HPP
+#ifndef TRANSITION_HPP
+#define TRANSITION_HPP
 
 // System
 #include <cmath>
@@ -19,23 +19,23 @@
 // Messages
 #include <std_srvs/Empty.h>
 #include <std_msgs/UInt8.h>
-#include <motion_planning_msgs/AwaitTransitionAction.h>
+#include <motion_planning_msgs/TransitionAction.h>
 #include <signalling_msgs/signalling_values.hpp>
 
-class AwaitTransitionAction {
+class TransitionAction {
  protected:
   ros::NodeHandle nh_;
   // NodeHandle instance must be created before this line.
   // Otherwise strange error may occur.
-  actionlib::SimpleActionServer<motion_planning_msgs::AwaitTransitionAction> as_;
+  actionlib::SimpleActionServer<motion_planning_msgs::TransitionAction> as_;
   std::string action_name_;
-  motion_planning_msgs::AwaitTransitionFeedback feedback_;
-  motion_planning_msgs::AwaitTransitionResult result_;
+  motion_planning_msgs::TransitionFeedback feedback_;
+  motion_planning_msgs::TransitionResult result_;
 
  public:
-  AwaitTransitionAction(ros::NodeHandle nh, std::string name);
+  TransitionAction(ros::NodeHandle nh, std::string name);
 
-  ~AwaitTransitionAction(void);
+  ~TransitionAction(void);
 
   void init();
 
@@ -59,4 +59,4 @@ class AwaitTransitionAction {
 };
 
 
-#endif /* AWAIT_TRANSITION_HPP */
+#endif /* TRANSITION_HPP */

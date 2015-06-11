@@ -8,6 +8,7 @@
 uint8 state
 ---
 #result definition
-bool success
+string outcome
+# bool success
 ---
 #feedback

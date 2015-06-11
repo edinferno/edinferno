@@ -62,7 +62,7 @@ add_action_files(
   StandUp.action
   SitDown.action
   SitRest.action
-  AwaitTransition.action
+  Transition.action
 )
 
 ## Generate added messages and services with any dependencies listed here
