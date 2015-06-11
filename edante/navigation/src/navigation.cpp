@@ -9,12 +9,9 @@ int main(int argc, char** argv) {
   MoveToAction move_to(nh, "move_to");
   WalkToBallAction walk_to_ball(nh, "walk_to_ball");
   SearchForBallAction search_for_ball(nh, "search_for_ball");
-  ros::Rate r(10);
 
-  while (ros::ok()) {
-    ros::spinOnce();
-    r.sleep();
-  }
+  ros::spin();
+
   ros::shutdown();
 
   return 0;
