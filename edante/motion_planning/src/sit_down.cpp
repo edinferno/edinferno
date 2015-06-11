@@ -10,8 +10,11 @@
 
 SitDownAction::SitDownAction(ros::NodeHandle nh, std::string name) :
   nh_(nh),
-  as_(nh_, name, boost::bind(&SitDownAction::executeCB, this, _1), false),
+  as_(nh_, name, false),
   action_name_(name) {
+  //register the goal and feeback callbacks
+  as_.registerGoalCallback(boost::bind(&SitDownAction::goalCB, this));
+  as_.registerPreemptCallback(boost::bind(&SitDownAction::preemptCB, this));
   awake_sub_ = nh_.subscribe("/motion/is_awake", 1, &SitDownAction::awakeCB,
                              this);
   wake_up_client_ = nh_.serviceClient<std_srvs::Empty>("/motion/wake_up", true);
@@ -39,12 +42,21 @@ void SitDownAction::init() {
   set_posture_srv_.request.speed = 0.5f;
 }
 
+void SitDownAction::goalCB() {
+  as_.acceptNewGoal();
+  this->executeCB();
+}
+
+void SitDownAction::preemptCB() {
+  ROS_INFO("Preempt");
+  as_.setPreempted();
+}
+
 void SitDownAction::awakeCB(const std_msgs::Bool::ConstPtr& msg) {
   is_awake_ = msg->data;
 }
 
-void SitDownAction::executeCB(const motion_planning_msgs::SitDownGoalConstPtr&
-                              goal) {
+void SitDownAction::executeCB() {
   ROS_INFO("Executing goal for %s", action_name_.c_str());
   bool going = true;
   bool success = true;
