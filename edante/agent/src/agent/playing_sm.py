@@ -17,18 +17,37 @@ from motion_planning_msgs.msg import SetupAction, SetupGoal
 from motion_planning_msgs.msg import StandUpAction, StandUpGoal
 from motion_planning_msgs.msg import SitDownAction, SitDownGoal
 from motion_planning_msgs.msg import SitRestAction, SitRestGoal
-from motion_planning_msgs.msg import AwaitTransitionAction, AwaitTransitionGoal
+from motion_planning_msgs.msg import TransitionAction, TransitionGoal
 
 class PlayingSM(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['succeeded','aborted', 'preempted'])
         with self:
+
+            # Search for ball
+            smach.StateMachine.add('SEARCH_FOR_BALL',
+                    smach_ros.SimpleActionState('navigation/search_for_ball',
+                        SearchForBallAction,
+                        goal = SearchForBallGoal(start_search=True)),
+                   {'succeeded':'WALK_TO_BALL',
+                   'aborted':'SEARCH_FOR_BALL',
+                   'preempted':'preempted'})
+
+            # Walk to ball
+            smach.StateMachine.add('WALK_TO_BALL',
+                    smach_ros.SimpleActionState('navigation/walk_to_ball',
+                        WalkToBallAction,
+                        goal = WalkToBallGoal(start_walk=True)),
+                   {'succeeded':'SIT_DOWN',
+                   'aborted':'SEARCH_FOR_BALL',
+                   'preempted':'preempted'})
+
             # Stand up
             smach.StateMachine.add('STAND_UP',
                     smach_ros.SimpleActionState('motion_planning/stand_up',
                         StandUpAction,
                         goal = StandUpGoal(stand_up=True)),
-                   {'succeeded':'succeeded',
+                   {'succeeded':'SEARCH_FOR_BALL',
                    'aborted':'STAND_UP',
                    'preempted':'preempted'})
             # Sit down
@@ -47,22 +66,4 @@ class PlayingSM(smach.StateMachine):
                         goal = SitRestGoal(sit_rest=True)),
                    {'succeeded':'succeeded',
                    'aborted':'aborted',
-                   'preempted':'preempted'})
-
-            # Search for ball
-            smach.StateMachine.add('SEARCH_FOR_BALL',
-                    smach_ros.SimpleActionState('navigation/search_for_ball',
-                        SearchForBallAction,
-                        goal = SearchForBallGoal(start_search=True)),
-                   {'succeeded':'WALK_TO_BALL',
-                   'aborted':'SEARCH_FOR_BALL',
-                   'preempted':'preempted'})
-
-            # Walk to ball
-            smach.StateMachine.add('WALK_TO_BALL',
-                    smach_ros.SimpleActionState('navigation/walk_to_ball',
-                        WalkToBallAction,
-                        goal = WalkToBallGoal(start_walk=True)),
-                   {'succeeded':'SIT_DOWN',
-                   'aborted':'SEARCH_FOR_BALL',
                    'preempted':'preempted'})
