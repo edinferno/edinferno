@@ -2,8 +2,11 @@
 
 MoveToAction::MoveToAction(ros::NodeHandle nh, std::string name) :
   nh_(nh),
-  as_(nh_, name, boost::bind(&MoveToAction::executeCB, this, _1), false),
+  as_(nh_, name, false),
   action_name_(name) {
+  //register the goal and feeback callbacks
+  as_.registerGoalCallback(boost::bind(&MoveToAction::goalCB, this));
+  as_.registerPreemptCallback(boost::bind(&MoveToAction::preemptCB, this));
   get_pose_client_ = nh_.serviceClient<motion_msgs::GetRobotPosition>(
                        "/motion/get_robot_position", true);
   get_pose_client_.waitForExistence();
@@ -19,7 +22,7 @@ MoveToAction::MoveToAction(ros::NodeHandle nh, std::string name) :
   start_position_.request.use_sensors = true;
   get_pose_srv_.request.use_sensors = true;
   this->init();
-  ROS_INFO("Starting Navigation server");
+  ROS_INFO("Starting MoveTo server");
   as_.start();
 }
 
@@ -37,17 +40,28 @@ void MoveToAction::init() {
   move_to_srv_.request.control_points[1].theta = 0.0f;
 }
 
-void MoveToAction::executeCB(
-  const navigation_msgs::MoveToGoalConstPtr& goal) {
+void MoveToAction::goalCB() {
+  target_pose_ = as_.acceptNewGoal()->target_pose;
+  this->executeCB();
+}
+
+void MoveToAction::preemptCB() {
+  ROS_INFO("Preempt");
+  as_.setPreempted();
+}
+
+void MoveToAction::executeCB() {
   bool going = true;
   bool success = true;
   ROS_INFO("Executing goal for %s", action_name_.c_str());
-  get_pose_client_.call(start_position_);
 
-  // ROTATE FIRST, THEN STRAIGHT TO GOAL
-  move_to_srv_.request.control_points[0].theta = goal->target_pose.theta;
-  move_to_srv_.request.control_points[1].x = goal->target_pose.x;
-  move_to_client_.call(move_to_srv_);
+  if (going) {
+    get_pose_client_.call(start_position_);
+    // ROTATE FIRST, THEN STRAIGHT TO GOAL
+    move_to_srv_.request.control_points[0].theta = target_pose_.theta;
+    move_to_srv_.request.control_points[1].x = target_pose_.x;
+    move_to_client_.call(move_to_srv_);
+  }
 
   while (going == true) {
     if (as_.isPreemptRequested() || !ros::ok()) {
@@ -68,10 +82,10 @@ void MoveToAction::executeCB(
     as_.publishFeedback(feedback_);
 
     // Calculate distance and orientation error
-    float theta_error = goal->target_pose.theta - feedback_.curr_pose.theta;
+    float theta_error = target_pose_.theta - feedback_.curr_pose.theta;
     float distance = sqrt(pow(feedback_.curr_pose.x, 2) +
                           pow(feedback_.curr_pose.y, 2) );
-    float distance_error = goal->target_pose.x - distance;
+    float distance_error = target_pose_.x - distance;
 
     // Check if robot has arrived
     if ((fabs(distance_error) < thresh) && (fabs(theta_error) < thresh)) {

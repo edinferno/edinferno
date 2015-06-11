@@ -37,12 +37,16 @@ class SearchForBallAction {
 
   void init();
 
-  void goalCB(const vision_msgs::BallDetection::ConstPtr& msg);
+  void ballCB(const vision_msgs::BallDetection::ConstPtr& msg);
+
+  void goalCB();
+
+  void preemptCB();
 
   void scan_right();
   void scan_left();
 
-  void executeCB(const navigation_msgs::SearchForBallGoalConstPtr& goal);
+  void executeCB();
 
  private:
   // Constants
@@ -53,6 +57,7 @@ class SearchForBallAction {
   int scan_no_;
 
   // Flags
+  bool going_;
   bool ball_found_;
   bool scanning_right_;
   bool scanning_left_;

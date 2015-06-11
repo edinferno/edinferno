@@ -2,10 +2,13 @@
 
 SearchForBallAction::SearchForBallAction(ros::NodeHandle nh, std::string name) :
   nh_(nh),
-  as_(nh_, name, boost::bind(&SearchForBallAction::executeCB, this, _1), false),
+  as_(nh_, name, false),
   action_name_(name) {
+  //register the goal and feeback callbacks
+  as_.registerGoalCallback(boost::bind(&SearchForBallAction::goalCB, this));
+  as_.registerPreemptCallback(boost::bind(&SearchForBallAction::preemptCB, this));
   ball_pos_sub_ = nh_.subscribe("/vision/ball", 1,
-                                &SearchForBallAction::goalCB, this);
+                                &SearchForBallAction::ballCB, this);
   scan_client_ = nh_.serviceClient<motion_msgs::AngleInterp>(
                    "/motion/angle_interp", true);
   scan_client_.waitForExistence();
@@ -104,11 +107,23 @@ void SearchForBallAction::init() {
   top_camera_srv_.request.active_camera = 0;
 }
 
-void SearchForBallAction::goalCB(const vision_msgs::BallDetection::ConstPtr&
+void SearchForBallAction::ballCB(const vision_msgs::BallDetection::ConstPtr&
                                  msg) {
   ball_found_ = msg->is_detected;
   // ball_pos_.x = msg->pos_robot.x;
   // ball_pos_.y = msg->pos_robot.y;
+}
+
+void SearchForBallAction::goalCB() {
+  as_.acceptNewGoal();
+  going_ = true;
+  this->executeCB();
+}
+
+void SearchForBallAction::preemptCB() {
+  ROS_INFO("Preempt");
+  going_ = false;
+  as_.setPreempted();
 }
 
 void SearchForBallAction::scan_right() {
@@ -122,17 +137,15 @@ void SearchForBallAction::scan_left() {
   scan_client_.call(scan_left_srv_);
 }
 
-void SearchForBallAction::executeCB(
-  const navigation_msgs::SearchForBallGoalConstPtr& goal) {
-  bool going = true;
+void SearchForBallAction::executeCB() {
   bool success = false;
   ROS_INFO("Executing goal for %s", action_name_.c_str());
 
-  while (going) {
+  while (going_) {
     if (as_.isPreemptRequested() || !ros::ok()) {
       ROS_INFO("%s: Preempted", action_name_.c_str());
       as_.setPreempted();
-      going = false;
+      going_ = false;
     }
 
     resource_avail_client_.call(resource_avail_srv_);
@@ -166,7 +179,7 @@ void SearchForBallAction::executeCB(
       }
     } else {
       // Number of maximum scans reached
-      going = false;
+      going_ = false;
       time_out_ = true;
     }
 
@@ -174,7 +187,7 @@ void SearchForBallAction::executeCB(
     if (ball_found_) {
       ROS_INFO("%s: Ball Found!", action_name_.c_str());
       success = true;
-      going = false;
+      going_ = false;
       kill_task_client_.call(kill_task_srv_);
     }
     usleep(WAIT_100MS_);

@@ -31,13 +31,18 @@ class MoveToAction {
 
   void init();
 
-  void executeCB(const navigation_msgs::MoveToGoalConstPtr& goal);
+  void goalCB();
+
+  void preemptCB();
+
+  void executeCB();
 
  private:
   // Variables
   float thresh;
 
   // ROS
+  geometry_msgs::Pose2D target_pose_;
   motion_msgs::GetRobotPosition get_pose_srv_;
   motion_msgs::GetRobotPosition start_position_;
   ros::ServiceClient get_pose_client_;

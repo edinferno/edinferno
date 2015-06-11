@@ -2,11 +2,13 @@
 
 WalkToBallAction::WalkToBallAction(ros::NodeHandle nh, std::string name) :
   nh_(nh),
-  as_(nh_, name, boost::bind(&WalkToBallAction::executeCB, this, _1), false),
+  as_(nh_, name, false),
   action_name_(name) {
-  // as_.registerGoalCallback(boost::bind(&WalkToBallAction::goalCB, this));
+  //register the goal and feeback callbacks
+  as_.registerGoalCallback(boost::bind(&WalkToBallAction::goalCB, this));
+  as_.registerPreemptCallback(boost::bind(&WalkToBallAction::preemptCB, this));
   ball_pos_sub_ = nh_.subscribe("/vision/ball", 1,
-                                &WalkToBallAction::goalCB, this);
+                                &WalkToBallAction::ballCB, this);
   get_pose_client_ = nh_.serviceClient<motion_msgs::GetRobotPosition>(
                        "/motion/get_robot_position", true);
   get_pose_client_.waitForExistence();
@@ -45,14 +47,23 @@ void WalkToBallAction::init() {
   theta_thresh_ = 0.2f;
 }
 
-void WalkToBallAction::goalCB(const vision_msgs::BallDetection::ConstPtr& msg) {
+void WalkToBallAction::ballCB(const vision_msgs::BallDetection::ConstPtr& msg) {
   ball_found_ = msg->is_detected;
   ball_pos_.x = msg->pos_robot.x;
   ball_pos_.y = msg->pos_robot.y;
 }
 
-void WalkToBallAction::executeCB(
-  const navigation_msgs::WalkToBallGoalConstPtr& goal) {
+void WalkToBallAction::goalCB() {
+  as_.acceptNewGoal();
+  this->executeCB();
+}
+
+void WalkToBallAction::preemptCB() {
+  ROS_INFO("Preempt");
+  as_.setPreempted();
+}
+
+void WalkToBallAction::executeCB() {
   bool going = true;
   bool success = false;
   ROS_INFO("Executing goal for %s", action_name_.c_str());
@@ -77,29 +88,23 @@ void WalkToBallAction::executeCB(
     }
     float distance_error = target_distance_; // Relative
     float theta_error = target_theta_;       // Relative
-    // ROS_INFO("Target dis: %f, Target theta %f", target_distance_, target_theta_);
-    // ROS_INFO("Distance_error: %f, Theta error: %f", distance_error, theta_error);
 
     // Reset velocities in-case we have reached a threshold
     move_toward_srv_.request.norm_velocity.x = 0.0f;
     move_toward_srv_.request.norm_velocity.theta = 0.0f;
     // Rotate first...
-    // if (fabs(theta_error) > theta_thresh_) {
     if (theta_error < 0) { ROS_INFO("Right"); } else { ROS_INFO("Left"); }
     float theta_vel = theta_error * theta_scalar_;
     if (theta_vel < -1.0) {theta_vel = -1.0;}
     else if (theta_vel > 1.0) {theta_vel = 1.0;}
     move_toward_srv_.request.norm_velocity.theta = theta_vel;
-    // ROS_INFO("Rot. Speed: %f", move_toward_srv_.request.norm_velocity.theta);
     // ...then straight to ball
-    // } else
     if (fabs(distance_error) > dist_thresh_) {
       if (distance_error > 0) { ROS_INFO("Forward"); }
       float forw_vel = distance_error * dist_scalar_;
       if (forw_vel < -1.0) {forw_vel = -1.0;}
       else if (forw_vel > 1.0) {forw_vel = 1.0;}
       move_toward_srv_.request.norm_velocity.x = forw_vel;
-      // ROS_INFO("Dist. Speed: %f", move_toward_srv_.request.norm_velocity.x);
     }
     move_toward_client_.call(move_toward_srv_);
 
