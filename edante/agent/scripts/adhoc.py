@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 ##
 # @file      adhoc.py
-# @brief     Agent game state machine
+# @brief     Adhoc agent main state machine
 # @author    Alejandro Bordallo <alex.bordallo@ed.ac.uk>
 # @date      2015-06-05
 # @copyright (MIT) 2015 Edinferno
@@ -12,28 +12,21 @@ import smach
 import smach_ros
 from actionlib import *
 from actionlib_msgs.msg import *
-from navigation_msgs.msg import WalkToBallAction, WalkToBallGoal
-from navigation_msgs.msg import SearchForBallAction, SearchForBallGoal
+from agent import PlayingSM
+from agent import FinishedSM
 from motion_planning_msgs.msg import SetupAction, SetupGoal
-from motion_planning_msgs.msg import StandUpAction, StandUpGoal
-from motion_planning_msgs.msg import SitDownAction, SitDownGoal
-from motion_planning_msgs.msg import SitRestAction, SitRestGoal
 from motion_planning_msgs.msg import AwaitTransitionAction, AwaitTransitionGoal
 
 # gets called when ANY child state terminates
 def playing_child_term_cb(outcome_map):
 
-  # terminate all running states if FOO finished with outcome 'outcome3'
   if outcome_map['AWAIT_TRANSITION'] == 'ready':
     return True
 
-  # terminate all running states if BAR finished
   if outcome_map['AWAIT_TRANSITION'] == 'penalized':
     return True
 
-  # in all other case, just keep running, don't terminate anything
   return False
-
 
 # gets called when ALL child states are terminated
 def playing_all_term_cb(outcome_map):
@@ -42,55 +35,6 @@ def playing_all_term_cb(outcome_map):
     else:
         return 'penalized'
 
-class Playing_sm(smach.StateMachine):
-    def __init__(self):
-        smach.StateMachine.__init__(self,outcomes=['succeeded','aborted', 'preempted'])
-        with self:
-            # Stand up
-            smach.StateMachine.add('STAND_UP',
-                    smach_ros.SimpleActionState('motion_planning/stand_up',
-                        StandUpAction,
-                        goal = StandUpGoal(stand_up=True)),
-                   {'succeeded':'succeeded',
-                   'aborted':'STAND_UP',
-                   'preempted':'preempted'})
-            # Sit down
-            smach.StateMachine.add('SIT_DOWN',
-                    smach_ros.SimpleActionState('motion_planning/sit_down',
-                        SitDownAction,
-                        goal = SitDownGoal(sit_down=True)),
-                   {'succeeded':'succeeded',
-                   'aborted':'aborted',
-                   'preempted':'preempted'})
-
-            # Sit rest
-            smach.StateMachine.add('SIT_REST',
-                    smach_ros.SimpleActionState('motion_planning/sit_rest',
-                        SitRestAction,
-                        goal = SitRestGoal(sit_rest=True)),
-                   {'succeeded':'succeeded',
-                   'aborted':'aborted',
-                   'preempted':'preempted'})
-
-            # Search for ball
-            smach.StateMachine.add('SEARCH_FOR_BALL',
-                    smach_ros.SimpleActionState('navigation/search_for_ball',
-                        SearchForBallAction,
-                        goal = SearchForBallGoal(start_search=True)),
-                   {'succeeded':'WALK_TO_BALL',
-                   'aborted':'SEARCH_FOR_BALL',
-                   'preempted':'preempted'})
-
-            # Walk to ball
-            smach.StateMachine.add('WALK_TO_BALL',
-                    smach_ros.SimpleActionState('navigation/walk_to_ball',
-                        WalkToBallAction,
-                        goal = WalkToBallGoal(start_walk=True)),
-                   {'succeeded':'SIT_DOWN',
-                   'aborted':'SEARCH_FOR_BALL',
-                   'preempted':'preempted'})
-
-# main
 def main():
     rospy.init_node('agent_game_smach')
 
@@ -208,8 +152,8 @@ def main():
                    {'succeeded':'PLAY_CC'})
 
             # creating the concurrence state machine
-            play_cc = smach.Concurrence(outcomes=['ready', 'penalized', 'succeeded'],
-                             default_outcome='penalized',
+            play_cc = smach.Concurrence(outcomes=['ready', 'penalized', 'succeeded', 'aborted'],
+                             default_outcome='aborted',
                              # input_keys=['sm_input'],
                              # output_keys=['sm_output'],
                              child_termination_cb = playing_child_term_cb,
@@ -224,7 +168,7 @@ def main():
                    {'ready':'ready',
                    'penalized':'penalized'})
 
-                smach.Concurrence.add('PLAYING_SM', Playing_sm())
+                smach.Concurrence.add('PLAYING_SM', PlayingSM())
 
             smach.StateMachine.add('PLAY_CC', play_cc,
                                transitions={'penalized':'penalized',
