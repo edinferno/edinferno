@@ -34,13 +34,12 @@ void AwaitTransitionAction::init() {
 
 void AwaitTransitionAction::goalCB() {
   chest_presses_ = 0;
-  ROS_INFO("New Goal");
   state_ = as_.acceptNewGoal()->state;
-  ROS_INFO("State: %i", state_);
 }
 
 void AwaitTransitionAction::preemptCB() {
   ROS_INFO("Preempt");
+  as_.setPreempted();
 }
 
 void AwaitTransitionAction::checkTransition(const std_msgs::UInt8::ConstPtr&
@@ -57,22 +56,18 @@ void AwaitTransitionAction::checkTransition(const std_msgs::UInt8::ConstPtr&
     going = false;
   }
 
-  while (going) {
-    ROS_INFO("Checking");
-    if (chest_presses_ == 1) {
-      ROS_INFO("Chest Button once");
-      if (state_ == GameState::INITIAL ||
-          state_ == GameState::PENALIZED ||
-          state_ == GameState::PLAYING)
-      {going = false;}
-    } else if (chest_presses_ == 2) {
-      ROS_INFO("Chest Button twice");
-      going = false;
-    } else if (chest_presses_ == 3) {
-      ROS_INFO("Chest Button thrice");
-      going = false;
-    }
-    usleep(100000);
+  if (chest_presses_ == 1) {
+    ROS_INFO("Chest Button once");
+    if (state_ == GameState::INITIAL ||
+        state_ == GameState::PENALIZED ||
+        state_ == GameState::PLAYING)
+    {going = false;}
+  } else if (chest_presses_ == 2) {
+    ROS_INFO("Chest Button twice");
+    going = false;
+  } else if (chest_presses_ == 3) {
+    ROS_INFO("Chest Button thrice");
+    going = false;
   }
 
   if (success) {

@@ -68,6 +68,7 @@ class SetupAction {
   static const uint FINISHED = 5;
 
   // ROS
+  signalling_msgs::FadeRGB reset_rgb_srv_;
   signalling_msgs::FadeRGB initial_rgb_srv_;
   signalling_msgs::FadeRGB ready_rgb_srv_;
   signalling_msgs::FadeRGB set_rgb_srv_;

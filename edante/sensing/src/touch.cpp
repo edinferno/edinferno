@@ -48,15 +48,9 @@ Touch::Touch(boost::shared_ptr<AL::ALBroker> broker, const std::string& name) :
   functionName("handLeftRightPressed", getName(),
                "Hand left right is pressed.");
   BIND_METHOD(Touch::handLeftRightPressed)
-  functionName("singleChestClick", getName(),
-               "Single chest button click event.");
-  BIND_METHOD(Touch::singleChestClick)
-  functionName("doubleChestClick", getName(),
-               "Double chest button click event.");
-  BIND_METHOD(Touch::doubleChestClick)
-  functionName("tripleChestClick", getName(),
-               "Triple chest button click event.");
-  BIND_METHOD(Touch::tripleChestClick)
+  functionName("chestButtonPressed", getName(),
+               "New chest button click event.");
+  BIND_METHOD(Touch::chestButtonPressed)
 }
 
 Touch::~Touch() {
@@ -71,9 +65,7 @@ Touch::~Touch() {
   fMemoryProxy.unsubscribeToEvent("HandLeftBackTouched", "Touch");
   fMemoryProxy.unsubscribeToEvent("HandLeftLeftTouched", "Touch");
   fMemoryProxy.unsubscribeToEvent("HandLeftRightTouched", "Touch");
-  fMemoryProxy.unsubscribeToEvent("ALSentinel/SimpleClickOccured", "Touch");
-  fMemoryProxy.unsubscribeToEvent("ALSentinel/DoubleClickOccured", "Touch");
-  fMemoryProxy.unsubscribeToEvent("ALSentinel/TripleClickOccured", "Touch");
+  fMemoryProxy.unsubscribeToEvent("ChestButtonPressed", "Touch");
 }
 
 void Touch::init() {
@@ -101,15 +93,12 @@ void Touch::init() {
                                   "handLeftLeftPressed");
     fMemoryProxy.subscribeToEvent("HandLeftRightTouched", "Touch",
                                   "handLeftRightPressed");
-    fMemoryProxy.subscribeToEvent("ALSentinel/SimpleClickOccured", "Touch",
-                                  "singleChestClick");
-    fMemoryProxy.subscribeToEvent("ALSentinel/DoubleClickOccured", "Touch",
-                                  "doubleChestClick");
-    fMemoryProxy.subscribeToEvent("ALSentinel/TripleClickOccured", "Touch",
-                                  "tripleChestClick");
+    fMemoryProxy.subscribeToEvent("ChestButtonPressed", "Touch",
+                                  "chestButtonPressed");
   } catch (const AL::ALError& e) {
     ROS_ERROR_STREAM(e.what());
   }
+  chest_presses_ = 0;
 }
 
 void Touch::rosSetup(ros::NodeHandle* nh) {
@@ -141,24 +130,6 @@ void Touch::leftBumperPressed() {
     bumperMsg_.left = false;
   }
   bumpers_pub_.publish(bumperMsg_);
-}
-
-void Touch::singleChestClick() {
-  AL::ALCriticalSection section(fCallbackMutex);
-  chestMsg_.data = 1;
-  chest_pub_.publish(chestMsg_);
-}
-
-void Touch::doubleChestClick() {
-  AL::ALCriticalSection section(fCallbackMutex);
-  chestMsg_.data = 2;
-  chest_pub_.publish(chestMsg_);
-}
-
-void Touch::tripleChestClick() {
-  AL::ALCriticalSection section(fCallbackMutex);
-  chestMsg_.data = 3;
-  chest_pub_.publish(chestMsg_);
 }
 
 void Touch::frontHeadPressed() {
@@ -260,3 +231,17 @@ void Touch::handLeftRightPressed() {
   left_hand_pub_.publish(leftHandMsg_);
 }
 
+void Touch::chestButtonPressed() {
+  AL::ALCriticalSection section(fCallbackMutex);
+  fState = fMemoryProxy.getData("ChestButtonPressed");
+  if (fState > 0.5f) {
+    chest_presses_++;
+    timer = nh_->createTimer(ros::Duration(0.5), &Touch::timerCB, this, true);
+  }
+}
+
+void Touch::timerCB(const ros::TimerEvent& event) {
+  chestMsg_.data = chest_presses_;
+  chest_pub_.publish(chestMsg_);
+  chest_presses_ = 0;
+}

@@ -41,9 +41,6 @@ class Touch : public AL::ALModule {
 
   void rightBumperPressed();
   void leftBumperPressed();
-  void singleChestClick();
-  void doubleChestClick();
-  void tripleChestClick();
   void frontHeadPressed();
   void middleHeadPressed();
   void rearHeadPressed();
@@ -53,6 +50,8 @@ class Touch : public AL::ALModule {
   void handLeftBackPressed();
   void handLeftLeftPressed();
   void handLeftRightPressed();
+  void chestButtonPressed();
+  void timerCB(const ros::TimerEvent& event);
 
  private:
   AL::ALMemoryProxy fMemoryProxy;
@@ -60,8 +59,10 @@ class Touch : public AL::ALModule {
   boost::shared_ptr<AL::ALMutex> fCallbackMutex;
 
   float fState;
+  size_t chest_presses_;
 
   // ROS
+  ros::Timer timer;
   ros::NodeHandle* nh_;
   ros::Publisher bumpers_pub_;
   ros::Publisher chest_pub_;
