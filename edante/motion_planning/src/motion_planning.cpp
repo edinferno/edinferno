@@ -10,7 +10,7 @@
 #include "motion_planning/stand_up.hpp"
 #include "motion_planning/sit_down.hpp"
 #include "motion_planning/sit_rest.hpp"
-#include "motion_planning/await_transition.hpp"
+#include "motion_planning/transition.hpp"
 
 int main(int argc, char** argv) {
   ros::init(argc, argv, "motion_planning");
@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
   StandUpAction stand(nh, "stand_up");
   SitDownAction sit(nh, "sit_down");
   SitRestAction rest(nh, "sit_rest");
-  AwaitTransitionAction await(nh, "await_transition");
+  TransitionAction await(nh, "transition");
 
   ros::spin();
 

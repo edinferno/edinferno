@@ -10,8 +10,11 @@
 
 SitRestAction::SitRestAction(ros::NodeHandle nh, std::string name) :
   nh_(nh),
-  as_(nh_, name, boost::bind(&SitRestAction::executeCB, this, _1), false),
+  as_(nh_, name, false),
   action_name_(name) {
+  //register the goal and feeback callbacks
+  as_.registerGoalCallback(boost::bind(&SitRestAction::goalCB, this));
+  as_.registerPreemptCallback(boost::bind(&SitRestAction::preemptCB, this));
   awake_sub_ = nh_.subscribe("/motion/is_awake", 1, &SitRestAction::awakeCB,
                              this);
   rest_client_ = nh_.serviceClient<std_srvs::Empty>(
@@ -32,12 +35,21 @@ void SitRestAction::init() {
   is_awake_ = true;
 }
 
+void SitRestAction::goalCB() {
+  as_.acceptNewGoal();
+  this->executeCB();
+}
+
+void SitRestAction::preemptCB() {
+  ROS_INFO("Preempt");
+  as_.setPreempted();
+}
+
 void SitRestAction::awakeCB(const std_msgs::Bool::ConstPtr& msg) {
   is_awake_ = msg->data;
 }
 
-void SitRestAction::executeCB(const motion_planning_msgs::SitRestGoalConstPtr&
-                              goal) {
+void SitRestAction::executeCB() {
   ROS_INFO("Executing goal for %s", action_name_.c_str());
   bool going = true;
   bool success = true;

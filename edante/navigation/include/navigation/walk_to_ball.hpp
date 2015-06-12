@@ -32,9 +32,13 @@ class WalkToBallAction {
 
   void init();
 
-  void goalCB(const vision_msgs::BallDetection::ConstPtr& msg);
+  void ballCB(const vision_msgs::BallDetection::ConstPtr& msg);
 
-  void executeCB(const navigation_msgs::WalkToBallGoalConstPtr& goal);
+  void goalCB();
+
+  void preemptCB();
+
+  void executeCB();
 
  private:
   bool ball_found_;

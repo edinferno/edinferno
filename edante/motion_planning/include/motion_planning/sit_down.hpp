@@ -41,9 +41,13 @@ class SitDownAction {
 
   void init();
 
+  void goalCB();
+
+  void preemptCB();
+
   void awakeCB(const std_msgs::Bool::ConstPtr& msg);
 
-  void executeCB(const motion_planning_msgs::SitDownGoalConstPtr& goal);
+  void executeCB();
 
  private:
   // Flags

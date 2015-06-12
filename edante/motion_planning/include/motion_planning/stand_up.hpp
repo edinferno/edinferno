@@ -40,9 +40,13 @@ class StandUpAction {
 
   void init();
 
+  void goalCB();
+
+  void preemptCB();
+
   void awakeCB(const std_msgs::Bool::ConstPtr& msg);
 
-  void executeCB(const motion_planning_msgs::StandUpGoalConstPtr& goal);
+  void executeCB();
 
  private:
   // Flags
