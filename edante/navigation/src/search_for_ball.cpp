@@ -121,7 +121,6 @@ void SearchForBallAction::goalCB() {
 }
 
 void SearchForBallAction::preemptCB() {
-  ROS_INFO("Preempt");
   going_ = false;
   as_.setPreempted();
 }
@@ -139,6 +138,7 @@ void SearchForBallAction::scan_left() {
 
 void SearchForBallAction::executeCB() {
   bool success = false;
+  ros::Rate r(1);
   ROS_INFO("Executing goal for %s", action_name_.c_str());
 
   while (going_) {
@@ -190,7 +190,8 @@ void SearchForBallAction::executeCB() {
       going_ = false;
       kill_task_client_.call(kill_task_srv_);
     }
-    usleep(WAIT_100MS_);
+    ros::spinOnce();
+    r.sleep();
   }
 
   stop_move_client_.call(stop_move_srv_);
