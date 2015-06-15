@@ -138,7 +138,7 @@ void SearchForBallAction::scan_left() {
 
 void SearchForBallAction::executeCB() {
   bool success = false;
-  ros::Rate r(1);
+  ros::Rate r(10);
   ROS_INFO("Executing goal for %s", action_name_.c_str());
 
   while (going_) {

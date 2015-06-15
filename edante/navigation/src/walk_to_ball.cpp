@@ -66,6 +66,7 @@ void WalkToBallAction::preemptCB() {
 void WalkToBallAction::executeCB() {
   bool going = true;
   bool success = false;
+  ros::Rate r(10);
   ROS_INFO("Executing goal for %s", action_name_.c_str());
 
   // Start tracking ball
@@ -115,6 +116,8 @@ void WalkToBallAction::executeCB() {
       success = true;
       going = false;
     }
+    ros::spinOnce();
+    r.sleep();
   }
   // Stop tracking ball
   stop_head_track_srv_.request.object_type = 0;

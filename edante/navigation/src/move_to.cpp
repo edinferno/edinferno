@@ -53,6 +53,7 @@ void MoveToAction::preemptCB() {
 void MoveToAction::executeCB() {
   bool going = true;
   bool success = true;
+  ros::Rate r(10);
   ROS_INFO("Executing goal for %s", action_name_.c_str());
 
   if (going) {
@@ -91,6 +92,8 @@ void MoveToAction::executeCB() {
     if ((fabs(distance_error) < thresh) && (fabs(theta_error) < thresh)) {
       going = false;
     }
+    ros::spinOnce();
+    r.sleep();
   }
   stop_move_client_.call(stop_move_srv_);
 
