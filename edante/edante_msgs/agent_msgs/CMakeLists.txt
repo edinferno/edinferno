@@ -5,11 +5,6 @@ project(agent_msgs)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  std_msgs
-  geometry_msgs
-  actionlib
-  actionlib_msgs
-  # message_generation
 )
 
 ## System dependencies are found with CMake's conventions
