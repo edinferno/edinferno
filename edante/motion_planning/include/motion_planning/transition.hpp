@@ -19,6 +19,7 @@
 // Messages
 #include <std_srvs/Empty.h>
 #include <std_msgs/UInt8.h>
+#include <comms_msgs/GameState.h>
 #include <motion_planning_msgs/TransitionAction.h>
 #include <signalling_msgs/signalling_values.hpp>
 
@@ -37,23 +38,24 @@ class TransitionAction {
 
   ~TransitionAction(void);
 
-  void init();
-
   void goalCB();
 
   void preemptCB();
 
-  void checkTransition(const std_msgs::UInt8::ConstPtr& msg);
+  void checkChestTransition(const std_msgs::UInt8::ConstPtr& msg);
+  void checkGCTransition(const comms_msgs::GameState::ConstPtr& msg);
 
  private:
   // Flags
 
   // Variables
   uint8_t state_;
+  uint8_t game_state_;
   uint8_t chest_presses_;
 
   // ROS
   ros::Subscriber chest_sub_;
+  ros::Subscriber game_state_sub_;
   std_srvs::Empty stop_move_srv_;
   ros::ServiceClient stop_move_client_;
 };

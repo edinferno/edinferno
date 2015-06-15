@@ -17,32 +17,28 @@ TransitionAction::TransitionAction(ros::NodeHandle nh, std::string name) :
   as_.registerPreemptCallback(boost::bind(&TransitionAction::preemptCB,
                                           this));
   chest_sub_ = nh_.subscribe("/sensing/chest", 1,
-                             &TransitionAction::checkTransition,
-                             this);
+                             &TransitionAction::checkChestTransition, this);
+  game_state_sub_ = nh_.subscribe("/comms/game_state", 1,
+                                  &TransitionAction::checkGCTransition, this);
   ROS_INFO("Starting Transition action server");
-  // this->init();
   as_.start();
 }
 
 TransitionAction::~TransitionAction(void) {
 }
 
-void TransitionAction::init() {
-  chest_presses_ = 0;
-}
-
 void TransitionAction::goalCB() {
   chest_presses_ = 0;
+  game_state_ = -1;
   state_ = as_.acceptNewGoal()->state;
 }
 
 void TransitionAction::preemptCB() {
-  ROS_INFO("Preempt");
   as_.setPreempted();
 }
 
-void TransitionAction::checkTransition(const std_msgs::UInt8::ConstPtr&
-                                       msg) {
+void TransitionAction::checkChestTransition(const std_msgs::UInt8::ConstPtr&
+                                            msg) {
   chest_presses_ = msg->data;
   ROS_INFO("Executing goal for %s", action_name_.c_str());
   bool going = true;
@@ -73,6 +69,52 @@ void TransitionAction::checkTransition(const std_msgs::UInt8::ConstPtr&
     // } else if (chest_presses_ == 3) {
     //   ROS_INFO("Chest Button thrice");
     //   going = false;
+  }
+
+  if (success) {
+    as_.setSucceeded(result_);
+  } else {
+    result_.outcome = "abort";
+    ROS_INFO("%s: Failed!", action_name_.c_str());
+    as_.setAborted(result_);
+  }
+}
+
+void TransitionAction::checkGCTransition(const comms_msgs::GameState::ConstPtr&
+                                         msg) {
+  game_state_ = msg->game_state;
+  ROS_INFO("Executing goal for %s", action_name_.c_str());
+  bool going = true;
+  bool success = true;
+
+  if (as_.isPreemptRequested() || !ros::ok()) {
+    ROS_INFO("%s: Preempted", action_name_.c_str());
+    as_.setPreempted();
+    success = false;
+    going = false;
+  }
+
+  switch (game_state_) {
+  case 0:
+    result_.outcome = "initial";
+    break;
+  case 1:
+    result_.outcome = "ready";
+    break;
+  case 2:
+    result_.outcome = "set";
+    break;
+  case 3:
+    result_.outcome = "penalized";
+    break;
+  case 4:
+    result_.outcome = "playing";
+    break;
+  case 5:
+    result_.outcome = "finished";
+    break;
+  default:
+    success = false;
   }
 
   if (success) {
