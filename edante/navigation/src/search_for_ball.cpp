@@ -140,14 +140,9 @@ void SearchForBallAction::executeCB() {
   bool success = false;
   ros::Rate r(10);
   ROS_INFO("Executing goal for %s", action_name_.c_str());
+  move_init_client_.call(move_init_srv_);
 
   while (going_) {
-    if (as_.isPreemptRequested() || !ros::ok()) {
-      ROS_INFO("%s: Preempted", action_name_.c_str());
-      as_.setPreempted();
-      going_ = false;
-    }
-
     resource_avail_client_.call(resource_avail_srv_);
     move_is_active_client_.call(move_is_active_srv_);
 
@@ -157,25 +152,21 @@ void SearchForBallAction::executeCB() {
         // START SCAN RIGHT
         scanning_right_ = true;
         this->scan_right();
-        ROS_INFO("Scanning Right...");
       } else if (scanning_right_ && resource_avail_srv_.response.available) {
         // START SCAN LEFT
         scanning_right_ = false;
         scanning_left_ = true;
         this->scan_left();
-        ROS_INFO("Scanning Left...");
       } else if (scanning_left_ && resource_avail_srv_.response.available) {
         // START TURNING
         scanning_left_ = false;
         turning_ = true;
         turn_client_.call(turn_right_srv_);
         scan_client_.call(look_straight_srv_);
-        ROS_INFO("Turning...");
       } else if (turning_ && !move_is_active_srv_.response.is_enabled) {
         // SEARCH FINISHED
         scan_no_++;
         turning_ = false;
-        ROS_INFO("Search complete");
       }
     } else {
       // Number of maximum scans reached
@@ -188,13 +179,13 @@ void SearchForBallAction::executeCB() {
       ROS_INFO("%s: Ball Found!", action_name_.c_str());
       success = true;
       going_ = false;
-      kill_task_client_.call(kill_task_srv_);
     }
     ros::spinOnce();
     r.sleep();
   }
 
-  stop_move_client_.call(stop_move_srv_);
+  kill_task_client_.call(kill_task_srv_);
+  // stop_move_client_.call(stop_move_srv_);
 
   if (success) {
     result_.success = true;
@@ -204,8 +195,9 @@ void SearchForBallAction::executeCB() {
     result_.success = false;
     ROS_INFO("%s: Failed!", action_name_.c_str());
     if (time_out_) {ROS_INFO("Timed out!");}
-    else if (!ball_found_) {ROS_INFO("Ball Lost!");}
+    else if (as_.isPreemptRequested()) {ROS_INFO("Search preempted");}
+    else if (!ball_found_) {ROS_INFO("Ball not found!");}
     as_.setAborted(result_);
   }
-  move_init_client_.call(move_init_srv_);
+  // move_init_client_.call(move_init_srv_);
 }

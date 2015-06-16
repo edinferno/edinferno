@@ -70,6 +70,7 @@ void WalkToBallAction::executeCB() {
   ROS_INFO("Executing goal for %s", action_name_.c_str());
 
   // Start tracking ball
+  move_init_client_.call(move_init_srv_);
   start_head_track_srv_.request.object_type = 0;
   start_head_track_client_.call(start_head_track_srv_);
 
@@ -94,14 +95,12 @@ void WalkToBallAction::executeCB() {
     move_toward_srv_.request.norm_velocity.x = 0.0f;
     move_toward_srv_.request.norm_velocity.theta = 0.0f;
     // Rotate first...
-    if (theta_error < 0) { ROS_INFO("Right"); } else { ROS_INFO("Left"); }
     float theta_vel = theta_error * theta_scalar_;
     if (theta_vel < -1.0) {theta_vel = -1.0;}
     else if (theta_vel > 1.0) {theta_vel = 1.0;}
     move_toward_srv_.request.norm_velocity.theta = theta_vel;
     // ...then straight to ball
     if (fabs(distance_error) > dist_thresh_) {
-      if (distance_error > 0) { ROS_INFO("Forward"); }
       float forw_vel = distance_error * dist_scalar_;
       if (forw_vel < -1.0) {forw_vel = -1.0;}
       else if (forw_vel > 1.0) {forw_vel = 1.0;}
@@ -123,7 +122,7 @@ void WalkToBallAction::executeCB() {
   stop_head_track_srv_.request.object_type = 0;
   stop_head_track_client_.call(stop_head_track_srv_);
 
-  stop_move_client_.call(stop_move_srv_);
+  // stop_move_client_.call(stop_move_srv_);
 
   if (success) {
     result_.success = true;
