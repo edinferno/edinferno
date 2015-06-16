@@ -20,6 +20,7 @@ StandUpAction::StandUpAction(ros::NodeHandle nh, std::string name) :
                              this);
   wake_up_client_ = nh_.serviceClient<std_srvs::Empty>("/motion/wake_up", true);
   wake_up_client_.waitForExistence();
+  has_fallen_pub_ = nh_.advertise<std_msgs::Bool>("/motion/has_fallen", 10);
   get_posture_family_client_ = nh_.serviceClient<motion_msgs::GetPostureFamily>(
                                  "/motion/get_posture_family", true);
   get_posture_family_client_.waitForExistence();
@@ -39,6 +40,7 @@ StandUpAction::~StandUpAction(void) {
 
 void StandUpAction::init() {
   is_awake_ = false;
+  has_fallen_msg_.data = false;
   set_posture_srv_.request.posture_name = "StandInit";
   set_posture_srv_.request.speed = 0.5f;
 }
@@ -95,6 +97,7 @@ void StandUpAction::executeCB() {
   if (success) {
     result_.success = true;
     ROS_INFO("%s: Succeeded!", action_name_.c_str());
+    has_fallen_pub_.publish(has_fallen_msg_);
     as_.setSucceeded(result_);
   } else {
     result_.success = false;
