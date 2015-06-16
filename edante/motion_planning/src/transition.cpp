@@ -20,6 +20,8 @@ TransitionAction::TransitionAction(ros::NodeHandle nh, std::string name) :
                              &TransitionAction::checkChestTransition, this);
   game_state_sub_ = nh_.subscribe("/comms/game_state", 1,
                                   &TransitionAction::checkGCTransition, this);
+  has_fallen_sub_ = nh_.subscribe("/motion/has_fallen", 1,
+                                  &TransitionAction::checkFallenTransition, this);
   ROS_INFO("Starting Transition action server");
   as_.start();
 }
@@ -123,5 +125,14 @@ void TransitionAction::checkGCTransition(const comms_msgs::GameState::ConstPtr&
     result_.outcome = "abort";
     ROS_INFO("%s: Failed!", action_name_.c_str());
     as_.setAborted(result_);
+  }
+}
+
+void TransitionAction::checkFallenTransition(const std_msgs::Bool::ConstPtr&
+                                             msg) {
+  if (msg->data) {
+    ROS_INFO("Fallen! Going to stand up");
+    result_.outcome = "stand_up";
+    as_.setSucceeded(result_);
   }
 }

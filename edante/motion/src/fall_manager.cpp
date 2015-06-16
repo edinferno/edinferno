@@ -42,7 +42,7 @@ void FallManager::init() {
 void FallManager::rosSetup(ros::NodeHandle* nh) {
   nh_ = nh;
   ROS_INFO_STREAM("Setting up Fall Manager publishers");
-  has_fallen_pub_ = nh_->advertise<std_msgs::Bool>("has_fallen", 10, true);
+  has_fallen_pub_ = nh_->advertise<std_msgs::Bool>("has_fallen", 10);
   ROS_INFO_STREAM("Setting up Fall Manager services");
   srv_set_fall_manager_ = nh_->advertiseService("set_fall_manager_enabled",
                                                 &FallManager::setFallManagerEnabled, this);

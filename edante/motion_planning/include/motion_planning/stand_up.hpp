@@ -53,6 +53,8 @@ class StandUpAction {
   bool is_awake_;
 
   // ROS
+  ros::Publisher has_fallen_pub_;
+  std_msgs::Bool has_fallen_msg_;
   ros::Subscriber awake_sub_;
   std_srvs::Empty wake_up_srv_;
   ros::ServiceClient wake_up_client_;

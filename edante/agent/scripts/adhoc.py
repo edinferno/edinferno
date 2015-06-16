@@ -23,26 +23,29 @@ def transition_cb(userdata, status, result):
 
 # gets called when ANY child state terminates
 def transition_child_term_cb(outcome_map):
+    if outcome_map['TRANSITION'] == 'stand_up':
+        return True
+    elif outcome_map['TRANSITION'] == 'initial':
+        return True
+    elif outcome_map['TRANSITION'] == 'ready':
+        return True
+    elif outcome_map['TRANSITION'] == 'set':
+        return True
+    elif outcome_map['TRANSITION'] == 'penalized':
+        return True
+    elif outcome_map['TRANSITION'] == 'playing':
+        return True
+    elif outcome_map['TRANSITION'] == 'finished':
+        return True
 
-  if outcome_map['TRANSITION'] == 'initial':
-    return True
-  elif outcome_map['TRANSITION'] == 'ready':
-    return True
-  elif outcome_map['TRANSITION'] == 'set':
-    return True
-  elif outcome_map['TRANSITION'] == 'penalized':
-    return True
-  elif outcome_map['TRANSITION'] == 'playing':
-    return True
-  elif outcome_map['TRANSITION'] == 'finished':
-    return True
-
-  return False
+    return False
 
 # gets called when ALL child states are terminated
 def transition_all_term_cb(outcome_map):
     print " Trans: " + outcome_map['TRANSITION']
-    if outcome_map['TRANSITION'] == 'initial':
+    if outcome_map['TRANSITION'] == 'stand_up':
+        return 'stand_up'
+    elif outcome_map['TRANSITION'] == 'initial':
         return 'initial'
     elif outcome_map['TRANSITION'] == 'ready':
         return 'ready'
@@ -84,7 +87,7 @@ def main():
                    {'succeeded':'INITIAL_CC'})
 
             # creating the concurrence state machine
-            initial_cc = smach.Concurrence(outcomes=['initial','ready','set','penalized','playing','finished', 'aborted', 'preempted'],
+            initial_cc = smach.Concurrence(outcomes=['stand_up','initial','ready','set','penalized','playing','finished', 'aborted', 'preempted'],
                              default_outcome='aborted',
                              # input_keys=['sm_input'],
                              # output_keys=['sm_output'],
@@ -97,13 +100,14 @@ def main():
                     smach_ros.SimpleActionState('motion_planning/transition',
                         TransitionAction,
                         result_cb=transition_cb,
-                        outcomes = ['initial','ready','set','penalized','playing','finished','aborted', 'preempted'],
+                        outcomes = ['stand_up','initial','ready','set','penalized','playing','finished','aborted', 'preempted'],
                         goal = TransitionGoal(state=INITIAL),
                         output_keys=['outcome']))
 
                 smach.Concurrence.add('INITIAL_SM', InitialSM())
 
-            smach.StateMachine.add('INITIAL_CC', initial_cc)
+            smach.StateMachine.add('INITIAL_CC', initial_cc,
+                                   transitions={'stand_up':'INITIAL_CC'})
 
         # Initial state machine description
         smach.StateMachine.add('INITIAL', initial_state_sm,
@@ -140,13 +144,14 @@ def main():
                     smach_ros.SimpleActionState('motion_planning/transition',
                         TransitionAction,
                         result_cb=transition_cb,
-                        outcomes = ['initial','ready','set','penalized','playing','finished','aborted'],
+                        outcomes = ['stand_up','initial','ready','set','penalized','playing','finished','aborted'],
                         goal = TransitionGoal(state=READY),
                         output_keys=['outcome']))
 
                 smach.Concurrence.add('READY_SM', ReadySM())
 
-            smach.StateMachine.add('READY_CC', ready_cc)
+            smach.StateMachine.add('READY_CC', ready_cc,
+                                   transitions={'stand_up':'READY_CC'})
 
         # Ready state machine description
         smach.StateMachine.add('READY', ready_state_sm,
@@ -183,13 +188,14 @@ def main():
                     smach_ros.SimpleActionState('motion_planning/transition',
                         TransitionAction,
                         result_cb=transition_cb,
-                        outcomes = ['initial','ready','set','penalized','playing','finished','aborted'],
+                        outcomes = ['stand_up','initial','ready','set','penalized','playing','finished','aborted'],
                         goal = TransitionGoal(state=SET),
                         output_keys=['outcome']))
 
                 smach.Concurrence.add('SET_SM', SetSM())
 
-            smach.StateMachine.add('SET_CC', set_cc)
+            smach.StateMachine.add('SET_CC', set_cc,
+                                   transitions={'stand_up':'SET_CC'})
 
         # Set state machine description
         smach.StateMachine.add('SET', set_state_sm,
@@ -226,13 +232,14 @@ def main():
                     smach_ros.SimpleActionState('motion_planning/transition',
                         TransitionAction,
                         result_cb=transition_cb,
-                        outcomes = ['initial','ready','set','penalized','playing','finished','aborted'],
+                        outcomes = ['stand_up','initial','ready','set','penalized','playing','finished','aborted'],
                         goal = TransitionGoal(state=PENALIZED),
                         output_keys=['outcome']))
 
                 smach.Concurrence.add('PENALIZED_SM', PenalizedSM())
 
-            smach.StateMachine.add('PENALIZED_CC', penalized_cc)
+            smach.StateMachine.add('PENALIZED_CC', penalized_cc,
+                                   transitions={'stand_up':'PENALIZED_CC'})
 
         # Penalized state machine description
         smach.StateMachine.add('PENALIZED', penalized_state_sm,
@@ -269,13 +276,14 @@ def main():
                     smach_ros.SimpleActionState('motion_planning/transition',
                         TransitionAction,
                         result_cb=transition_cb,
-                        outcomes = ['initial','ready','set','penalized','playing','finished','aborted'],
+                        outcomes = ['stand_up','initial','ready','set','penalized','playing','finished','aborted'],
                         goal = TransitionGoal(state=FINISHED),
                         output_keys=['outcome']))
 
                 smach.Concurrence.add('FINISHED_SM', FinishedSM())
 
-            smach.StateMachine.add('FINISHED_CC', finished_cc)
+            smach.StateMachine.add('FINISHED_CC', finished_cc,
+                                   transitions={'stand_up':'FINISHED_CC'})
 
         # Finished state machine description
         smach.StateMachine.add('FINISHED', finished_state_sm,
@@ -311,13 +319,14 @@ def main():
                     smach_ros.SimpleActionState('motion_planning/transition',
                         TransitionAction,
                         result_cb=transition_cb,
-                        outcomes = ['initial','ready','set','penalized','playing','finished','aborted', 'preempted'],
+                        outcomes = ['stand_up','initial','ready','set','penalized','playing','finished','aborted', 'preempted'],
                         goal = TransitionGoal(state=PLAYING),
                         output_keys=['outcome']))
 
                 smach.Concurrence.add('PLAYING_SM', PlayingSM())
 
-            smach.StateMachine.add('PLAY_CC', play_cc)
+            smach.StateMachine.add('PLAY_CC', play_cc,
+                                   transitions={'stand_up':'PLAY_CC'})
 
         # Playing state machine description
         smach.StateMachine.add('PLAYING', play_state_sm,
