@@ -131,7 +131,7 @@ def main():
                    {'succeeded':'READY_CC'})
 
             # creating the concurrence state machine
-            ready_cc = smach.Concurrence(outcomes=['initial','ready','set','penalized','playing','finished', 'aborted'],
+            ready_cc = smach.Concurrence(outcomes=['stand_up','initial','ready','set','penalized','playing','finished', 'aborted'],
                              default_outcome='aborted',
                              # input_keys=['sm_input'],
                              # output_keys=['sm_output'],
@@ -175,7 +175,7 @@ def main():
                    {'succeeded':'SET_CC'})
 
             # creating the concurrence state machine
-            set_cc = smach.Concurrence(outcomes=['initial','ready','set','penalized','playing','finished', 'aborted'],
+            set_cc = smach.Concurrence(outcomes=['stand_up','initial','ready','set','penalized','playing','finished', 'aborted'],
                              default_outcome='aborted',
                              # input_keys=['sm_input'],
                              # output_keys=['sm_output'],
@@ -219,7 +219,7 @@ def main():
                    {'succeeded':'PENALIZED_CC'})
 
             # creating the concurrence state machine
-            penalized_cc = smach.Concurrence(outcomes=['initial','ready','set','penalized','playing','finished', 'aborted'],
+            penalized_cc = smach.Concurrence(outcomes=['stand_up','initial','ready','set','penalized','playing','finished', 'aborted'],
                              default_outcome='aborted',
                              # input_keys=['sm_input'],
                              # output_keys=['sm_output'],
@@ -263,7 +263,7 @@ def main():
                    {'succeeded':'FINISHED_CC'})
 
             # creating the concurrence state machine
-            finished_cc = smach.Concurrence(outcomes=['initial','ready','set','penalized','playing','finished','aborted'],
+            finished_cc = smach.Concurrence(outcomes=['stand_up','initial','ready','set','penalized','playing','finished','aborted'],
                              default_outcome='aborted',
                              # input_keys=['sm_input'],
                              # output_keys=['sm_output'],
@@ -306,7 +306,7 @@ def main():
                    {'succeeded':'PLAY_CC'})
 
             # creating the concurrence state machine
-            play_cc = smach.Concurrence(outcomes=['initial','ready','set','penalized','playing','finished', 'aborted', 'preempted'],
+            play_cc = smach.Concurrence(outcomes=['stand_up','initial','ready','set','penalized','playing','finished', 'aborted', 'preempted'],
                              default_outcome='aborted',
                              # input_keys=['sm_input'],
                              # output_keys=['sm_output'],

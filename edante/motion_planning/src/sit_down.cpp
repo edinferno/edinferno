@@ -39,7 +39,7 @@ SitDownAction::~SitDownAction(void) {
 void SitDownAction::init() {
   is_awake_ = false;
   set_posture_srv_.request.posture_name = "Crouch";
-  set_posture_srv_.request.speed = 0.5f;
+  set_posture_srv_.request.speed = 1.0f;
 }
 
 void SitDownAction::goalCB() {
