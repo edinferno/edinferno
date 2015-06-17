@@ -5,6 +5,9 @@
 * @Desc:      ROS wrapper for Nao's LED class
 */
 
+#ifndef LED_HPP
+#define LED_HPP
+
 #include <ros/ros.h>
 
 #include <alproxies/alledsproxy.h>
@@ -16,9 +19,6 @@
 #include <signalling_msgs/GetNames.h>
 #include <signalling_msgs/RotateEyes.h>
 #include <signalling_msgs/SetIntensity.h>
-
-#ifndef LED_HPP
-#define LED_HPP
 
 class Led {
  public:
@@ -58,4 +58,4 @@ class Led {
   AL::ALLedsProxy* leds_;
 };
 
-#endif /* LED_H_ */
+#endif /* LED_HPP_ */
