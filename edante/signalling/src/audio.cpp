@@ -10,8 +10,10 @@
 Audio::Audio(ros::NodeHandle* nh) {
   nh_ = nh;
   audio_ = new AL::ALAudioDeviceProxy("127.0.0.1", 9559);
+  speech_ = new AL::ALTextToSpeechProxy("127.0.0.1", 9559);
   ROS_INFO_STREAM("Setting up Audio signalling services");
   srv_play_sine_ = nh_->advertiseService("play_sine", &Audio::playSine, this);
+  srv_say_text_ = nh_->advertiseService("say_text", &Audio::sayText, this);
 }
 
 Audio::~Audio() {
@@ -20,5 +22,11 @@ Audio::~Audio() {
 bool Audio::playSine(signalling_msgs::PlaySine::Request& req,
                      signalling_msgs::PlaySine::Response& res) {
   audio_->playSine(req.frequency, req.gain, req.pan, req.duration);
+  return true;
+}
+
+bool Audio::sayText(signalling_msgs::SayText::Request& req,
+                    signalling_msgs::SayText::Response& res) {
+  speech_->say(req.text);
   return true;
 }
