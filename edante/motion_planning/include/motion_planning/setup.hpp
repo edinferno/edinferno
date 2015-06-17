@@ -21,7 +21,7 @@
 #include <std_msgs/Bool.h>
 #include <motion_planning_msgs/SetupAction.h>
 #include <signalling_msgs/FadeRGB.h>
-// #include <signalling_msgs/signalling_values.hpp>
+#include <signalling_msgs/signalling_values.hpp>
 
 class SetupAction {
  protected:
@@ -51,21 +51,6 @@ class SetupAction {
 
   // Variables
   uint8_t state_;
-
-  // Constants
-  static const int BLACK = 0x000000;
-  static const int BLUE = 0x0000FF;
-  static const int GREEN = 0x00FF00;
-  static const int YELLOW = 0xFFFF00;
-  static const int RED = 0xFF0000;
-  static const int WHITE = 0xFFFFFF;
-
-  static const uint INITIAL = 0;
-  static const uint READY = 1;
-  static const uint SET = 2;
-  static const uint PENALIZED = 3;
-  static const uint PLAYING = 4;
-  static const uint FINISHED = 5;
 
   // ROS
   signalling_msgs::FadeRGB reset_rgb_srv_;
