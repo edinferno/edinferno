@@ -17,8 +17,11 @@
 #include <navigation_msgs/SearchForBallAction.h>
 #include <vision_msgs/BallDetection.h>
 #include <camera_msgs/SetActiveCamera.h>
+#include <motion_planning_msgs/MonitorMode.h>
 // Navigation values
 #include "navigation/navigation_values.hpp"
+// Signalling values
+#include "signalling_msgs/signalling_values.hpp"
 
 class SearchForBallAction {
  protected:
@@ -86,6 +89,10 @@ class SearchForBallAction {
   ros::ServiceClient move_is_active_client_;
   ros::ServiceClient kill_task_client_;
   ros::ServiceClient camera_client_;
+  ros::ServiceClient monitor_client_;
+  motion_planning_msgs::MonitorMode bottom_camera_monitor_srv_;
+  motion_planning_msgs::MonitorMode top_camera_monitor_srv_;
+  motion_planning_msgs::MonitorMode ball_seen_monitor_srv_;
 };
 
 

@@ -27,6 +27,9 @@ WalkToBallAction::WalkToBallAction(ros::NodeHandle nh, std::string name) :
   stop_head_track_client_ = nh_.serviceClient<vision_msgs::StopHeadTracking>(
                               "/vision/stop_head_tracking", true);
   stop_head_track_client_.waitForExistence();
+  monitor_client_ = nh_.serviceClient<motion_planning_msgs::MonitorMode>(
+                      "/motion_planning/monitor_mode", true);
+  monitor_client_.waitForExistence();
   start_position_.request.use_sensors = true;
   get_pose_srv_.request.use_sensors = true;
   this->init();
@@ -45,6 +48,7 @@ void WalkToBallAction::init() {
   theta_scalar_ = 1.0f;
   dist_thresh_ = 0.05f;
   theta_thresh_ = 0.2f;
+  ball_lost_monitor_srv_.request.monitor_mode = MonitorMode::BALL_LOST;
 }
 
 void WalkToBallAction::ballCB(const vision_msgs::BallDetection::ConstPtr& msg) {
@@ -131,7 +135,10 @@ void WalkToBallAction::executeCB() {
   } else {
     result_.success = false;
     ROS_INFO("%s: Failed!", action_name_.c_str());
-    if (!ball_found_) {ROS_INFO("Ball Lost!");}
+    if (!ball_found_) {
+      monitor_client_.call(ball_lost_monitor_srv_);
+      ROS_INFO("Ball Lost!");
+    }
     as_.setAborted(result_);
   }
 

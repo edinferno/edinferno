@@ -27,6 +27,9 @@ SearchForBallAction::SearchForBallAction(ros::NodeHandle nh, std::string name) :
   kill_task_client_ = nh_.serviceClient<motion_msgs::TaskResource>(
                         "/motion/kill_tasks_using_resources", true);
   kill_task_client_.waitForExistence();
+  monitor_client_ = nh_.serviceClient<motion_planning_msgs::MonitorMode>(
+                      "/motion_planning/monitor_mode", true);
+  monitor_client_.waitForExistence();
   this->init();
   ROS_INFO("Starting SearchForBall server");
   as_.start();
@@ -105,6 +108,11 @@ void SearchForBallAction::init() {
   // Prepare camera srvs
   bottom_camera_srv_.request.active_camera = 1;
   top_camera_srv_.request.active_camera = 0;
+
+  // Prepare monitor srvs
+  bottom_camera_monitor_srv_.request.monitor_mode = MonitorMode::BOTTOM_CAMERA;
+  top_camera_monitor_srv_.request.monitor_mode = MonitorMode::TOP_CAMERA;
+  ball_seen_monitor_srv_.request.monitor_mode = MonitorMode::BALL_SEEN;
 }
 
 void SearchForBallAction::ballCB(const vision_msgs::BallDetection::ConstPtr&
@@ -127,12 +135,14 @@ void SearchForBallAction::preemptCB() {
 
 void SearchForBallAction::scan_right() {
   camera_client_.call(bottom_camera_srv_);
+  monitor_client_.call(bottom_camera_monitor_srv_);
   scan_client_.call(look_left_srv_);
   scan_client_.call(scan_right_srv_);
 }
 
 void SearchForBallAction::scan_left() {
   camera_client_.call(top_camera_srv_);
+  monitor_client_.call(top_camera_monitor_srv_);
   scan_client_.call(scan_left_srv_);
 }
 
@@ -177,6 +187,7 @@ void SearchForBallAction::executeCB() {
     // Check if we have found the ball
     if (ball_found_) {
       ROS_INFO("%s: Ball Found!", action_name_.c_str());
+      monitor_client_.call(ball_seen_monitor_srv_);
       success = true;
       going_ = false;
     }

@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   motion_msgs
   navigation_msgs
+  signalling_msgs
   vision_msgs
   std_msgs
 )
