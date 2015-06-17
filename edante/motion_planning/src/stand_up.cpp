@@ -42,7 +42,7 @@ void StandUpAction::init() {
   is_awake_ = false;
   has_fallen_msg_.data = false;
   set_posture_srv_.request.posture_name = "StandInit";
-  set_posture_srv_.request.speed = 0.5f;
+  set_posture_srv_.request.speed = 1.0f;
 }
 
 void StandUpAction::goalCB() {
