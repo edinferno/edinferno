@@ -18,7 +18,7 @@
 
 class Audio {
  public:
-  explicit Audio(ros::NodeHandle* nh);
+  Audio(ros::NodeHandle* nh, std::string naoqi_ip, int naoqi_port);
   ~Audio();
 
   bool playSine(signalling_msgs::PlaySine::Request& req,

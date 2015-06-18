@@ -19,8 +19,13 @@ int main(int argc, char* argv[]) {
   ros::init(argc, argv, "signalling");
   ros::NodeHandle nh("signalling");
 
-  Led LedTest(&nh);
-  Audio AudioTest(&nh);
+  std::string naoqi_ip_;
+  int naoqi_port_;
+  ros::param::param<std::string>("/naoqi_ip", naoqi_ip_, "127.0.0.1");
+  ros::param::param("/naoqi_port", naoqi_port_, 9559);
+
+  Led LedTest(&nh, naoqi_ip_, naoqi_port_);
+  Audio AudioTest(&nh, naoqi_ip_, naoqi_port_);
 
   ros::Rate r(10);
 

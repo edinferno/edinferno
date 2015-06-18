@@ -22,7 +22,7 @@
 
 class Led {
  public:
-  explicit Led(ros::NodeHandle* nh);
+  Led(ros::NodeHandle* nh, std::string naoqi_ip, int naoqi_port);
   ~Led();
 
   bool createLedGroup(signalling_msgs::CreateLedGroup::Request& req,

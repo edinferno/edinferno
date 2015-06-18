@@ -7,10 +7,10 @@
 
 #include "signalling/audio.hpp"
 
-Audio::Audio(ros::NodeHandle* nh) {
+Audio::Audio(ros::NodeHandle* nh, std::string naoqi_ip, int naoqi_port) {
   nh_ = nh;
-  audio_ = new AL::ALAudioDeviceProxy("127.0.0.1", 9559);
-  speech_ = new AL::ALTextToSpeechProxy("127.0.0.1", 9559);
+  audio_ = new AL::ALAudioDeviceProxy(naoqi_ip, naoqi_port);
+  speech_ = new AL::ALTextToSpeechProxy(naoqi_ip, naoqi_port);
   ROS_INFO_STREAM("Setting up Audio signalling services");
   srv_play_sine_ = nh_->advertiseService("play_sine", &Audio::playSine, this);
   srv_say_text_ = nh_->advertiseService("say_text", &Audio::sayText, this);
