@@ -7,9 +7,9 @@
 
 #include "signalling/led.hpp"
 
-Led::Led(ros::NodeHandle* nh) {
+Led::Led(ros::NodeHandle* nh, std::string naoqi_ip, int naoqi_port) {
   nh_ = nh;
-  leds_ = new AL::ALLedsProxy("127.0.0.1", 9559);
+  leds_ = new AL::ALLedsProxy(naoqi_ip, naoqi_port);
   ROS_INFO_STREAM("Setting up LED signalling services");
   srv_create_group_ = nh_->advertiseService("create_led_group",
                                             &Led::createLedGroup, this);

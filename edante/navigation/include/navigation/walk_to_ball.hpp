@@ -14,6 +14,9 @@
 #include <vision_msgs/BallDetection.h>
 #include <vision_msgs/StartHeadTracking.h>
 #include <vision_msgs/StopHeadTracking.h>
+#include <motion_planning_msgs/MonitorMode.h>
+// Signalling values
+#include "signalling_msgs/signalling_values.hpp"
 
 class WalkToBallAction {
  protected:
@@ -65,6 +68,8 @@ class WalkToBallAction {
   ros::ServiceClient start_head_track_client_;
   vision_msgs::StartHeadTracking stop_head_track_srv_;
   ros::ServiceClient stop_head_track_client_;
+  ros::ServiceClient monitor_client_;
+  motion_planning_msgs::MonitorMode ball_lost_monitor_srv_;
 };
 
 

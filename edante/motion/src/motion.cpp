@@ -24,9 +24,11 @@
 #include <motion/robot_posture.hpp>
 
 
-boost::shared_ptr<AL::ALBroker> naoqiBroker(std::string brokerName, int pt) {
-  const std::string parentBrokerIP = "127.0.0.1";
-  int parentBrokerPort = 9559;
+boost::shared_ptr<AL::ALBroker> naoqiBroker(std::string naoqi_ip,
+                                            int naoqi_port,
+                                            std::string brokerName, int pt) {
+  const std::string parentBrokerIP = naoqi_ip;
+  int parentBrokerPort = naoqi_port;
   int brokerPort = pt;
   const std::string brokerIp   = "0.0.0.0";
 
@@ -51,57 +53,62 @@ int main(int argc, char* argv[]) {
   ros::NodeHandle nh("motion");
   setlocale(LC_NUMERIC, "C");
 
+  std::string naoqi_ip_;
+  int naoqi_port_;
+  ros::param::param<std::string>("/naoqi_ip", naoqi_ip_, "127.0.0.1");
+  ros::param::param("/naoqi_port", naoqi_port_, 9559);
+
   boost::shared_ptr<AL::ALBroker> StiffnessControlBroker =
-    naoqiBroker("StiffnessControl", 55000);
+    naoqiBroker(naoqi_ip_, naoqi_port_, "StiffnessControl", 55000);
   boost::shared_ptr<StiffnessControl> StiffnessControlTest =
     AL::ALModule::createModule<StiffnessControl>(StiffnessControlBroker,
                                                  "StiffnessControl");
   StiffnessControlTest->rosSetup(&nh);
 
   boost::shared_ptr<AL::ALBroker> JointControlBroker =
-    naoqiBroker("JointControl", 55100);
+    naoqiBroker(naoqi_ip_, naoqi_port_, "JointControl", 55100);
   boost::shared_ptr<JointControl> JointControlTest =
     AL::ALModule::createModule<JointControl>(JointControlBroker,
                                              "JointControl");
   JointControlTest->rosSetup(&nh);
 
   boost::shared_ptr<AL::ALBroker> LocomotionBroker =
-    naoqiBroker("LocomotionControl", 55200);
+    naoqiBroker(naoqi_ip_, naoqi_port_, "LocomotionControl", 55200);
   boost::shared_ptr<LocomotionControl> LocomotionControlTest =
     AL::ALModule::createModule<LocomotionControl>(LocomotionBroker,
                                                   "LocomotionControl");
   LocomotionControlTest->rosSetup(&nh);
 
   boost::shared_ptr<AL::ALBroker> CartesianControlBroker =
-    naoqiBroker("CartesianControl", 55300);
+    naoqiBroker(naoqi_ip_, naoqi_port_, "CartesianControl", 55300);
   boost::shared_ptr<CartesianControl> CartesianControlTest =
     AL::ALModule::createModule<CartesianControl>(CartesianControlBroker,
                                                  "CartesianControl");
   CartesianControlTest->rosSetup(&nh);
 
   boost::shared_ptr<AL::ALBroker> BodyBalancerBroker =
-    naoqiBroker("BodyBalancer", 55400);
+    naoqiBroker(naoqi_ip_, naoqi_port_, "BodyBalancer", 55400);
   boost::shared_ptr<BodyBalancer> BodyBalancerTest =
     AL::ALModule::createModule<BodyBalancer>(BodyBalancerBroker,
                                              "BodyBalancer");
   BodyBalancerTest->rosSetup(&nh);
 
   boost::shared_ptr<AL::ALBroker> FallManagerBroker =
-    naoqiBroker("FallManager", 55500);
+    naoqiBroker(naoqi_ip_, naoqi_port_, "FallManager", 55500);
   boost::shared_ptr<FallManager> FallManagerTest =
     AL::ALModule::createModule<FallManager>(FallManagerBroker,
                                             "FallManager");
   FallManagerTest->rosSetup(&nh);
 
   boost::shared_ptr<AL::ALBroker> MotionTaskBroker =
-    naoqiBroker("MotionTask", 55600);
+    naoqiBroker(naoqi_ip_, naoqi_port_, "MotionTask", 55600);
   boost::shared_ptr<MotionTask> MotionTaskTest =
     AL::ALModule::createModule<MotionTask>(MotionTaskBroker,
                                            "MotionTask");
   MotionTaskTest->rosSetup(&nh);
 
   boost::shared_ptr<AL::ALBroker> RobotPostureBroker =
-    naoqiBroker("RobotPosture", 55700);
+    naoqiBroker(naoqi_ip_, naoqi_port_, "RobotPosture", 55700);
   boost::shared_ptr<RobotPosture> RobotPostureTest =
     AL::ALModule::createModule<RobotPosture>(RobotPostureBroker,
                                              "RobotPosture");

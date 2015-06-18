@@ -1,0 +1,9 @@
+# Monitor modes
+# 0		Disable
+# 1		Bottom Camera
+# 2		Top Camera
+# 3		Ball Seen
+# 4		Ball Lost
+#
+uint8 monitor_mode
+---

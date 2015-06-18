@@ -5,6 +5,9 @@
 * @Desc:      ROS wrapper for Nao's LED class
 */
 
+#ifndef LED_HPP
+#define LED_HPP
+
 #include <ros/ros.h>
 
 #include <alproxies/alledsproxy.h>
@@ -17,12 +20,9 @@
 #include <signalling_msgs/RotateEyes.h>
 #include <signalling_msgs/SetIntensity.h>
 
-#ifndef LED_HPP
-#define LED_HPP
-
 class Led {
  public:
-  explicit Led(ros::NodeHandle* nh);
+  Led(ros::NodeHandle* nh, std::string naoqi_ip, int naoqi_port);
   ~Led();
 
   bool createLedGroup(signalling_msgs::CreateLedGroup::Request& req,
@@ -58,4 +58,4 @@ class Led {
   AL::ALLedsProxy* leds_;
 };
 
-#endif /* LED_H_ */
+#endif /* LED_HPP_ */

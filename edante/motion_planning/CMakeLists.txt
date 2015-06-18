@@ -113,7 +113,8 @@ add_executable(motion_planning
  src/stand_up.cpp
  src/sit_down.cpp
  src/sit_rest.cpp
- src/transition.cpp)
+ src/transition.cpp
+ src/monitor.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes

@@ -6,6 +6,9 @@
  * @copyright (MIT) 2015 Edinferno
  */
 
+#ifndef SIGNALLING_VALUES_HPP
+#define SIGNALLING_VALUES_HPP
+
 namespace Colors {
 static const int BLACK = 0x000000;
 static const int BLUE = 0x0000FF;
@@ -13,12 +16,6 @@ static const int GREEN = 0x00FF00;
 static const int YELLOW = 0xFFFF00;
 static const int RED = 0xFF0000;
 static const int WHITE = 0xFFFFFF;
-}
-namespace DebugState {
-enum Debug_State {
-  BALL_SEEN = 0,
-  BALL_NOT_SEEN
-};
 }
 namespace GameState {
 enum Game_State {
@@ -30,3 +27,14 @@ enum Game_State {
   FINISHED = 5
 };
 }
+namespace MonitorMode {
+enum Monitor_Mode {
+  DISABLE = 0,
+  BOTTOM_CAMERA = 1,
+  TOP_CAMERA = 2,
+  BALL_SEEN = 3,
+  BALL_LOST = 4
+};
+}
+
+#endif /* SIGNALLING_VALUES_HPP_ */

@@ -15,9 +15,11 @@
 #include "sensing/power.hpp"
 #include "sensing/fsr.hpp"
 
-boost::shared_ptr<AL::ALBroker> naoqiBroker(std::string brokerName, int pt) {
-  const std::string parentBrokerIP = "127.0.0.1";
-  int parentBrokerPort = 9559;
+boost::shared_ptr<AL::ALBroker> naoqiBroker(std::string naoqi_ip,
+                                            int naoqi_port,
+                                            std::string brokerName, int pt) {
+  const std::string parentBrokerIP = naoqi_ip;
+  int parentBrokerPort = naoqi_port;
   int brokerPort = pt;
   const std::string brokerIp   = "0.0.0.0";
 
@@ -40,25 +42,37 @@ boost::shared_ptr<AL::ALBroker> naoqiBroker(std::string brokerName, int pt) {
 int main(int argc, char* argv[]) {
   ros::init(argc, argv, "sensing");
   ros::NodeHandle nh("sensing");
-
   setlocale(LC_NUMERIC, "C");
 
-  boost::shared_ptr<AL::ALBroker> SonarBroker = naoqiBroker("Sonar", 54200);
+  std::string naoqi_ip_;
+  int naoqi_port_;
+  ros::param::param<std::string>("/naoqi_ip", naoqi_ip_, "127.0.0.1");
+  ros::param::param("/naoqi_port", naoqi_port_, 9559);
+
+  boost::shared_ptr<AL::ALBroker> SonarBroker = naoqiBroker(naoqi_ip_,
+                                                            naoqi_port_,
+                                                            "Sonar", 54200);
   boost::shared_ptr<Sonar> SonarTest =
     AL::ALModule::createModule<Sonar>(SonarBroker, "Sonar");
   SonarTest->rosSetup(&nh);
 
-  boost::shared_ptr<AL::ALBroker> TouchBroker = naoqiBroker("Touch", 54400);
+  boost::shared_ptr<AL::ALBroker> TouchBroker = naoqiBroker(naoqi_ip_,
+                                                            naoqi_port_,
+                                                            "Touch", 54400);
   boost::shared_ptr<Touch> TouchTest =
     AL::ALModule::createModule<Touch>(TouchBroker, "Touch");
   TouchTest->rosSetup(&nh);
 
-  boost::shared_ptr<AL::ALBroker> PowerBroker = naoqiBroker("Power", 54600);
+  boost::shared_ptr<AL::ALBroker> PowerBroker = naoqiBroker(naoqi_ip_,
+                                                            naoqi_port_,
+                                                            "Power", 54600);
   boost::shared_ptr<Power> PowerTest =
     AL::ALModule::createModule<Power>(PowerBroker, "Power");
   PowerTest->rosSetup(&nh);
 
-  boost::shared_ptr<AL::ALBroker> FsrBroker = naoqiBroker("Fsr", 54800);
+  boost::shared_ptr<AL::ALBroker> FsrBroker = naoqiBroker(naoqi_ip_, naoqi_port_,
+
+                                                          "Fsr", 54800);
   boost::shared_ptr<Fsr> FsrTest =
     AL::ALModule::createModule<Fsr>(FsrBroker, "Fsr");
   FsrTest->rosSetup(&nh);

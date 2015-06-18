@@ -61,6 +61,7 @@ add_service_files(
   SetIntensity.srv
   # Audio
   PlaySine.srv
+  SayText.srv
 )
 
 ## Generate actions in the 'action' folder
