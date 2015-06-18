@@ -16,6 +16,7 @@
 
 // ROS
 #include <ros/ros.h>
+#include <image_geometry/pinhole_camera_model.h>
 
 // Messages
 #include <sensor_msgs/CameraInfo.h>
@@ -28,11 +29,14 @@ class LineDetector {
  public:
   explicit LineDetector(ros::NodeHandle& nh);
   void ProcessImage(const cv::Mat& image,
-                    const sensor_msgs::CameraInfo& cam_info);
+                    const image_geometry::PinholeCameraModel& cam_model);
   void ThresholdImage(cv::Mat& image);
+
+  std::vector<cv::Vec4i> lines_;
+
  private:
   cv::Mat image_;
-  std::vector<cv::Vec4i> lines_;
+
   cv::Ptr<cv::LineSegmentDetector> lsd_;
   // Information about the detected lines
   vision_msgs::LineDetections line_detections_;

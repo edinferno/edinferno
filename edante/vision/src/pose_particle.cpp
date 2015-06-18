@@ -21,22 +21,24 @@ void PoseParticle::Project(FieldModel& field_model,
                            std::vector<float> cam_transform,
                            std::vector<cv::Point2i>& lines,
                            std::vector<cv::Point2i>& field) {
+  Point2i pt;
   for (size_t i = 0; i < field_model.lines.size(); ++i) {
-    lines.push_back(ProjectPoint(field_model.lines[i],
-                                 cam_model,
-                                 cam_transform));
+    if (ProjectPoint(field_model.lines[i], cam_model, cam_transform, pt)) {
+      lines.push_back(pt);
+    }
   }
   for (size_t i = 0; i < field_model.field.size(); ++i) {
-    lines.push_back(ProjectPoint(field_model.field[i],
-                                 cam_model,
-                                 cam_transform));
+    if (ProjectPoint(field_model.field[i], cam_model, cam_transform, pt)) {
+      field.push_back(pt);
+    }
   }
 }
 
-cv::Point2i PoseParticle::ProjectPoint(
+bool PoseParticle::ProjectPoint(
   cv::Point3d pt,
   const image_geometry::PinholeCameraModel& cam_model,
-  std::vector<float> cam_transform) {
+  std::vector<float> cam_transform,
+  cv::Point2i& proj_pt) {
   // Get the field point in the robot frame given the particle pose.
   Point3d trans_pt(0, 0, 0);
   trans_pt.x = pt.x - xy_.x;
@@ -61,8 +63,12 @@ cv::Point2i PoseParticle::ProjectPoint(
   optical_frame.y = -cam_frame.z;
   optical_frame.z = cam_frame.x;
 
+  if (optical_frame.z < 0) return false;
+
   // Project the point back onto the image
   Point2d image_frame = cam_model.project3dToPixel(optical_frame);
   image_frame = cam_model.unrectifyPoint(image_frame);
-  return Point2i(image_frame.x, image_frame.y);
+  proj_pt.x = image_frame.x;
+  proj_pt.y = image_frame.y;
+  return true;
 }

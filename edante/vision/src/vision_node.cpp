@@ -7,6 +7,9 @@
 */
 #include "vision/vision_node.hpp"
 
+// Eigen
+#include <Eigen/Dense>
+
 // ROS
 #include <image_geometry/pinhole_camera_model.h>
 
@@ -15,8 +18,9 @@
 
 #include "vision/pose_particle.hpp"
 
-// TODO(svepe): Remove the include
+// TODO(svepe): Remove the includes
 #include "vision_msgs/ProjectedModel.h"
+#include "sparseicp/sicp.hpp"
 
 using std::vector;
 
@@ -74,7 +78,6 @@ void VisionNode::Spin() {
   ros::Rate rate(30);
   while (ros::ok()) {
     if (ReadFromSharedMemory(image, cam_info, transform, head_angles)) {
-
       // Update the camera model
       cam_model.fromCameraInfo(cam_info);
 
@@ -92,22 +95,58 @@ void VisionNode::Spin() {
         proj_model.field[i].x = field[i].x;
         proj_model.field[i].y = field[i].y;
       }
-      model_pub.publish(proj_model);
-
       // Calculate the horizon level
-      // horizon_estimator_.HorizonLevel(5,  // 5m
-      //                                 cam_model,
-      //                                 transform,
-      //                                 head_angles[0],  // yaw
-      //                                 horizon_level);
+      horizon_estimator_.HorizonLevel(5,  // 5m
+                                      cam_model,
+                                      transform,
+                                      head_angles[0],  // yaw
+                                      horizon_level);
 
       // Get a shared cv::Mat from the image message
-      // Mat mat = Mat(image.height, image.width, CV_8UC1, image.data.data());
+      Mat mat = Mat(image.height, image.width, CV_8UC1, image.data.data());
       // ball_detector_.ProcessImage(mat, image.header, cam_model, transform);
       // head_tracker_.Track(ball_detector_.ball(), head_angles[1]);
 
       // Disable line tracking for now
-      // line_detector_.ProcessImage(mat, cam_mode);
+      line_detector_.ProcessImage(mat, cam_model);
+
+      Eigen::Matrix3Xd line_points(3, 3 * line_detector_.lines_.size());
+      for (size_t i = 0; i < line_detector_.lines_.size(); ++i) {
+        line_points(0, 3 * i) = line_detector_.lines_[i][0];
+        line_points(1, 3 * i) = line_detector_.lines_[i][1];
+        line_points(2, 3 * i) = 0;
+
+        line_points(0, 3 * i + 1) = line_detector_.lines_[i][2];
+        line_points(1, 3 * i + 1) = line_detector_.lines_[i][3];
+        line_points(2, 3 * i + 1) = 0;
+
+        line_points(0, 3 * i + 2) = 0.5 * line_points(0, 3 * i + 1) +
+                                    0.5 * line_points(0, 3 * i);
+        line_points(1, 3 * i + 2) = 0.5 * line_points(1, 3 * i + 1) +
+                                    0.5 * line_points(1, 3 * i);
+        line_points(2, 3 * i + 2) = 0;
+
+      }
+      Eigen::Matrix3Xd model_points(3, lines.size());
+      for (size_t i = 0; i < lines.size(); ++i) {
+        model_points(0, i) = lines[i].x;
+        model_points(1, i) = lines[i].y;
+        model_points(2, i) = 0;
+      }
+      if (line_points.cols() != 0) {
+        // source, target
+        ICP::Parameters params;
+        params.max_icp = 10;
+        params.max_outer = 10;
+        params.p = 1;
+        ICP::point_to_point(model_points, line_points, params);
+        for (size_t i = 0; i < lines.size(); ++i) {
+          proj_model.lines[i].x = model_points(0, i);
+          proj_model.lines[i].y = model_points(1, i);
+        }
+      }
+
+      model_pub.publish(proj_model);
     }
     ros::spinOnce();
     rate.sleep();

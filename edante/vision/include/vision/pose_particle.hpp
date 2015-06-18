@@ -29,9 +29,10 @@ class PoseParticle {
                std::vector<cv::Point2i>& lines,
                std::vector<cv::Point2i>& field);
 
-  cv::Point2i ProjectPoint(cv::Point3d pt,
-                           const image_geometry::PinholeCameraModel& cam_model,
-                           std::vector<float> cam_transform);
+  bool ProjectPoint(cv::Point3d pt,
+                    const image_geometry::PinholeCameraModel& cam_model,
+                    std::vector<float> cam_transform,
+                    cv::Point2i& proj_pt);
  private:
   cv::Point2f xy_;
   float theta_;

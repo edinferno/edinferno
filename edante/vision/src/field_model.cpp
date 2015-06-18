@@ -120,33 +120,33 @@ void FieldModel::SampleCircle(cv::Point3d center, double r, double angle_step,
 void FieldModel::SampleField(std::vector<cv::Point3d>& points) {
   // Penalty zones
   points.push_back(Point3d(kFieldLength / 2 - kPenaltyAreaLength / 2, 0, 0));
-  points.push_back(Point3d(-kFieldLength / 2 + kPenaltyAreaLength / 2, 0, 0));
+  // points.push_back(Point3d(-kFieldLength / 2 + kPenaltyAreaLength / 2, 0, 0));
 
-  // Above penalty zones
-  points.push_back(Point3d(kFieldLength / 2 - kPenaltyAreaLength / 2,
-                           kFieldWidth / 4, 0));
-  points.push_back(Point3d(-kFieldLength / 2 + kPenaltyAreaLength / 2,
-                           kFieldWidth / 4, 0));
+  // // Above penalty zones
+  // points.push_back(Point3d(kFieldLength / 2 - kPenaltyAreaLength / 2,
+  //                          kFieldWidth / 4, 0));
+  // points.push_back(Point3d(-kFieldLength / 2 + kPenaltyAreaLength / 2,
+  //                          kFieldWidth / 4, 0));
 
-  // Below penalty zones
-  points.push_back(Point3d(kFieldLength / 2 - kPenaltyAreaLength / 2,
-                           -kFieldWidth / 4, 0));
-  points.push_back(Point3d(-kFieldLength / 2 + kPenaltyAreaLength / 2,
-                           -kFieldWidth / 4, 0));
+  // // Below penalty zones
+  // points.push_back(Point3d(kFieldLength / 2 - kPenaltyAreaLength / 2,
+  //                          -kFieldWidth / 4, 0));
+  // points.push_back(Point3d(-kFieldLength / 2 + kPenaltyAreaLength / 2,
+  //                          -kFieldWidth / 4, 0));
 
-  // Field half center
-  points.push_back(Point3d(kFieldLength / 4, 0, 0));
-  points.push_back(Point3d(-kFieldLength / 4, 0, 0));
+  // // Field half center
+  // points.push_back(Point3d(kFieldLength / 4, 0, 0));
+  // points.push_back(Point3d(-kFieldLength / 4, 0, 0));
 
-  // Above field half center
-  points.push_back(Point3d(kFieldLength / 4,
-                           kFieldWidth / 4, 0));
-  points.push_back(Point3d(-kFieldLength / 4,
-                           kFieldWidth / 4, 0));
+  // // Above field half center
+  // points.push_back(Point3d(kFieldLength / 4,
+  //                          kFieldWidth / 4, 0));
+  // points.push_back(Point3d(-kFieldLength / 4,
+  //                          kFieldWidth / 4, 0));
 
-  // Below field half center
-  points.push_back(Point3d(kFieldLength / 4,
-                           -kFieldWidth / 4, 0));
-  points.push_back(Point3d(-kFieldLength / 4,
-                           -kFieldWidth / 4, 0));
+  // // Below field half center
+  // points.push_back(Point3d(kFieldLength / 4,
+  //                          -kFieldWidth / 4, 0));
+  // points.push_back(Point3d(-kFieldLength / 4,
+  //                          -kFieldWidth / 4, 0));
 }

@@ -51,8 +51,8 @@ class FieldModel {
   static const float kGoalDepth            = 0.5f;   // L
   static const float kGoalBeamWidth        = 0.1f;   // M
 
-  FieldModel(double max_sample_distance = 1.0,
-             double max_sample_angle = M_PI / 3);
+  FieldModel(double max_sample_distance = 0.1,
+             double max_sample_angle = M_PI / 18);
 
   std::vector<cv::Point3d> lines;
   std::vector<cv::Point3d> field;
