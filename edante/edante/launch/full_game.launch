@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<!--
+This launch file starts a series of nodes for the Edante project.
+
+If you receive an error message that contains "Excecute as root"
+then go to the bin folder and execute: sudo setcap cap_net_raw+ep
+or enable the USE_SETCAP flag in the cmake file and recompile again.
+-->
+
+<launch>
+        <param name="naoqi_ip" value="192.168.1.11" />
+        <param name="naoqi_port" type="int" value="9559" />
+        <node name="motion" pkg="motion" type="motion" output="screen">
+        </node>
+
+        <node name="sensing" pkg="sensing" type="sensing" output="screen">
+        </node>
+
+        <node name="signalling" pkg="signalling" type="signalling" output="screen">
+        </node>
+</launch>

@@ -1,0 +1,6 @@
+string effector_name
+int32 space
+float32[] position_change
+float32 fraction_max_speed
+int32 axis_mask
+---

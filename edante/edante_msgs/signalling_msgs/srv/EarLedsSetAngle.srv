@@ -1,0 +1,4 @@
+int32 degrees
+float32 duration
+bool leave_on_at_end
+---

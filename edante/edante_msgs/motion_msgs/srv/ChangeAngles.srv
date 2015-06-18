@@ -1,0 +1,5 @@
+string[] names
+float32[] changes
+float32 fraction_max_speed
+---
+bool res

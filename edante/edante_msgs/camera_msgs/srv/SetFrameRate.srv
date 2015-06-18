@@ -1,0 +1,4 @@
+# The desired FPS betwee 1-30
+uint8 frame_rate
+---
+bool result

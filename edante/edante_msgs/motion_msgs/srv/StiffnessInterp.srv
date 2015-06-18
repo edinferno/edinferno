@@ -1,0 +1,5 @@
+string[] names
+Float32List[] stiffness_lists
+Float32List[] time_lists
+---
+bool res

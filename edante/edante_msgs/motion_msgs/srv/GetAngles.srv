@@ -1,0 +1,4 @@
+string[] names
+bool use_sensors
+---
+float32[] joint_angles
