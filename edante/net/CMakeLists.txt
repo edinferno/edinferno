@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(net)
 
-SET(CUSTOM_CXX_FLAGS "--std=c++11")
+SET(CUSTOM_CXX_FLAGS "--std=c++0x")
 SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${CUSTOM_CXX_FLAGS}")
 
 ## Find catkin macros and libraries
@@ -93,35 +93,41 @@ catkin_package(
 ## Build ##
 ###########
 
+set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -O2")
+
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(include)
 include_directories(
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a cpp library
-# add_library(net
-#   src/${PROJECT_NAME}/net.cpp
-# )
+add_library(net_transceiver
+  src/net_transceiver.cpp
+)
 
 ## Declare a cpp executable
-add_executable(net_receiver src/NetReceiver.cpp src/NetReceiverWrapper.cpp)
-add_executable(net_sender src/NetSender.cpp src/NetSenderWrapper.cpp)
-
+add_executable(test_transceiver test/test_transceiver.cpp)
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 # add_dependencies(net net_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(net_receiver
+target_link_libraries(test_transceiver
+  net_transceiver
   ${catkin_LIBRARIES}
 )
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(net_sender
-  ${catkin_LIBRARIES}
-)
+# target_link_libraries(net_receiver
+#   ${catkin_LIBRARIES}
+# )
+
+## Specify libraries to link a library or executable target against
+# target_link_libraries(net_sender
+#   ${catkin_LIBRARIES}
+# )
 #############
 ## Install ##
 #############

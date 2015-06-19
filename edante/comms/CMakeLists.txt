@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(comms)
 
-SET(CUSTOM_CXX_FLAGS "--std=c++11")
+SET(CUSTOM_CXX_FLAGS "--std=c++0x")
 SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${CUSTOM_CXX_FLAGS}")
 
 ## Find catkin macros and libraries
