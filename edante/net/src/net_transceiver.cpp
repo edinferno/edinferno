@@ -10,23 +10,23 @@
 #include "net/net_transceiver.hpp"
 
 #include <string.h>
-#include <netinet/in.h>
+
+#include <arpa/inet.h>
 
 NetTransceiver::NetTransceiver() {
-  // Game controller socket
-  game_data_sd_ = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+  // Socket option
   int yes = 1;
-  setsockopt(game_data_sd_, SOL_SOCKET, SO_BROADCAST, &yes, sizeof(yes));
-
-  // Set timeout time of 1ms
+  // Set read timeout to 1ms
   struct timeval read_timeout;
   read_timeout.tv_sec = 0;
   read_timeout.tv_usec = 1000 * 1;  // 1 ms
+
+  // Game controller socket
+  game_data_sd_ = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+  setsockopt(game_data_sd_, SOL_SOCKET, SO_BROADCAST, &yes, sizeof(yes));
   setsockopt(game_data_sd_, SOL_SOCKET, SO_RCVTIMEO,
              &read_timeout,
              sizeof(read_timeout));
-
-  // Bind the socket to the corresponding port regardless of the sender IP.
   sockaddr_in game_data_server;
   memset(&game_data_server, 0, sizeof(game_data_server));
   game_data_server.sin_family = AF_INET;
@@ -34,6 +34,34 @@ NetTransceiver::NetTransceiver() {
   game_data_server.sin_addr.s_addr = INADDR_ANY;
   bind(game_data_sd_,
        reinterpret_cast<sockaddr*>(&game_data_server),
+       sizeof(sockaddr));
+
+  // SPL broadcast socket
+  boradcast_spl_sd_ = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+  setsockopt(boradcast_spl_sd_, SOL_SOCKET, SO_BROADCAST, &yes, sizeof(yes));
+  setsockopt(boradcast_spl_sd_, SOL_SOCKET, SO_RCVTIMEO,
+             &read_timeout,
+             sizeof(read_timeout));
+  memset(&broadcast_spl_server_, 0, sizeof(broadcast_spl_server_));
+  broadcast_spl_server_.sin_family = AF_INET;
+  broadcast_spl_server_.sin_port = htons(kTeamBroadcastPort);
+  broadcast_spl_server_.sin_addr.s_addr = inet_addr("255.255.255.255");
+  bind(boradcast_spl_sd_,
+       reinterpret_cast<sockaddr*>(&broadcast_spl_server_),
+       sizeof(sockaddr));
+
+  // Coach broadcast socket
+  boradcast_coach_sd_ = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+  setsockopt(boradcast_coach_sd_, SOL_SOCKET, SO_BROADCAST, &yes, sizeof(yes));
+  setsockopt(boradcast_coach_sd_, SOL_SOCKET, SO_RCVTIMEO,
+             &read_timeout,
+             sizeof(read_timeout));
+  memset(&broadcast_coach_server_, 0, sizeof(broadcast_coach_server_));
+  broadcast_coach_server_.sin_family = AF_INET;
+  broadcast_coach_server_.sin_port = htons(kCoachBroadcastPort);
+  broadcast_coach_server_.sin_addr.s_addr = inet_addr("255.255.255.255");
+  bind(boradcast_coach_sd_,
+       reinterpret_cast<sockaddr*>(&broadcast_coach_server_),
        sizeof(sockaddr));
 }
 
@@ -62,7 +90,7 @@ bool NetTransceiver::ReceiveGameData(
   } while (len > 0);
 
   // If new game controller data was received
-  if (data_available < 0) {
+  if (!data_available) {
     return false;
   }
 
@@ -76,4 +104,48 @@ bool NetTransceiver::ReceiveGameData(
          sizeof(sockaddr));
 
   return true;
+}
+
+bool NetTransceiver::BroadcastSPLStandardMessage(
+  const SPLStandardMessage& msg) {
+  ssize_t len = sendto(boradcast_spl_sd_,
+                       &msg,
+                       sizeof(msg),
+                       0,
+                       reinterpret_cast<sockaddr*>(&broadcast_spl_server_),
+                       sizeof(sockaddr));
+  return (len > 0);
+}
+
+bool NetTransceiver::ReceiveSPLStandardMessage(SPLStandardMessage& msg) {
+  sockaddr_in sender;
+  socklen_t sockaddr_len = sizeof(sockaddr);
+  ssize_t len;
+  bool data_available = false;
+
+  // Read all received messages up to the last one, otherwise
+  // only the first message in the queue (the oldest) will be read.
+  // If the function is called often enough there should always be
+  // only one message in the queue.
+  do {
+    len = recvfrom(boradcast_spl_sd_,
+                   &msg,
+                   sizeof(msg),
+                   0,
+                   reinterpret_cast<sockaddr*>(&sender),
+                   &sockaddr_len);
+    if (len > 0) data_available = true;
+  } while (len > 0);
+
+  return data_available;
+}
+
+bool NetTransceiver::BroadcastSPLCoachMessage(const SPLCoachMessage& msg) {
+  ssize_t len = sendto(boradcast_coach_sd_,
+                       &msg,
+                       sizeof(msg),
+                       0,
+                       reinterpret_cast<sockaddr*>(&broadcast_coach_server_),
+                       sizeof(sockaddr));
+  return (len > 0);
 }
