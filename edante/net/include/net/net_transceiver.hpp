@@ -11,9 +11,9 @@
 
 #include <vector>
 
-#include "net/RoboCupGameControlData.h"
-#include "net/SPLStandardMessage.h"
-#include "net/SPLCoachMessage.h"
+#include "spl_msgs/RoboCupGameControlData.h"
+#include "spl_msgs/SPLStandardMessage.h"
+#include "spl_msgs/SPLCoachMessage.h"
 
 class NetTransceiver {
  public:

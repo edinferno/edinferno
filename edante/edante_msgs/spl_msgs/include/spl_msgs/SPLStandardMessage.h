@@ -23,8 +23,7 @@
 */
 
 
-struct SPLStandardMessage
-{
+struct SPLStandardMessage {
   char header[4];        // "SPL "
   uint8_t version;       // has to be set to SPL_STANDARD_MESSAGE_STRUCT_VERSION
   int8_t playerNum;      // [MANDATORY FIELD] 1-5
@@ -132,10 +131,9 @@ struct SPLStandardMessage
     maxKickDistance(-1),
     currentPositionConfidence(-1),
     currentSideConfidence(-1),
-    numOfDataBytes(0)
-  {
+    numOfDataBytes(0) {
     const char* c = SPL_STANDARD_MESSAGE_STRUCT_HEADER;
-    for(unsigned int i = 0; i < sizeof(header); ++i)
+    for (unsigned int i = 0; i < sizeof(header); ++i)
       header[i] = c[i];
     pose[0] = 0.f;
     pose[1] = 0.f;
@@ -148,17 +146,13 @@ struct SPLStandardMessage
     ball[1] = 0.f;
     ballVel[0] = 0.f;
     ballVel[1] = 0.f;
-    for(int i = 0; i < SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS; ++i)
+    for (int i = 0; i < SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS; ++i)
       suggestion[i] = -1;
   }
 
-  friend std::ostream& operator<<(std::ostream& stream, const SPLStandardMessage& obj);
+  friend std::ostream& operator<<(std::ostream& stream,
+                                  const SPLStandardMessage& obj);
 #endif
 };
-
-#include "comms/SPLStandardMessage.h"
-
-comms::SPLStandardMessage convertToROS(const SPLStandardMessage& msg);
-SPLStandardMessage convertFromROS(const comms::SPLStandardMessage& msg);
 
 #endif // SPLSTANDARDMESSAGE_H

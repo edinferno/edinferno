@@ -22,21 +22,16 @@
 ///    timestamps:
 ///     - the time elapsed since the last synchronization of the clocks of the
 ///       team.
-#ifndef EDANTE_COMMS_M
-#define EDANTE_COMMS_M
-
-#include "Time.h"
-#include "Space.h"
-
-#include "Mental.h"
+#ifndef EDANTE_COMMS_H
+#define EDANTE_COMMS_H
 
 #include "SPLStandardMessage.h"
 
 class Communication {
-private:
+  private:
     SPLStandardMessage stdmsg;
 
-public:
+  public:
     /// Sets the pose of the robot on the field at the given point in time.
     ///  - The pose is given in absolute coordinates as (x, y, θ)
     void setPose(Pose2D pose, Timestamp at);
@@ -67,7 +62,7 @@ public:
     /// Sets the current intention of the robot and the time at which the
     /// decision was made.
     void setIntention(Intention intention, Timestamp at);
-    /// Gives the latest constructed standard message. 
+    /// Gives the latest constructed standard message.
     /// Returns a constant reference of the local struct to avoid the overhead
     /// of copying the entire struct.
     const SPLStandardMessage& getStandardMessage();

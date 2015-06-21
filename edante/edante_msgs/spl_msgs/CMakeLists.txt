@@ -1,16 +1,10 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(comms)
-
-SET(CUSTOM_CXX_FLAGS "--std=c++0x")
-SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${CUSTOM_CXX_FLAGS}")
+project(spl_msgs)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  message_generation
-)
+find_package(catkin REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -46,12 +40,11 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-add_message_files(
-  FILES
-  SPLStandardMessage.msg
+# add_message_files(
+#   FILES
 #   Message1.msg
 #   Message2.msg
-)
+# )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -68,10 +61,10 @@ add_message_files(
 # )
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages(
-  DEPENDENCIES
-  std_msgs  # Or other packages containing msgs
-)
+# generate_messages(
+#   DEPENDENCIES
+#   std_msgs  # Or other packages containing msgs
+# )
 
 ###################################
 ## catkin specific configuration ##
@@ -83,9 +76,9 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
- INCLUDE_DIRS include
-#  LIBRARIES comms
- CATKIN_DEPENDS roscpp message_runtime
+INCLUDE_DIRS include
+#  LIBRARIES spl_msgs
+#  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS system_lib
 )
 
@@ -93,32 +86,26 @@ catkin_package(
 ## Build ##
 ###########
 
-set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -O2")
-
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(include)
-include_directories(
-  ${catkin_INCLUDE_DIRS}
-)
+# include_directories(include)
 
 ## Declare a cpp library
-# add_library(comms
-#   src/${PROJECT_NAME}/comms.cpp
+# add_library(spl_msgs
+#   src/${PROJECT_NAME}/spl_msgs.cpp
 # )
 
 ## Declare a cpp executable
-# add_executable(comms
-# )
+# add_executable(spl_msgs_node src/spl_msgs_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(comms comms_generate_messages_cpp)
+# add_dependencies(spl_msgs_node spl_msgs_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(comms
-  ${catkin_LIBRARIES}
-)
+# target_link_libraries(spl_msgs_node
+#   ${catkin_LIBRARIES}
+# )
 
 #############
 ## Install ##
@@ -135,7 +122,7 @@ target_link_libraries(comms
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS comms comms_node
+# install(TARGETS spl_msgs spl_msgs_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -160,7 +147,7 @@ target_link_libraries(comms
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_comms.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_spl_msgs.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
