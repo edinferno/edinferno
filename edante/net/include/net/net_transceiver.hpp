@@ -9,6 +9,8 @@
 
 #include <netinet/in.h>
 
+#include <vector>
+
 #include "net/RoboCupGameControlData.h"
 #include "net/SPLStandardMessage.h"
 #include "net/SPLCoachMessage.h"
@@ -21,7 +23,7 @@ class NetTransceiver {
                        RoboCupGameControlData& game_data);
   // SPL Standard message support
   bool BroadcastSPLStandardMessage(const SPLStandardMessage& msg);
-  bool ReceiveSPLStandardMessage(SPLStandardMessage& msg);
+  bool ReceiveSPLStandardMessage(std::vector<SPLStandardMessage>& msgs);
 
   // SPL Coach message support
   bool BroadcastSPLCoachMessage(const SPLCoachMessage& msg);

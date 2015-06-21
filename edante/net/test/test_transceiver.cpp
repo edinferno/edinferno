@@ -8,8 +8,11 @@
 #include <unistd.h>
 
 #include <iostream>
+#include <vector>
 
 #include "net/net_transceiver.hpp"
+
+using std::vector;
 
 int main(int argc, const char** argv) {
   RoboCupGameControlReturnData return_data;
@@ -17,7 +20,7 @@ int main(int argc, const char** argv) {
 
   NetTransceiver net;
   SPLStandardMessage spl_msg;
-  SPLStandardMessage spl_msg_rec;
+  vector<SPLStandardMessage> spl_msg_rec;
   SPLCoachMessage cch_msg;
 
   return_data.team = 9;
@@ -39,5 +42,6 @@ int main(int argc, const char** argv) {
               << net.BroadcastSPLCoachMessage(cch_msg) << std::endl;
     sleep(1);
   }
+
   return 0;
 }

@@ -117,16 +117,14 @@ bool NetTransceiver::BroadcastSPLStandardMessage(
   return (len > 0);
 }
 
-bool NetTransceiver::ReceiveSPLStandardMessage(SPLStandardMessage& msg) {
+bool NetTransceiver::ReceiveSPLStandardMessage(
+  std::vector<SPLStandardMessage>& msgs) {
   sockaddr_in sender;
   socklen_t sockaddr_len = sizeof(sockaddr);
   ssize_t len;
-  bool data_available = false;
+  SPLStandardMessage msg;
+  msgs.clear();
 
-  // Read all received messages up to the last one, otherwise
-  // only the first message in the queue (the oldest) will be read.
-  // If the function is called often enough there should always be
-  // only one message in the queue.
   do {
     len = recvfrom(boradcast_spl_sd_,
                    &msg,
@@ -134,10 +132,12 @@ bool NetTransceiver::ReceiveSPLStandardMessage(SPLStandardMessage& msg) {
                    0,
                    reinterpret_cast<sockaddr*>(&sender),
                    &sockaddr_len);
-    if (len > 0) data_available = true;
+    if (len > 0) {
+      msgs.push_back(msg);
+    }
   } while (len > 0);
 
-  return data_available;
+  return (msgs.size() != 0);
 }
 
 bool NetTransceiver::BroadcastSPLCoachMessage(const SPLCoachMessage& msg) {
