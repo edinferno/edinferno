@@ -1,7 +1,0 @@
-# INITIAL=0
-# READY=1
-# SET=2
-# PENALIZED=3
-# PLAYING=4
-# FINISHED=5
-uint8 game_state

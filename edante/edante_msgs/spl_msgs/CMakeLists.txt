@@ -1,17 +1,10 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(motion_planning)
+project(spl_msgs)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS
-  actionlib
-  roscpp
-  motion_msgs
-  signalling_msgs
-  spl_msgs
-  motion_planning_msgs
-)
+find_package(catkin REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -70,6 +63,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
+#   std_msgs  # Or other packages containing msgs
 # )
 
 ###################################
@@ -82,9 +76,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES motion_planning
-#  CATKIN_DEPENDS actionlib actionlib_msgs geometry_msgs message_generation roscpp rospy std_msgs
+INCLUDE_DIRS include
+#  LIBRARIES spl_msgs
+#  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS system_lib
 )
 
@@ -92,39 +86,26 @@ catkin_package(
 ## Build ##
 ###########
 
-set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -O2")
-
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 # include_directories(include)
-include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
-)
 
 ## Declare a cpp library
-# add_library(motion_planning
-#   src/${PROJECT_NAME}/motion_planning.cpp
+# add_library(spl_msgs
+#   src/${PROJECT_NAME}/spl_msgs.cpp
 # )
 
 ## Declare a cpp executable
-add_executable(motion_planning
- src/motion_planning.cpp
- src/setup.cpp
- src/stand_up.cpp
- src/sit_down.cpp
- src/sit_rest.cpp
- src/transition.cpp
- src/monitor.cpp)
+# add_executable(spl_msgs_node src/spl_msgs_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(motion_planning motion_msgs)
+# add_dependencies(spl_msgs_node spl_msgs_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(motion_planning
-  ${catkin_LIBRARIES}
-)
+# target_link_libraries(spl_msgs_node
+#   ${catkin_LIBRARIES}
+# )
 
 #############
 ## Install ##
@@ -141,7 +122,7 @@ target_link_libraries(motion_planning
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS motion_planning motion_planning_node
+# install(TARGETS spl_msgs spl_msgs_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -166,7 +147,7 @@ target_link_libraries(motion_planning
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_motion_planning.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_spl_msgs.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

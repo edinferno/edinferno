@@ -20,9 +20,10 @@
 #include <std_srvs/Empty.h>
 #include <std_msgs/UInt8.h>
 #include <std_msgs/Bool.h>
-#include <comms_msgs/GameState.h>
+// #include <comms_msgs/GameState.h>
 #include <motion_planning_msgs/TransitionAction.h>
 #include <signalling_msgs/signalling_values.hpp>
+#include <spl_msgs/RoboCupGameControlData.h>
 
 class TransitionAction {
  protected:
@@ -44,8 +45,9 @@ class TransitionAction {
   void preemptCB();
 
   void checkChestTransition(const std_msgs::UInt8::ConstPtr& msg);
-  void checkGCTransition(const comms_msgs::GameState::ConstPtr& msg);
+  void checkGCTransition(const std_msgs::UInt8::ConstPtr& msg);
   void checkFallenTransition(const std_msgs::Bool::ConstPtr& msg);
+  void checkPenalizedTransition(const std_msgs::UInt8::ConstPtr& msg);
 
  private:
   // Flags
@@ -59,8 +61,10 @@ class TransitionAction {
   ros::Subscriber chest_sub_;
   ros::Subscriber game_state_sub_;
   ros::Subscriber has_fallen_sub_;
+  ros::Subscriber penalized_sub_;
   std_srvs::Empty stop_move_srv_;
   ros::ServiceClient stop_move_client_;
+  ros::Publisher manual_penalized_pub_;
 };
 
 

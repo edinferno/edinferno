@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <package>
-  <name>motion_planning</name>
+  <name>net</name>
   <version>0.0.0</version>
-  <description>The motion_planning package</description>
+  <description>The net package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="nao@todo.todo">nao</maintainer>
+  <maintainer email="stan@todo.todo">stan</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->
@@ -19,7 +19,7 @@
   <!-- Url tags are optional, but mutiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/motion_planning</url> -->
+  <!-- <url type="website">http://wiki.ros.org/net</url> -->
 
 
   <!-- Author tags are optional, mutiple are allowed, one per tag -->
@@ -40,19 +40,7 @@
   <!-- Use test_depend for packages you need only for testing: -->
   <!--   <test_depend>gtest</test_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>actionlib</build_depend>
-  <build_depend>motion_msgs</build_depend>
-  <build_depend>signalling_msgs</build_depend>
   <build_depend>spl_msgs</build_depend>
-  <build_depend>motion_planning_msgs</build_depend>
-  <build_depend>roscpp</build_depend>
-  <run_depend>actionlib</run_depend>
-  <run_depend>motion_msgs</run_depend>
-  <run_depend>signalling_msgs</run_depend>
-  <run_depend>spl_msgs</run_depend>
-  <run_depend>motion_planning_msgs</run_depend>
-  <run_depend>roscpp</run_depend>
-
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

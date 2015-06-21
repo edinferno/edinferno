@@ -67,9 +67,9 @@ def main():
     INITIAL = 0
     READY=1
     SET=2
-    PENALIZED=3
-    PLAYING=4
-    FINISHED=5
+    PLAYING=3
+    FINISHED=4
+    PENALIZED=5
 
     # Create the main game SMACH state machine
     game_sm = smach.StateMachine(outcomes=['succeeded','aborted','preempted'])
