@@ -9,6 +9,8 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
 -->
 
 <launch>
+        <param name="naoqi_ip" value="192.168.1.11" />
+        <param name="naoqi_port" type="int" value="9559" />
         <node name="motion" pkg="motion" type="motion" output="screen">
         </node>
 
