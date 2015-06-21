@@ -35,6 +35,8 @@
 
 #include <ros/ros.h>
 
+#include <std_msgs/UInt8.h>
+
 #include <spl_msgs/RoboCupGameControlData.h>
 #include <spl_msgs/SPLStandardMessage.h>
 
@@ -46,13 +48,23 @@ class CommsNode {
   void Spin();
 
  private:
+  static const uint8_t kStateUnknown = 255;
+  static const uint8_t kPenaltyUnknown = 255;
+  static const uint8_t kColorUnknown = 255;
+
   int team_number_;
   int player_number_;
 
   ros::NodeHandle nh_;
+
   ros::Publisher game_state_pub_;
+  std_msgs::UInt8 game_state_msg_;
+
   ros::Publisher penalised_pub_;
+  std_msgs::UInt8 penalised_msg_;
+
   ros::Publisher team_color_pub_;
+  std_msgs::UInt8 team_color_msg_;
 
   NetTransceiver net_;
 
