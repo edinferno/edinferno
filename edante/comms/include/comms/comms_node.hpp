@@ -55,6 +55,7 @@ class CommsNode {
   int team_number_;
   int player_number_;
 
+  // ROS
   ros::NodeHandle nh_;
 
   ros::Publisher game_state_pub_;
@@ -66,6 +67,8 @@ class CommsNode {
   ros::Publisher team_color_pub_;
   std_msgs::UInt8 team_color_msg_;
 
+  ros::Subscriber man_penalised_sub_;
+  // Network
   NetTransceiver net_;
 
   RoboCupGameControlData game_data_;
@@ -78,6 +81,8 @@ class CommsNode {
   void PublishGameState();
   void PublishPenalised();
   void PublishTeamColor();
+
+  void ManuallyPenalisedCallback(const std_msgs::UInt8& msg);
 };
 
 #endif

@@ -31,6 +31,7 @@ class NetTransceiver {
  private:
   static const int kGameDataPort = GAMECONTROLLER_PORT;
   static const int kReturnGameDataPort = GAMECONTROLLER_PORT;
+  // TODO(svepe): Read ROS params
   static const int kTeamBroadcastPort = 10009;
   static const int kCoachBroadcastPort = SPL_COACH_MESSAGE_PORT;
 

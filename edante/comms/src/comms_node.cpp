@@ -10,7 +10,11 @@ CommsNode::CommsNode() :
   nh_("comms"),
   game_state_pub_(nh_.advertise<std_msgs::UInt8>("game_state", 1, true)),
   penalised_pub_(nh_.advertise<std_msgs::UInt8>("penalized", 1, true)),
-  team_color_pub_(nh_.advertise<std_msgs::UInt8>("team_color", 1, true)) {
+  team_color_pub_(nh_.advertise<std_msgs::UInt8>("team_color", 1, true)),
+  man_penalised_sub_(nh_.subscribe(
+                       "/world/manually_penalized",
+                       1,
+                       &CommsNode::ManuallyPenalisedCallback, this)) {
   // TODO(svepe): Read ROS params
   team_number_ = 9;
   player_number_ = 1;
@@ -29,6 +33,7 @@ void CommsNode::Spin() {
     if (net_.ReceiveGameData(game_return_data_, game_data_)) {
       Publish();
     }
+    ros::spinOnce();
     r.sleep();
   }
 }
@@ -61,4 +66,8 @@ void CommsNode::PublishTeamColor() {
     team_color_msg_.data = game_data_.teams[t].teamColour;
     team_color_pub_.publish(team_color_msg_);
   }
+}
+
+void CommsNode::ManuallyPenalisedCallback(const std_msgs::UInt8& msg) {
+  game_return_data_.message = msg.data;
 }
