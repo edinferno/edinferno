@@ -24,6 +24,9 @@ TransitionAction::TransitionAction(ros::NodeHandle nh, std::string name) :
                                   &TransitionAction::checkFallenTransition, this);
   penalized_sub_ = nh_.subscribe("/comms/penalized", 1,
                                  &TransitionAction::checkPenalizedTransition, this);
+  manual_penalized_pub_ =
+    nh_.advertise<std_msgs::UInt8>("/world/manually_penalized", 1, true);
+
   ROS_INFO("Starting Transition action server");
   as_.start();
 }
@@ -33,7 +36,6 @@ TransitionAction::~TransitionAction(void) {
 
 void TransitionAction::goalCB() {
   chest_presses_ = 0;
-  game_state_ = -1;
   state_ = as_.acceptNewGoal()->state;
 }
 
@@ -55,15 +57,22 @@ void TransitionAction::checkChestTransition(const std_msgs::UInt8::ConstPtr&
     going = false;
   }
 
+  std_msgs::UInt8 man_pen_msg_;
   if (chest_presses_ == 1) {
     if (state_ == GameState::INITIAL) {
       result_.outcome = "penalized";
+      man_pen_msg_.data = GAMECONTROLLER_RETURN_MSG_MAN_PENALISE;
+      manual_penalized_pub_.publish(man_pen_msg_);
       going = false;
     } else if (state_ == GameState::PENALIZED) {
       result_.outcome = "playing";
+      man_pen_msg_.data = GAMECONTROLLER_RETURN_MSG_MAN_UNPENALISE;
+      manual_penalized_pub_.publish(man_pen_msg_);
       going = false;
     } else if (state_ == GameState::PLAYING) {
       result_.outcome = "penalized";
+      man_pen_msg_.data = GAMECONTROLLER_RETURN_MSG_MAN_PENALISE;
+      manual_penalized_pub_.publish(man_pen_msg_);
       going = false;
     }
   } else if (chest_presses_ == 2) {
@@ -84,9 +93,9 @@ void TransitionAction::checkChestTransition(const std_msgs::UInt8::ConstPtr&
   }
 }
 
-void TransitionAction::checkGCTransition(const comms_msgs::GameState::ConstPtr&
+void TransitionAction::checkGCTransition(const std_msgs::UInt8::ConstPtr&
                                          msg) {
-  game_state_ = msg->game_state;
+  game_state_ = msg->data;
   ROS_INFO("Executing goal for %s", action_name_.c_str());
   bool going = true;
   bool success = true;
@@ -114,9 +123,6 @@ void TransitionAction::checkGCTransition(const comms_msgs::GameState::ConstPtr&
   case GameState::FINISHED:
     result_.outcome = "finished";
     break;
-  case GameState::PENALIZED:
-    result_.outcome = "penalized";
-    break;
   default:
     success = false;
   }
@@ -141,14 +147,29 @@ void TransitionAction::checkFallenTransition(const std_msgs::Bool::ConstPtr&
 
 void TransitionAction::checkPenalizedTransition(const std_msgs::UInt8::ConstPtr&
                                                 msg) {
-  ROS_INFO("Penalized?");
-  if (state_ != GameState::PENALIZED && msg->data >= 1) {
-    ROS_INFO("Penalized!");
+  if (state_ != GameState::PENALIZED && msg->data != PENALTY_NONE) {
     result_.outcome = "penalized";
     as_.setSucceeded(result_);
-  } else if (state_ == GameState::PENALIZED && msg->data == 0) {
-    ROS_INFO("NOT Penalized!");
-    result_.outcome = "playing";
+  } else if (state_ == GameState::PENALIZED && msg->data == PENALTY_NONE) {
+    switch (game_state_) {
+    case GameState::INITIAL:
+      result_.outcome = "initial";
+      break;
+    case GameState::READY:
+      result_.outcome = "ready";
+      break;
+    case GameState::SET:
+      result_.outcome = "set";
+      break;
+    case GameState::PLAYING:
+      result_.outcome = "playing";
+      break;
+    case GameState::FINISHED:
+      result_.outcome = "finished";
+      break;
+    default:
+      ROS_INFO("ERROR, got %d game_state", game_state_);
+    }
     as_.setSucceeded(result_);
   }
 }
