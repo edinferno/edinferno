@@ -1,7 +1,7 @@
 # INITIAL=0
 # READY=1
 # SET=2
-# PENALIZED=3
-# PLAYING=4
-# FINISHED=5
+# PLAYING=3
+# FINISHED=4
+# PENALIZED=5 # Used by smach
 uint8 game_state

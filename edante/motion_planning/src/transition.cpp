@@ -22,6 +22,8 @@ TransitionAction::TransitionAction(ros::NodeHandle nh, std::string name) :
                                   &TransitionAction::checkGCTransition, this);
   has_fallen_sub_ = nh_.subscribe("/motion/has_fallen", 1,
                                   &TransitionAction::checkFallenTransition, this);
+  penalized_sub_ = nh_.subscribe("/comms/penalized", 1,
+                                 &TransitionAction::checkPenalizedTransition, this);
   ROS_INFO("Starting Transition action server");
   as_.start();
 }
@@ -97,23 +99,23 @@ void TransitionAction::checkGCTransition(const comms_msgs::GameState::ConstPtr&
   }
 
   switch (game_state_) {
-  case 0:
+  case GameState::INITIAL:
     result_.outcome = "initial";
     break;
-  case 1:
+  case GameState::READY:
     result_.outcome = "ready";
     break;
-  case 2:
+  case GameState::SET:
     result_.outcome = "set";
     break;
-  case 3:
-    result_.outcome = "penalized";
-    break;
-  case 4:
+  case GameState::PLAYING:
     result_.outcome = "playing";
     break;
-  case 5:
+  case GameState::FINISHED:
     result_.outcome = "finished";
+    break;
+  case GameState::PENALIZED:
+    result_.outcome = "penalized";
     break;
   default:
     success = false;
@@ -133,6 +135,20 @@ void TransitionAction::checkFallenTransition(const std_msgs::Bool::ConstPtr&
   if (msg->data) {
     ROS_INFO("Fallen! Going to stand up");
     result_.outcome = "stand_up";
+    as_.setSucceeded(result_);
+  }
+}
+
+void TransitionAction::checkPenalizedTransition(const std_msgs::UInt8::ConstPtr&
+                                                msg) {
+  ROS_INFO("Penalized?");
+  if (state_ != GameState::PENALIZED && msg->data >= 1) {
+    ROS_INFO("Penalized!");
+    result_.outcome = "penalized";
+    as_.setSucceeded(result_);
+  } else if (state_ == GameState::PENALIZED && msg->data == 0) {
+    ROS_INFO("NOT Penalized!");
+    result_.outcome = "playing";
     as_.setSucceeded(result_);
   }
 }
