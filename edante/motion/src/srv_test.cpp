@@ -24,16 +24,16 @@ int main(int argc, char* argv[]) {
   ros::Rate r(10);
 
   // KICK TEST
-  float balance_init = 1.5f;
-  float kick_time = 0.3f;
+  float balance_init = 1.0f;
+  float kick_time = 0.2f;
   float move_time = 0.4f;
   float lift_time = 0.5f;
   float leg_lift = 0.05f;
-  float foot_retraction = 0.15f;
-  float foot_forward_kick = 0.12f;
-  float foot_lift = 0.06f;
+  float foot_retraction = 0.1f;
+  float foot_forward_kick = 0.1f;
+  float foot_lift = 0.015f;
   float foot_rot_kick = 0.6f;
-  float balance_end = 0.7f;
+  float balance_end = 0.8f;
 
   // Clients
   ros::ServiceClient move_init_client =
@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
   // Set foot states
   motion_msgs::FootState left_foot;
   left_foot.request.state_name = "Fixed";
-  left_foot.request.support_leg = "RLeg";
+  left_foot.request.support_leg = "LLeg";
 
   if (foot_client.call(left_foot)) {
     ROS_INFO("FootSrv1 Worked!");
@@ -71,7 +71,7 @@ int main(int argc, char* argv[]) {
 
   motion_msgs::FootState right_foot;
   right_foot.request.state_name = "Fixed";
-  right_foot.request.support_leg = "LLeg";
+  right_foot.request.support_leg = "RLeg";
 
   if (foot_client.call(right_foot)) {
     ROS_INFO("FootSrv1 Worked!");
@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
   lift_leg.request.chain_name = "LLeg";
   lift_leg.request.space = FRAME_ROBOT;
   lift_leg.request.path.traj_points.resize(1);
-  lift_leg.request.path.traj_points[0].float_list.push_back(0.0f);
+  lift_leg.request.path.traj_points[0].float_list.push_back(foot_forward_kick);
   lift_leg.request.path.traj_points[0].float_list.push_back(0.0f);
   lift_leg.request.path.traj_points[0].float_list.push_back(leg_lift);
   lift_leg.request.path.traj_points[0].float_list.push_back(0.0f);
@@ -113,7 +113,7 @@ int main(int argc, char* argv[]) {
   lift_leg.request.path.traj_points[0].float_list.push_back(0.0f);
   lift_leg.request.axis_mask = 63;
   lift_leg.request.durations.resize(1);
-  lift_leg.request.durations[0] = lift_time;
+  lift_leg.request.durations[0] = kick_time;
   lift_leg.request.is_absolute = false;
 
   if (pos_interp_client.call(lift_leg)) {
@@ -127,89 +127,22 @@ int main(int argc, char* argv[]) {
   foot_back.request.chain_name = "LLeg";
   foot_back.request.space = FRAME_ROBOT;
   foot_back.request.path.traj_points.resize(1);
-  foot_back.request.path.traj_points[0].float_list.push_back(-foot_retraction);
+  foot_back.request.path.traj_points[0].float_list.push_back(-foot_forward_kick);
   foot_back.request.path.traj_points[0].float_list.push_back(0.0f);
-  foot_back.request.path.traj_points[0].float_list.push_back(leg_lift);
+  foot_back.request.path.traj_points[0].float_list.push_back(
+    -leg_lift + foot_lift);
   foot_back.request.path.traj_points[0].float_list.push_back(0.0f);
-  foot_back.request.path.traj_points[0].float_list.push_back(foot_rot_kick);
+  foot_back.request.path.traj_points[0].float_list.push_back(0.0f);
   foot_back.request.path.traj_points[0].float_list.push_back(0.0f);
   foot_back.request.axis_mask = 63;
   foot_back.request.durations.resize(1);
-  foot_back.request.durations[0] = move_time;
+  foot_back.request.durations[0] = kick_time;
   foot_back.request.is_absolute = false;
 
   if (pos_interp_client.call(foot_back)) {
     ROS_INFO("Back Worked!");
   } else {
     ROS_INFO("Failed to call Back service");
-  }
-
-  // Kick Forwards
-  motion_msgs::PositionInterpolation kick_forw;
-  kick_forw.request.chain_name = "LLeg";
-  kick_forw.request.space = FRAME_ROBOT;
-  kick_forw.request.path.traj_points.resize(1);
-  kick_forw.request.path.traj_points[0].float_list.push_back(
-    foot_retraction + foot_forward_kick);
-  kick_forw.request.path.traj_points[0].float_list.push_back(0.0f);
-  kick_forw.request.path.traj_points[0].float_list.push_back(foot_lift);
-  kick_forw.request.path.traj_points[0].float_list.push_back(0.0f);
-  kick_forw.request.path.traj_points[0].float_list.push_back(-foot_rot_kick);
-  kick_forw.request.path.traj_points[0].float_list.push_back(0.0f);
-  kick_forw.request.axis_mask = 63;
-  kick_forw.request.durations.resize(1);
-  kick_forw.request.durations[0] = kick_time;
-  kick_forw.request.is_absolute = false;
-
-  if (pos_interp_client.call(kick_forw)) {
-    ROS_INFO("Forward Worked!");
-  } else {
-    ROS_INFO("Failed to call Forward service");
-  }
-
-  // Retract leg
-  motion_msgs::PositionInterpolation retract_leg;
-  retract_leg.request.chain_name = "LLeg";
-  retract_leg.request.space = FRAME_ROBOT;
-  retract_leg.request.path.traj_points.resize(1);
-  retract_leg.request.path.traj_points[0].float_list.push_back(
-    -foot_forward_kick);
-  retract_leg.request.path.traj_points[0].float_list.push_back(0.0f);
-  retract_leg.request.path.traj_points[0].float_list.push_back(0.0f);
-  retract_leg.request.path.traj_points[0].float_list.push_back(0.0f);
-  retract_leg.request.path.traj_points[0].float_list.push_back(0.0f);
-  retract_leg.request.path.traj_points[0].float_list.push_back(0.0f);
-  retract_leg.request.axis_mask = 63;
-  retract_leg.request.durations.resize(1);
-  retract_leg.request.durations[0] = move_time;
-  retract_leg.request.is_absolute = false;
-
-  if (pos_interp_client.call(retract_leg)) {
-    ROS_INFO("Retract Worked!");
-  } else {
-    ROS_INFO("Failed to call Retract service");
-  }
-
-  // Put foot down
-  motion_msgs::PositionInterpolation lower_foot;
-  lower_foot.request.chain_name = "LLeg";
-  lower_foot.request.space = FRAME_ROBOT;
-  lower_foot.request.path.traj_points.resize(1);
-  lower_foot.request.path.traj_points[0].float_list.push_back(0.0f);
-  lower_foot.request.path.traj_points[0].float_list.push_back(0.0f);
-  lower_foot.request.path.traj_points[0].float_list.push_back(-foot_lift);
-  lower_foot.request.path.traj_points[0].float_list.push_back(0.0f);
-  lower_foot.request.path.traj_points[0].float_list.push_back(0.0f);
-  lower_foot.request.path.traj_points[0].float_list.push_back(0.0f);
-  lower_foot.request.axis_mask = 63;
-  lower_foot.request.durations.resize(1);
-  lower_foot.request.durations[0] = move_time;
-  lower_foot.request.is_absolute = false;
-
-  if (pos_interp_client.call(lower_foot)) {
-    ROS_INFO("Down Worked!");
-  } else {
-    ROS_INFO("Failed to call Down service");
   }
 
   if (balance_client.call(balance_enable)) {
