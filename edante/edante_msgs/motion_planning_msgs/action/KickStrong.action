@@ -1,0 +1,11 @@
+#goal Kicking leg
+# Left 0
+# Right 1
+uint8 kick_type
+---
+#result definition
+bool success
+---
+#feedback Kicking state
+#
+uint8 feedback

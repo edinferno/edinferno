@@ -62,6 +62,7 @@ add_action_files(
   SitDown.action
   SitRest.action
   Transition.action
+  KickStrong.action
 )
 
 ## Generate added messages and services with any dependencies listed here

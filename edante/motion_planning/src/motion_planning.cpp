@@ -10,6 +10,7 @@
 #include "motion_planning/stand_up.hpp"
 #include "motion_planning/sit_down.hpp"
 #include "motion_planning/sit_rest.hpp"
+#include "motion_planning/kick_strong.hpp"
 #include "motion_planning/transition.hpp"
 #include "motion_planning/monitor.hpp"
 
@@ -21,6 +22,7 @@ int main(int argc, char** argv) {
   StandUpAction stand(nh, "stand_up");
   SitDownAction sit(nh, "sit_down");
   SitRestAction rest(nh, "sit_rest");
+  KickStrongAction kick(nh, "kick_strong");
   TransitionAction await(nh, "transition");
   Monitor monitor(&nh);
 
