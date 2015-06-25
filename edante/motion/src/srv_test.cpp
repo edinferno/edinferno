@@ -7,7 +7,7 @@
  */
 
 #include <ros/ros.h>
-#include "motion/motion_values.hpp"
+#include <motion_msgs/motion_values.hpp>
 #include <std_srvs/Empty.h>
 
 #include <motion_msgs/PositionInterpolation.h>
