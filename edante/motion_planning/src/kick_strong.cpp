@@ -139,11 +139,11 @@ void KickStrongAction::executeCB() {
 void KickStrongAction::setKickType() {
   std::string leg;
   std::string support_leg;
-  if (kick_type_ == 0) {
+  if (kick_type_ == KickType::LEFT) {
     // Left kick
     leg = "LLeg";
     support_leg = "RLeg";
-  } else if (kick_type_ == 1) {
+  } else if (kick_type_ == KickType::RIGHT) {
     // Right kick
     leg = "RLeg";
     support_leg = "LLeg";

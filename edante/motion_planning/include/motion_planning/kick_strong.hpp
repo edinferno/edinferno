@@ -27,6 +27,7 @@
 #include <motion_msgs/Enable.h>
 #include <motion_msgs/SetPosture.h>
 #include <motion_msgs/motion_values.hpp>
+#include <motion_planning_msgs/motion_planning_values.hpp>
 
 class KickStrongAction {
  protected:
