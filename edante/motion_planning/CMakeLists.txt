@@ -114,6 +114,7 @@ add_executable(motion_planning
  src/stand_up.cpp
  src/sit_down.cpp
  src/sit_rest.cpp
+ src/kick_strong.cpp
  src/transition.cpp
  src/monitor.cpp)
 
