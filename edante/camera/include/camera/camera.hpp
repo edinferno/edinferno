@@ -10,8 +10,15 @@
 #define CAMERA_HPP
 
 #include <memory>
+
+#include <alproxies/alvideodeviceproxy.h>
+#include <alvision/alimage.h>
+
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+
+#include <sensor_msgs/CameraInfo.h>
+#include <sensor_msgs/Image.h>
 
 #include <camera_info_manager/camera_info_manager.h>
 
@@ -23,51 +30,114 @@
  */
 class Camera {
  public:
+  static int fps() { return fps_; }
+  static void fps(int fps) { fps_ = fps; }
+
   /**
-   * @brief Constructor
-   *
-   * @param nh The ROS node hande used by the camera
-   * @param id ID of the camera (AL::kTopCamera or AL::kBottomCamera)
-   * @param name Name of camera e.g. "top"
-   */
-  Camera(ros::NodeHandle& nh, int id, const char* name);
+  * @brief Constructor
+  *
+  * @param nh The ROS node hande used by the camera
+  * @param name Name of camera e.g. "top"
+  * @param id ID of the camera (AL::kTopCamera or AL::kBottomCamera)
+  * @param resolution Resolution of the camera (AL::kQQVGA, AL::kQVGA,
+  *                   AL::kVGA, AL::k4VGA)
+  * @param color_space Color space of the camera (AL::kYUV422ColorSpace,
+  *                    AL::kYUVColorSpace, AL::kRGBColorSpace,
+  *                    AL::kHSYColorSpace, AL::kBGRColorSpace)
+  */
+  Camera(ros::NodeHandle& nh,
+         const char* name,
+         const char* frame_name,
+         int id,
+         int resolution,
+         int color_space);
   /**
    * @brief Destructor
    */
   ~Camera();
+
+  void SetImage(const AL::ALImage* alimage, ros::Time stamp);
+  void SetGreyscaleImage(const AL::ALImage* alimage, ros::Time stamp);
+
+  void Update();
+  void UpdateImage();
+  void UpdateCameraInfo();
+
+  /**
+   * @brief Getter of the camera name.
+   */
+  const std::string& name() const { return name_; }
+  /**
+   * @brief Getter of the camera frame name
+   */
+  const std::string& frame_name() const { return frame_name_; }
   /**
    * @brief Getter of the camera ID.
    */
   int id() const { return id_; }
   /**
-   * @brief Getter of the camera name.
+   * @brief Getter of the camera resolution.
    */
-  std::string name() const { return name_; }
+  int resolution() const { return resolution_; }
   /**
-   * @brief Getter of the camera frame_id.
+   * @brief Getter of the camera color_space.
    */
-  std::string frame_id() const { return frame_id_; }
+  int color_space() const { return color_space_; }
   /**
    * @brief Getter of the camera info.
    */
-  sensor_msgs::CameraInfo cam_info() const {
-    return cam_info_manager_->getCameraInfo();
+  const sensor_msgs::CameraInfo& cam_info() const { return cam_info_; }
+
+  const sensor_msgs::Image& image() const {
+    return image_;
+  }
+
+  const sensor_msgs::Image& greyscale_image() const {
+    return greyscale_image_;
   }
 
  private:
+  static int fps_;
+
   // Node Handle
   ros::NodeHandle nh_;
+
+  // Camera name
+  std::string name_;
+
+  // Camera sensor frame name
+  std::string frame_name_;
 
   // AL::kTopCamera
   // AL::kBottomCamera
   const int id_;
 
-  // Camera settings
-  std::string name_;
-  std::string cam_info_url_;
-  std::string frame_id_;
+  // AL::kQQVGA  160*120px
+  // AL::kQVGA   320*240px
+  // AL::kVGA    640*480px
+  // AL::k4VGA   1280*960px
+  int resolution_;
 
-  // ROS image toolchain
+  // AL::kYUV422ColorSpace  0xY’Y’VVYYUU - native format (2 pixels)
+  // AL::kYUVColorSpace     0xVVUUYY
+  // AL::kRGBColorSpace     0xBBGGRR
+  // AL::kHSYColorSpace     0xYYSSHH
+  // AL::kBGRColorSpace     0xRRGGBB
+  int color_space_;
+
+  // Camera settings
+  std::string cam_info_url_;
+
+  // Current camera info
+  sensor_msgs::CameraInfo cam_info_;
+
+  // Current camera image
+  sensor_msgs::Image image_;
+
+  // Greyscale image
+  sensor_msgs::Image greyscale_image_;
+
+  // Manager of the camera info (used for camera calibration)
   camera_info_manager::CameraInfoManager* cam_info_manager_;
 
   /**

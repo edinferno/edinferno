@@ -70,9 +70,10 @@ CameraNode::CameraNode(boost::shared_ptr<AL::ALBroker> broker,
                        const std::string& module_name) :
   AL::ALModule(broker, module_name),
   module_name_(module_name),
-  camera_proxy_(new AL::ALVideoDeviceProxy(broker)),
+  cameras_proxy_(new AL::ALVideoDeviceProxy(broker)),
   motion_proxy_(new AL::ALMotionProxy(broker)),
-  shdmem_(open_or_create, "camera_image", read_write) {
+  active_shdmem_(open_or_create, "active_camera", read_write),
+  grey_shdmem_(open_or_create, "grey_camera", read_write) {
   Init();
 }
 /**
@@ -90,7 +91,7 @@ CameraNode::~CameraNode() {
   delete top_cam_;
   delete it_;
   delete nh_;
-  delete camera_proxy_;
+  delete cameras_proxy_;
 }
 
 /**
@@ -146,34 +147,53 @@ void CameraNode::Init() {
   // TODO(svepe): Add a service to control the rest of the camera params
 
   // Create both cameras
-  top_cam_ = new Camera(*nh_, AL::kTopCamera, "top");
-  bot_cam_ = new Camera(*nh_, AL::kBottomCamera, "bottom");
+  Camera::fps(30);
+  top_cam_ = new Camera(*nh_, "top", "CameraTop",
+                        AL::kTopCamera,
+                        AL::kQVGA,
+                        AL::kYUV422ColorSpace);
+  bot_cam_ = new Camera(*nh_, "bottom", "CameraBottom",
+                        AL::kBottomCamera,
+                        AL::kQVGA,
+                        AL::kYUV422ColorSpace);
 
   // Set the default active camera to be the top one
   active_cam_ = top_cam_;
-  active_resolution_ = AL::kQVGA;
-  active_color_space_ = AL::kYUV422ColorSpace;
-  active_fps_ = 30;
-  active_rate_ = new ros::Rate(active_fps_);
-  active_camera_frame_name_ = "CameraTop";
+  active_rate_ = new ros::Rate(Camera::fps());
+
+  camera_ids_.push_back(top_cam_->id());
+  camera_ids_.push_back(bot_cam_->id());
+  camera_resolutions_.push_back(top_cam_->resolution());
+  camera_resolutions_.push_back(bot_cam_->resolution());
+  camera_color_spaces_.push_back(top_cam_->color_space());
+  camera_color_spaces_.push_back(bot_cam_->color_space());
 
   // Subscribe to the active Nao camera
-  module_name_ = camera_proxy_->subscribeCamera(
+  module_name_ = cameras_proxy_->subscribeCameras(
                    module_name_,
-                   active_cam_->id(), active_resolution_,
-                   active_color_space_, active_fps_);
-  // Update cached information
-  Update();
+                   camera_ids_,
+                   camera_resolutions_,
+                   camera_color_spaces_,
+                   Camera::fps());
 
   // Read the color table
   LoadColorTable();
 
   // Allocate shared memory
-  shdmem_.truncate(kShdMemSize);
-  shdmem_region_ = new mapped_region(shdmem_, read_write);
-  shdmem_ptr_ = static_cast<uint8_t*>(shdmem_region_->get_address());
-  named_mutex::remove("camera_image_mutex");
-  shdmem_mtx_ = new named_mutex(open_or_create, "camera_image_mutex");
+  active_shdmem_.truncate(kShdMemSize);
+  active_shdmem_region_ = new mapped_region(active_shdmem_, read_write);
+  active_shdmem_ptr_ = static_cast<uint8_t*>(
+                         active_shdmem_region_->get_address());
+  named_mutex::remove("active_camera");
+  active_shdmem_mtx_ = new named_mutex(open_or_create, "active_camera");
+
+  // Allocate shared memory
+  grey_shdmem_.truncate(kShdMemSize);
+  grey_shdmem_region_ = new mapped_region(grey_shdmem_, read_write);
+  grey_shdmem_ptr_ = static_cast<uint8_t*>(
+                       grey_shdmem_region_->get_address());
+  named_mutex::remove("grey_camera");
+  grey_shdmem_mtx_ = new named_mutex(open_or_create, "grey_camera");
 
   // Spawn the thread for the node
   module_thread_ = new boost::thread(boost::bind(&CameraNode::Spin, this));
@@ -196,7 +216,6 @@ void CameraNode::LoadColorTable() {
     for (size_t i = 0; i < kTableLen; ++i) { table_ptr[i] = Nothing; }
     return;
   }
-
 
   size_t table_pos = 0;
   do {
@@ -230,7 +249,8 @@ void CameraNode::LoadColorTable() {
  *          and then publishes them over ROS. It runs on a separate thread.
  */
 void CameraNode::Spin() {
-  AL::ALImage* alimage;
+
+  ros::Time stamp;
   vector<float> transform;
   vector<float> head_angles;
   vector<string> joint_names;
@@ -238,54 +258,62 @@ void CameraNode::Spin() {
   joint_names.push_back("HeadPitch");
 
   while (!is_module_closing_) {
-    // Read the camera frame
-    alimage = (AL::ALImage*)(camera_proxy_->getImageLocal(module_name_));
+    stamp = ros::Time::now();
 
-    transform = motion_proxy_->getTransform(active_camera_frame_name_,
+    // Read the frames from both cameras
+    AL::ALValue val = cameras_proxy_->getImagesLocal(module_name_);
+
+    // Make a greyscale image from the top camera
+    top_cam_->SetGreyscaleImage(reinterpret_cast<const AL::ALImage*>(
+                                  static_cast<int>(val[0])),
+                                stamp);
+
+
+    transform = motion_proxy_->getTransform(active_cam_->frame_name(),
                                             2,  // FRAME_ROBOT
                                             true);
     head_angles = motion_proxy_->getAngles(joint_names, true);
 
-    // Copy the image into the pre-allocated message
-    image_.header.stamp = ros::Time::now();
-    memcpy(image_.data.data(), alimage->getData(), image_.data.size());
-
-    // Update the timestamp of the camera info
-    active_cam_info_.header.stamp = image_.header.stamp;
+    WriteToSharedMemory(grey_shdmem_mtx_,
+                        grey_shdmem_ptr_,
+                        top_cam_->greyscale_image(),
+                        top_cam_->cam_info(),
+                        transform,
+                        head_angles);
 
     // Publish the image with cam_info
-    image_pub_.publish(image_, active_cam_info_);
+    //image_pub_.publish(active_cam_->greyscale_image(), active_cam_->cam_info());
 
     // Segment the image and publish it
-    SegmentImage(image_, segmented_image_);
+    // SegmentImage(image_, segmented_image_);
 
-    // Publish segmented image
-    segmented_image_.header.stamp = image_.header.stamp;
-    segmented_image_pub_.publish(segmented_image_, active_cam_info_);
+    // // Publish segmented image
+    // segmented_image_.header.stamp = image_.header.stamp;
+    // segmented_image_pub_.publish(segmented_image_, active_cam_info_);
 
-    // Move image and camera info to shared memory
-    WriteToSharedMemory(segmented_image_, active_cam_info_,
-                        transform, head_angles);
+    // // Move image and camera info to shared memory
+    // WriteToSharedMemory(segmented_image_, active_cam_info_,
+    //                     transform, head_angles);
 
-    // Publish segmented RGB image if necessary
-    if (segmented_rgb_image_pub_.getNumSubscribers() > 0) {
-      if (segmented_image_pub_.getNumSubscribers() == 0) {
-        SegmentImage(image_, segmented_image_);
-      }
-      ColorSegmentedImage(segmented_image_, segmented_rgb_image_);
-      segmented_rgb_image_.header.stamp = image_.header.stamp;
-      segmented_rgb_image_pub_.publish(segmented_rgb_image_);
-    }
+    // // Publish segmented RGB image if necessary
+    // if (segmented_rgb_image_pub_.getNumSubscribers() > 0) {
+    //   if (segmented_image_pub_.getNumSubscribers() == 0) {
+    //     SegmentImage(image_, segmented_image_);
+    //   }
+    //   ColorSegmentedImage(segmented_image_, segmented_rgb_image_);
+    //   segmented_rgb_image_.header.stamp = image_.header.stamp;
+    //   segmented_rgb_image_pub_.publish(segmented_rgb_image_);
+    // }
 
     // Release the ALImage
-    camera_proxy_->releaseImage(module_name_);
+    cameras_proxy_->releaseImages(module_name_);
 
     // Spin ROS
     ros::spinOnce();
     active_rate_->sleep();
   }
 
-  camera_proxy_->unsubscribe(module_name_);
+  cameras_proxy_->unsubscribe(module_name_);
 }
 /**
  * @brief Write the captured data to shared memory
@@ -298,13 +326,15 @@ void CameraNode::Spin() {
  * @param transform The camera frame transformation to be copied to memory
  * @param transform The head angles to be copied to memory
  */
-void CameraNode::WriteToSharedMemory(const sensor_msgs::Image& image,
+void CameraNode::WriteToSharedMemory(boost::interprocess::named_mutex* mtx,
+                                     uint8_t* shdmem_ptr,
+                                     const sensor_msgs::Image& image,
                                      const sensor_msgs::CameraInfo& cam_info,
                                      const std::vector<float>& transform,
                                      const std::vector<float>& head_angles) {
   // Gain access to the shared memory
-  shdmem_mtx_->lock();
-  uint8_t* ptr = shdmem_ptr_;
+  mtx->lock();
+  uint8_t* ptr = shdmem_ptr;
 
   // Write the size in bytes of the cam_info
   uint32_t cam_info_size = ros::serialization::serializationLength(cam_info);
@@ -334,7 +364,7 @@ void CameraNode::WriteToSharedMemory(const sensor_msgs::Image& image,
   memcpy(ptr, head_angles.data(), sizeof(float) * head_angles.size());
 
   // Release the shared memory
-  shdmem_mtx_->unlock();
+  mtx->unlock();
 }
 /**
  * @brief Segments the image using the color look up table
@@ -418,102 +448,6 @@ void CameraNode::ColorSegmentedImage(const sensor_msgs::Image& seg,
   }
 }
 /**
- * @brief Updates the manually allocated images and camera_info.
- */
-void CameraNode::Update() {
-  UpdateImage();
-  UpdateCameraInfo();
-}
-/**
- * @brief Updates the allocated images to reflect the currently active camera settings.
- */
-void CameraNode::UpdateImage() {
-  // Set the image frame_id
-  image_.header.frame_id = active_cam_->frame_id();
-
-  // Set the image size
-  switch (active_resolution_) {
-    case AL::kQQVGA:
-      image_.width = 160;
-      image_.height = 120;
-      break;
-    case AL::kQVGA:
-      image_.width = 320;
-      image_.height = 240;
-      break;
-    case AL::kVGA:
-      image_.width = 640;
-      image_.height = 480;
-      break;
-    case AL::k4VGA:
-      image_.width = 1280;
-      image_.height = 960;
-      break;
-  }
-
-  int pixel_size = 3;
-  // Set the image encoding
-  switch (active_color_space_) {
-    case AL::kYUV422ColorSpace:
-      image_.encoding = "yuv422";
-      // Adjust pixel size
-      pixel_size = 2;
-      break;
-    case AL::kYUVColorSpace:
-      image_.encoding = "yuv8";
-      break;
-    case AL::kRGBColorSpace:
-      image_.encoding = "rgb8";
-      break;
-    case AL::kHSYColorSpace:
-      image_.encoding = "hsy8";
-      break;
-    case AL::kBGRColorSpace:
-      image_.encoding = "bgr8";
-      break;
-  }
-
-  // Allocate memory
-  image_.is_bigendian = false;
-  image_.step = image_.width * pixel_size;
-  image_.data.resize(image_.height * image_.step);
-
-  // Allocate segmented image
-  segmented_image_.header.frame_id = image_.header.frame_id;
-  segmented_image_.width = image_.width;
-  segmented_image_.height = image_.height;
-  segmented_image_.encoding = "mono8";
-  segmented_image_.is_bigendian = image_.is_bigendian;
-  segmented_image_.step = segmented_image_.width;
-  segmented_image_.data.resize(segmented_image_.height * segmented_image_.step);
-
-  // Allocate segmented RGB image
-  segmented_rgb_image_.header.frame_id = image_.header.frame_id;
-  segmented_rgb_image_.width = image_.width;
-  segmented_rgb_image_.height = image_.height;
-  segmented_rgb_image_.encoding = "rgb8";
-  segmented_rgb_image_.is_bigendian = image_.is_bigendian;
-  segmented_rgb_image_.step = 3 * segmented_rgb_image_.width;
-  segmented_rgb_image_.data.resize(segmented_rgb_image_.height *
-                                   segmented_rgb_image_.step);
-}
-/**
- * @brief Updates the currently active camera_info to reflect the active camera settings.
- */
-void CameraNode::UpdateCameraInfo() {
-  active_cam_info_ = active_cam_->cam_info();
-  active_cam_info_.header.frame_id = image_.header.frame_id;
-
-  // Check if the stored camera info matches the current settings
-  if (active_cam_info_.width != image_.width ||
-      active_cam_info_.height != image_.height) {
-    // The sizes do not match so generate and uncalibrated camera settings
-    active_cam_info_ = sensor_msgs::CameraInfo();
-    active_cam_info_.width = image_.width;
-    active_cam_info_.height = image_.height;
-  }
-}
-/**
  * @brief Set the currently active camera (top or bottom).
  *
  * @param req Service request.
@@ -542,16 +476,15 @@ bool CameraNode::set_active_camera(camera_msgs::SetActiveCamera::Request&  req,
       return true;
   }
 
-  res.result = camera_proxy_->setActiveCamera(module_name_, new_active_cam_id);
+  //res.result = camera_proxy_->setActiveCamera(module_name_, new_active_cam_id);
 
   if (res.result) {
     active_cam_ = new_active_cam;
     active_camera_frame_name_ = new_active_cam_frame;
-    camera_proxy_->setColorSpace(module_name_, active_color_space_);
-    camera_proxy_->setResolution(module_name_, active_resolution_);
-    camera_proxy_->setFrameRate(module_name_, active_fps_);
+    //camera_proxy_->setColorSpace(module_name_, active_color_space_);
+    //camera_proxy_->setResolution(module_name_, active_resolution_);
+    //camera_proxy_->setFrameRate(module_name_, active_fps_);
 
-    Update();
   }
 
   return true;
@@ -585,12 +518,11 @@ bool CameraNode::set_resolution(camera_msgs::SetResolution::Request&  req,
       return true;
   }
 
-  res.result = camera_proxy_->setResolution(module_name_, new_resolution);
+  //res.result = camera_proxy_->setResolution(module_name_, new_resolution);
 
-  if (res.result) {
-    active_resolution_ = new_resolution;
-    Update();
-  }
+  // if (res.result) {
+  //   active_resolution_ = new_resolution;
+  // }
 
   return true;
 }
@@ -609,13 +541,13 @@ bool CameraNode::set_frame_rate(camera_msgs::SetFrameRate::Request&  req,
     return true;
   }
 
-  res.result = camera_proxy_->setFrameRate(module_name_, req.frame_rate);
+  //res.result = camera_proxy_->setFrameRate(module_name_, req.frame_rate);
 
-  if (res.result) {
-    active_fps_ = req.frame_rate;
-    delete active_rate_;
-    active_rate_ = new ros::Rate(active_fps_);
-  }
+  //if (res.result) {
+  //active_fps_ = req.frame_rate;
+  //delete active_rate_;
+  //active_rate_ = new ros::Rate(active_fps_);
+  //}
 
   return true;
 }
@@ -651,12 +583,11 @@ bool CameraNode::set_color_space(camera_msgs::SetColorSpace::Request&  req,
       return true;
   }
 
-  res.result = camera_proxy_->setColorSpace(module_name_, new_color_space);
+  //res.result = camera_proxy_->setColorSpace(module_name_, new_color_space);
 
-  if (res.result) {
-    active_color_space_ = new_color_space;
-    Update();
-  }
+  // if (res.result) {
+  //   active_color_space_ = new_color_space;
+  // }
 
   return true;
 }

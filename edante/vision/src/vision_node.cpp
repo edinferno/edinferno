@@ -32,8 +32,8 @@ using ros::serialization::Serializer;
  */
 VisionNode::VisionNode() :
   nh_("vision"),
-  shdmem_(open_only, "camera_image", read_only),
-  shdmem_mtx_(open_only, "camera_image_mutex"),
+  shdmem_(open_only, "active_camera", read_only),
+  shdmem_mtx_(open_only, "active_camera"),
   horizon_estimator_(nh_),
   ball_detector_(nh_),
   line_detector_(nh_),

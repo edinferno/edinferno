@@ -81,13 +81,12 @@ class CameraNode : public AL::ALModule {
   image_transport::CameraPublisher segmented_image_pub_;
   image_transport::Publisher segmented_rgb_image_pub_;
 
-  // Message structs
-  sensor_msgs::Image image_;
-  sensor_msgs::Image segmented_image_;
-  sensor_msgs::Image segmented_rgb_image_;
-
   // NaoQi related members
-  AL::ALVideoDeviceProxy* camera_proxy_;
+  AL::ALVideoDeviceProxy* cameras_proxy_;
+  std::vector<int> camera_ids_;
+  std::vector<int> camera_resolutions_;
+  std::vector<int> camera_color_spaces_;
+
   AL::ALMotionProxy* motion_proxy_;
 
   // Camera instances
@@ -97,21 +96,7 @@ class CameraNode : public AL::ALModule {
   // Active settings
   const Camera* active_cam_;
 
-  // AL::kQQVGA  160*120px
-  // AL::kQVGA   320*240px
-  // AL::kVGA    640*480px
-  // AL::k4VGA   1280*960px
-  int active_resolution_;
-
-  // AL::kYUV422ColorSpace  0xY’Y’VVYYUU - native format (2 pixels)
-  // AL::kYUVColorSpace     0xVVUUYY
-  // AL::kRGBColorSpace     0xBBGGRR
-  // AL::kHSYColorSpace     0xYYSSHH
-  // AL::kBGRColorSpace     0xRRGGBB
-  int active_color_space_;
-
   // 1 - 30 FPS
-  int active_fps_;
   ros::Rate* active_rate_;
 
   // Camera calibration info
@@ -134,12 +119,19 @@ class CameraNode : public AL::ALModule {
   static const size_t kTableLen = kTableSize * kTableSize * kTableSize;
   PixelClass table_[kTableSize][kTableSize][kTableSize];
 
-  // Shared memory
+
   static const size_t kShdMemSize = 1280 * 960 + 128;  // k4VGA + misc
-  boost::interprocess::shared_memory_object shdmem_;
-  boost::interprocess::mapped_region* shdmem_region_;
-  uint8_t* shdmem_ptr_;
-  boost::interprocess::named_mutex* shdmem_mtx_;
+  // Shared memory for the active camera image
+  boost::interprocess::shared_memory_object active_shdmem_;
+  boost::interprocess::mapped_region* active_shdmem_region_;
+  uint8_t* active_shdmem_ptr_;
+  boost::interprocess::named_mutex* active_shdmem_mtx_;
+
+  // Shared memory for the top camera greyscale image
+  boost::interprocess::shared_memory_object grey_shdmem_;
+  boost::interprocess::mapped_region* grey_shdmem_region_;
+  uint8_t* grey_shdmem_ptr_;
+  boost::interprocess::named_mutex* grey_shdmem_mtx_;
 
   /**
   * @brief Initialised the module
@@ -173,7 +165,9 @@ class CameraNode : public AL::ALModule {
   * @param transform The camera frame transformation to be copied to memory
   * @param transform The head angles to be copied to memory
   */
-  void WriteToSharedMemory(const sensor_msgs::Image& image,
+  void WriteToSharedMemory(boost::interprocess::named_mutex* mtx,
+                           uint8_t* shdmem_ptr,
+                           const sensor_msgs::Image& image,
                            const sensor_msgs::CameraInfo& cam_info,
                            const std::vector<float>& transform,
                            const std::vector<float>& head_angles);
@@ -195,18 +189,6 @@ class CameraNode : public AL::ALModule {
   */
   void ColorSegmentedImage(const sensor_msgs::Image& seg,
                            sensor_msgs::Image& rgb);
-  /**
-  * @brief Updates the manually allocated images and camera_info.
-  */
-  void Update();
-  /**
-  * @brief Updates the allocated images to reflect the currently active camera settings.
-  */
-  void UpdateImage();
-  /**
-  * @brief Updates the currently active camera_info to reflect the active camera settings.
-  */
-  void UpdateCameraInfo();
 
   // Service callbacks
   /**
