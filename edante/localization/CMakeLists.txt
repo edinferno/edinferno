@@ -6,6 +6,8 @@ project(localization)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  signalling_msgs
+  motion_planning_msgs
   localization_msgs
   motion_msgs
   geometry_msgs

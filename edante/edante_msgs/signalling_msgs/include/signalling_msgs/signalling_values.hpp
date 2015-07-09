@@ -33,7 +33,9 @@ enum Monitor_Mode {
   BOTTOM_CAMERA = 1,
   TOP_CAMERA = 2,
   BALL_SEEN = 3,
-  BALL_LOST = 4
+  PTAM_ACTIVE = 4,
+  BALL_LOST = 5,
+  PTAM_LOST = 6
 };
 }
 

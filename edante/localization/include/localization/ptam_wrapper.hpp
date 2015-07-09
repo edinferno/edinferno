@@ -19,6 +19,8 @@
 #include <geometry_msgs/Pose2D.h>
 #include <motion_msgs/GetRobotPosition.h>
 #include <motion_msgs/Position.h>
+#include <signalling_msgs/signalling_values.hpp>
+#include <motion_planning_msgs/MonitorMode.h>
 #include <localization_msgs/GetRobotPose.h>
 #include <localization_msgs/SetPoseOffset.h>
 
@@ -32,6 +34,8 @@ class PTAMWrapper {
 
   void rosSetup();
 
+  void update();
+
   void loadParams();
 
   void poseCB(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg);
@@ -43,6 +47,8 @@ class PTAMWrapper {
 
   bool getRobotPose(localization_msgs::GetRobotPose::Request& req,
                     localization_msgs::GetRobotPose::Response& res);
+
+  void calcCurrPose();
 
  private:
   // Constants
@@ -57,11 +63,15 @@ class PTAMWrapper {
   ros::Subscriber ptam_pose_sub_;
   ros::Subscriber ptam_info_sub_;
   ros::ServiceClient get_odom_pose_client_;
+  ros::ServiceClient monitor_client_;
+  ros::Publisher robot_pose_pub_;
   ros::ServiceServer srv_set_pose_offset_;
   ros::ServiceServer srv_get_robot_pose_;
   motion_msgs::GetRobotPosition get_robot_pos_srv_;
   motion_msgs::Position last_odom_pose_;
   motion_msgs::Position curr_odom_pose_;
+  motion_planning_msgs::MonitorMode ptam_active_srv_;
+  motion_planning_msgs::MonitorMode ptam_inactive_srv_;
   geometry_msgs::Pose2D odom_diff_;
   geometry_msgs::Pose2D pose_offset_;
   geometry_msgs::PoseWithCovarianceStamped ptam_pose_;

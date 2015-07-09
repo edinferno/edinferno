@@ -11,12 +11,15 @@
 PTAMWrapper::PTAMWrapper(ros::NodeHandle nh) {
   nh_ = nh;
   this->rosSetup();
+  this->init();
 }
 
 PTAMWrapper::~PTAMWrapper() {;}
 
 void PTAMWrapper::init() {
   outside_field_ = false;
+  ptam_active_srv_.request.monitor_mode = MonitorMode::PTAM_ACTIVE;
+  ptam_inactive_srv_.request.monitor_mode = MonitorMode::PTAM_LOST;
 }
 
 void PTAMWrapper::rosSetup() {
@@ -28,11 +31,21 @@ void PTAMWrapper::rosSetup() {
   get_odom_pose_client_ = nh_.serviceClient<motion_msgs::GetRobotPosition>(
                             "/motion/get_robot_position", true);
   get_odom_pose_client_.waitForExistence();
+  monitor_client_ = nh_.serviceClient<motion_planning_msgs::MonitorMode>(
+                      "/motion_planning/monitor_mode", true);
+  monitor_client_.waitForExistence();
+  robot_pose_pub_ = nh_.advertise <geometry_msgs::Pose2D>
+                    ("/world/robot_pose", 1, true);
   srv_set_pose_offset_ =
     nh_.advertiseService("set_pose_offset", &PTAMWrapper::setPoseOffset, this);
   srv_get_robot_pose_ =
     nh_.advertiseService("get_robot_pose", &PTAMWrapper::getRobotPose, this);
   get_robot_pos_srv_.request.use_sensors = true;
+}
+
+void PTAMWrapper::update() {
+  this->calcCurrPose();
+  monitor_client_.call(ptam_inactive_srv_);
 }
 
 void PTAMWrapper::loadParams() {
@@ -43,10 +56,12 @@ void PTAMWrapper::loadParams() {
 void PTAMWrapper::poseCB(const
                          geometry_msgs::PoseWithCovarianceStamped::ConstPtr&
                          msg) {
+  robot_pose_pub_.publish(curr_robot_pose_);
   ptam_pose_ = *msg;
   get_odom_pose_client_.call(get_robot_pos_srv_);
   // Store odom pose given by robot, used for odometry offset
   last_odom_pose_ = get_robot_pos_srv_.response.position;
+  monitor_client_.call(ptam_active_srv_);
 }
 
 void PTAMWrapper::infoCB(const ptam_com::ptam_info::ConstPtr& msg) {
@@ -71,6 +86,12 @@ bool PTAMWrapper::setPoseOffset(localization_msgs::SetPoseOffset::Request& req,
 
 bool PTAMWrapper::getRobotPose(localization_msgs::GetRobotPose::Request& req,
                                localization_msgs::GetRobotPose::Response& res) {
+  this->calcCurrPose();
+  res.pose = curr_robot_pose_;
+  return true;
+}
+
+void PTAMWrapper::calcCurrPose() {
   // Get current pose from odometry
   get_odom_pose_client_.call(get_robot_pos_srv_);
   curr_odom_pose_ = get_robot_pos_srv_.response.position;
@@ -103,7 +124,5 @@ bool PTAMWrapper::getRobotPose(localization_msgs::GetRobotPose::Request& req,
   } else {
     outside_field_ = false;
   }
-
-  res.pose = curr_robot_pose_;
-  return true;
+  robot_pose_pub_.publish(curr_robot_pose_);
 }

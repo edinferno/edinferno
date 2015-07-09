@@ -45,11 +45,15 @@
   <build_depend>motion_msgs</build_depend>
   <build_depend>geometry_msgs</build_depend>
   <build_depend>ptam_com</build_depend>
+  <build_depend>signalling_msgs</build_depend>
+  <build_depend>motion_planning_msgs</build_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>localization_msgs</run_depend>
   <run_depend>motion_msgs</run_depend>
   <run_depend>geometry_msgs</run_depend>
   <run_depend>ptam_com</run_depend>
+  <run_depend>signalling_msgs</run_depend>
+  <run_depend>motion_planning_msgs</run_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
