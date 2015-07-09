@@ -121,7 +121,13 @@ add_executable(navigation
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(navigation navigation_msgs)
+add_dependencies(navigation
+  navigation_msgs_gencpp
+  motion_msgs_gencpp
+  navigation_msgs_gencpp
+  signalling_msgs_gencpp
+  vision_msgs_gencpp
+  std_msgs_gencpp)
 
 # Specify libraries to link a library or executable target against
 target_link_libraries(navigation
