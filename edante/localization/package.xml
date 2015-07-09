@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>agent</name>
+  <name>localization</name>
   <version>0.0.0</version>
-  <description>The agent package</description>
+  <description>The localization package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
@@ -19,7 +19,7 @@
   <!-- Url tags are optional, but mutiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/agent</url> -->
+  <!-- <url type="website">http://wiki.ros.org/localization</url> -->
 
 
   <!-- Author tags are optional, mutiple are allowed, one per tag -->
@@ -40,19 +40,16 @@
   <!-- Use test_depend for packages you need only for testing: -->
   <!--   <test_depend>gtest</test_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>rospy</build_depend>
-  <build_depend>smach</build_depend>
-  <build_depend>smach_ros</build_depend>
-  <build_depend>actionlib</build_depend>
-  <build_depend>actionlib_msgs</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>localization_msgs</build_depend>
+  <build_depend>motion_msgs</build_depend>
   <build_depend>geometry_msgs</build_depend>
-  <run_depend>rospy</run_depend>
-  <run_depend>smach</run_depend>
-  <run_depend>smach_ros</run_depend>
-  <run_depend>actionlib</run_depend>
-  <run_depend>actionlib_msgs</run_depend>
+  <build_depend>ptam_com</build_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>localization_msgs</run_depend>
+  <run_depend>motion_msgs</run_depend>
   <run_depend>geometry_msgs</run_depend>
-
+  <run_depend>ptam_com</run_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

@@ -95,9 +95,9 @@ add_executable(joy_remote
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(motion motion_msgs)
-add_dependencies(srv_test motion_msgs)
-add_dependencies(joy_remote motion_msgs)
+add_dependencies(motion motion_msgs_gencpp)
+add_dependencies(srv_test motion_msgs_gencpp)
+add_dependencies(joy_remote motion_msgs_gencpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(motion

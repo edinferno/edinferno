@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<!--
+This launch file starts a series of nodes for the Edante project.
+
+If you receive an error message that contains "Excecute as root"
+then go to the bin folder and execute: sudo setcap cap_net_raw+ep
+or enable the USE_SETCAP flag in the cmake file and recompile again.
+-->
+
+<launch>
+    <rosparam file="/home/nao/config/world/pitch.yaml" command="load" />
+    <node name="localization" pkg="localization" type="localization" output="screen">
+    </node>
+</launch>

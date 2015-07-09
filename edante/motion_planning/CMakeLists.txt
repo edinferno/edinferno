@@ -120,7 +120,11 @@ add_executable(motion_planning
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(motion_planning motion_msgs)
+add_dependencies(motion_planning
+  motion_msgs_gencpp
+  signalling_msgs_gencpp
+  spl_msgs_gencpp
+  motion_planning_msgs_gencpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(motion_planning
