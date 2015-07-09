@@ -5,6 +5,7 @@ mkdir -p /home/nao/config/camera
 # Add empty calibration files
 cp ./resources/top.yaml /home/nao/config/camera/
 cp ./resources/bottom.yaml /home/nao/config/camera/
+cp ./resources/pitch.yaml /home/nao/config/world/
 
 # Update autload.ini so that naoqi loads the camera module
 cp ./resources/autoload.ini /home/nao/naoqi/preferences/
