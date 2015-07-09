@@ -98,7 +98,7 @@ bool PTAMWrapper::getRobotPose(localization_msgs::GetRobotPose::Request& req,
   // Check whether current pose is inside pitch
   if (abs(curr_robot_pose_.x) > field_length_ / 2) {
     outside_field_ = true;
-  } else if (abs(curr_robot_pose.y) > field_width_ / 2) {
+  } else if (abs(curr_robot_pose_.y) > field_width_ / 2) {
     outside_field_ = true;
   } else {
     outside_field_ = false;
