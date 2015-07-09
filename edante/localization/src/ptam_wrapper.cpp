@@ -19,7 +19,7 @@ void PTAMWrapper::init() {;}
 
 void PTAMWrapper::rosSetup() {
   ROS_INFO_STREAM("Setting up Localization");
-  ptam_pose_sub_ = nh_.subscribe("/vslam/pose", 1, &PTAMWrapper::poseCB,
+  ptam_pose_sub_ = nh_.subscribe("/vslam/robot_pose", 1, &PTAMWrapper::poseCB,
                                  this);
   ptam_info_sub_ = nh_.subscribe("/vslam/info", 1, &PTAMWrapper::infoCB,
                                  this);
@@ -34,7 +34,6 @@ void PTAMWrapper::rosSetup() {
 }
 
 void PTAMWrapper::loadParams() {
-  // std::string nn = "youbot_experiment/";  // Add node parameter path
   ros::param::param("field_length", field_length_, 9000.0f);
   ros::param::param("field_width", field_width_, 6000.0f);
 }
@@ -44,6 +43,7 @@ void PTAMWrapper::poseCB(const
                          msg) {
   ptam_pose_ = *msg;
   get_odom_pose_client_.call(get_robot_pos_srv_);
+  // Store odom pose given by robot, used for odometry offset
   last_odom_pose_ = get_robot_pos_srv_.response.position;
 }
 
@@ -53,12 +53,14 @@ void PTAMWrapper::infoCB(const ptam_com::ptam_info::ConstPtr& msg) {
 
 bool PTAMWrapper::setPoseOffset(localization_msgs::SetPoseOffset::Request& req,
                                 localization_msgs::SetPoseOffset::Response& res) {
+  // Transform PTAM's orientation in quaternion into Euler
   tf::Quaternion q;
   tf::quaternionMsgToTF(ptam_pose_.pose.pose.orientation, q);
-  // TODO: Enable setting current pose as offset
   tf::Matrix3x3 m(q);
   double roll, pitch, yaw;
   m.getRPY(roll, pitch, yaw);
+
+  // Store pose offset robot pose is in the pitch frame of reference
   pose_offset_.x = -ptam_pose_.pose.pose.position.z - req.offset.x;
   pose_offset_.y = ptam_pose_.pose.pose.position.x - req.offset.y;
   pose_offset_.theta = pitch - req.offset.theta;
@@ -67,9 +69,11 @@ bool PTAMWrapper::setPoseOffset(localization_msgs::SetPoseOffset::Request& req,
 
 bool PTAMWrapper::getRobotPose(localization_msgs::GetRobotPose::Request& req,
                                localization_msgs::GetRobotPose::Response& res) {
+  // Get current pose from odometry
   get_odom_pose_client_.call(get_robot_pos_srv_);
   curr_odom_pose_ = get_robot_pos_srv_.response.position;
 
+  // Transform PTAM's orientation quaternion into Euler
   tf::Quaternion q;
   tf::quaternionMsgToTF(ptam_pose_.pose.pose.orientation, q);
   tf::Matrix3x3 m(q);
