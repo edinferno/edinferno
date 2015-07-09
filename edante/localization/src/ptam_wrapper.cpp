@@ -15,7 +15,9 @@ PTAMWrapper::PTAMWrapper(ros::NodeHandle nh) {
 
 PTAMWrapper::~PTAMWrapper() {;}
 
-void PTAMWrapper::init() {;}
+void PTAMWrapper::init() {
+  outside_field_ = false;
+}
 
 void PTAMWrapper::rosSetup() {
   ROS_INFO_STREAM("Setting up Localization");
@@ -94,6 +96,13 @@ bool PTAMWrapper::getRobotPose(localization_msgs::GetRobotPose::Request& req,
     -pitch - pose_offset_.theta + odom_diff_.theta;
 
   // Check whether current pose is inside pitch
+  if (abs(curr_robot_pose_.x) > field_length_ / 2) {
+    outside_field_ = true;
+  } else if (abs(curr_robot_pose.y) > field_width_ / 2) {
+    outside_field_ = true;
+  } else {
+    outside_field_ = false;
+  }
 
   res.pose = curr_robot_pose_;
   return true;

@@ -50,7 +50,7 @@ class PTAMWrapper {
   float field_width_;
 
   // Flags
-  bool lost_;
+  bool outside_field_;
 
   ros::NodeHandle nh_;
 
