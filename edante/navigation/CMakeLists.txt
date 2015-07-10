@@ -116,6 +116,7 @@ include_directories(
 add_executable(navigation
  src/navigation.cpp
  src/move_to.cpp
+ src/align_to_pose.cpp
  src/turn_to_pose.cpp
  src/walk_to_pose.cpp
  src/walk_to_ball.cpp
