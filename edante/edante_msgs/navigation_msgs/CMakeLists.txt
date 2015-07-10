@@ -63,6 +63,7 @@ add_action_files(
   FILES
   MoveTo.action
   TurnToPose.action
+  WalkToPose.action
   WalkToBall.action
   SearchForBall.action
 )

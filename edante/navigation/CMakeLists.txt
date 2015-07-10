@@ -117,6 +117,7 @@ add_executable(navigation
  src/navigation.cpp
  src/move_to.cpp
  src/turn_to_pose.cpp
+ src/walk_to_pose.cpp
  src/walk_to_ball.cpp
  src/search_for_ball.cpp
  )
