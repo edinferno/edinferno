@@ -21,7 +21,7 @@ void PTAMWrapper::init() {
 
 void PTAMWrapper::rosSetup() {
   ROS_INFO_STREAM("Setting up Localization");
-  ptam_pose_sub_ = nh_.subscribe("/vslam/robot_pose", 1, &PTAMWrapper::poseCB,
+  ptam_pose_sub_ = nh_.subscribe("/vslam/pose_world", 1, &PTAMWrapper::poseCB,
                                  this);
   ptam_info_sub_ = nh_.subscribe("/vslam/info", 1, &PTAMWrapper::infoCB,
                                  this);
@@ -64,7 +64,7 @@ bool PTAMWrapper::setPoseOffset(localization_msgs::SetPoseOffset::Request& req,
 
   // Store pose offset robot pose is in the pitch frame of reference
   pose_offset_.x = -ptam_pose_.pose.pose.position.z - req.offset.x;
-  pose_offset_.y = ptam_pose_.pose.pose.position.x - req.offset.y;
+  pose_offset_.y = -ptam_pose_.pose.pose.position.x - req.offset.y;
   pose_offset_.theta = pitch - req.offset.theta;
   return true;
 }
@@ -93,7 +93,7 @@ bool PTAMWrapper::getRobotPose(localization_msgs::GetRobotPose::Request& req,
   curr_robot_pose_.y =
     -ptam_pose_.pose.pose.position.x - pose_offset_.y + odom_diff_.y;
   curr_robot_pose_.theta =
-    -pitch - pose_offset_.theta + odom_diff_.theta;
+    pitch - pose_offset_.theta + odom_diff_.theta;
 
   // Check whether current pose is inside pitch
   if (abs(curr_robot_pose_.x) > field_length_ / 2) {
