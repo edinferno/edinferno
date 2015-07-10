@@ -9,12 +9,16 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
 -->
 
 <launch>
-        <node name="motion" pkg="motion" type="motion" output="screen">
-        </node>
-
-        <node name="sensing" pkg="sensing" type="sensing" output="screen">
-        </node>
-
-        <node name="signalling" pkg="signalling" type="signalling" output="screen">
-        </node>
+    <node name="motion" pkg="motion" type="motion" output="screen">
+    </node>
+    <node name="sensing" pkg="sensing" type="sensing" output="screen">
+    </node>
+    <node name="signalling" pkg="signalling" type="signalling" output="screen">
+    </node>
+    <node name="vision" pkg="vision" type="vision" output="screen">
+    </node>
+    <node name="motion_planning" pkg="motion_planning" type="motion_planning" output="screen">
+    </node>
+    <node name="navigation" pkg="navigation" type="navigation" output="screen">
+    </node>
 </launch>
