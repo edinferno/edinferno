@@ -62,6 +62,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_action_files(
   FILES
   MoveTo.action
+  TurnToPose.action
   WalkToBall.action
   SearchForBall.action
 )
