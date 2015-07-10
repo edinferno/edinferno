@@ -94,16 +94,10 @@ class CameraNode : public AL::ALModule {
   Camera* bot_cam_;
 
   // Active settings
-  const Camera* active_cam_;
+  Camera* active_cam_;
 
   // 1 - 30 FPS
   ros::Rate* active_rate_;
-
-  // Camera calibration info
-  sensor_msgs::CameraInfo active_cam_info_;
-
-  // Camera frame name
-  std::string active_camera_frame_name_;
 
   // ROS service servers
   ros::ServiceServer set_active_camera_server_;
@@ -115,8 +109,6 @@ class CameraNode : public AL::ALModule {
 
   // Color table
   static const char* table_file_name_;
-  static const size_t kTableSize = 64;
-  static const size_t kTableLen = kTableSize * kTableSize * kTableSize;
   PixelClass table_[kTableSize][kTableSize][kTableSize];
 
 
@@ -171,25 +163,6 @@ class CameraNode : public AL::ALModule {
                            const sensor_msgs::CameraInfo& cam_info,
                            const std::vector<float>& transform,
                            const std::vector<float>& head_angles);
-  /**
-  * @brief Segments the image using the color look up table
-  * @details The 3 color channels of a pixel are used as indecies to the color
-  *          lookup table in order to classify them.
-  * @param raw A YUV442 encoded input image.
-  * @param seg The segmented image in MONO8 encoding. The values are determined
-  *            by the PixelClass enumeration.
-  */
-  void SegmentImage(const sensor_msgs::Image& raw, sensor_msgs::Image& seg);
-  /**
-  * @brief Color the segmented image for visualisation only.
-  * @details Each pixel is colored according to its class.
-  *
-  * @param seg The input segmented image. It should be in MONO8 encoding.
-  * @param rgb The output color image.
-  */
-  void ColorSegmentedImage(const sensor_msgs::Image& seg,
-                           sensor_msgs::Image& rgb);
-
   // Service callbacks
   /**
   * @brief Set the currently active camera (top or bottom).

@@ -260,6 +260,7 @@ void CameraNode::Spin() {
   while (!is_module_closing_) {
     stamp = ros::Time::now();
 
+    //------------------------------ Top Camera --------------------------------
     // Read the frames from both cameras
     AL::ALValue val = cameras_proxy_->getImagesLocal(module_name_);
 
@@ -281,29 +282,32 @@ void CameraNode::Spin() {
                         transform,
                         head_angles);
 
-    // Publish the image with cam_info
-    //image_pub_.publish(active_cam_->greyscale_image(), active_cam_->cam_info());
+    //----------------------------- Active Camera ------------------------------
+    if (image_pub_.getNumSubscribers() > 0) {
+      active_cam_->SetImage(reinterpret_cast<const AL::ALImage*>(
+                              static_cast<int>(val[active_cam_->id()])),
+                            stamp);
+      image_pub_.publish(active_cam_->image(), active_cam_->cam_info());
+    }
 
-    // Segment the image and publish it
-    // SegmentImage(image_, segmented_image_);
+    active_cam_->SetSegmentedImage(reinterpret_cast<const AL::ALImage*>(
+                                     static_cast<int>(val[active_cam_->id()])),
+                                   table_, stamp);
 
-    // // Publish segmented image
-    // segmented_image_.header.stamp = image_.header.stamp;
-    // segmented_image_pub_.publish(segmented_image_, active_cam_info_);
+    WriteToSharedMemory(active_shdmem_mtx_,
+                        active_shdmem_ptr_,
+                        active_cam_->segmented_image(),
+                        active_cam_->cam_info(),
+                        transform,
+                        head_angles);
 
-    // // Move image and camera info to shared memory
-    // WriteToSharedMemory(segmented_image_, active_cam_info_,
-    //                     transform, head_angles);
+    segmented_image_pub_.publish(active_cam_->segmented_image(),
+                                 active_cam_->cam_info());
 
-    // // Publish segmented RGB image if necessary
-    // if (segmented_rgb_image_pub_.getNumSubscribers() > 0) {
-    //   if (segmented_image_pub_.getNumSubscribers() == 0) {
-    //     SegmentImage(image_, segmented_image_);
-    //   }
-    //   ColorSegmentedImage(segmented_image_, segmented_rgb_image_);
-    //   segmented_rgb_image_.header.stamp = image_.header.stamp;
-    //   segmented_rgb_image_pub_.publish(segmented_rgb_image_);
-    // }
+    // Publish segmented RGB image if necessary
+    if (segmented_rgb_image_pub_.getNumSubscribers() > 0) {
+      segmented_rgb_image_pub_.publish(active_cam_->segmented_rgb_image());
+    }
 
     // Release the ALImage
     cameras_proxy_->releaseImages(module_name_);
@@ -367,87 +371,6 @@ void CameraNode::WriteToSharedMemory(boost::interprocess::named_mutex* mtx,
   mtx->unlock();
 }
 /**
- * @brief Segments the image using the color look up table
- * @details The 3 color channels of a pixel are used as indecies to the color
- *          lookup table in order to classify them.
- * @param raw A YUV442 encoded input image.
- * @param seg The segmented image in MONO8 encoding. The values are determined
- *            by the PixelClass enumeration.
- */
-void CameraNode::SegmentImage(const sensor_msgs::Image& raw,
-                              sensor_msgs::Image& seg) {
-  for (size_t i = 0, j = 0; i < seg.data.size(); i += 2, j += 4) {
-    // First pixel of the YUY'V pair
-    // Divde by 4, i.e. shift right by two since the size
-    // of each dimension of our lookup color table is 64.
-    uint8_t y = raw.data[j + 0] >> 2;
-    uint8_t u = raw.data[j + 1] >> 2;
-    uint8_t v = raw.data[j + 3] >> 2;
-    seg.data[i] = table_[y][u][v];
-    // Second pixel of the YUY'V pair
-    y = raw.data[j + 2] >> 2;
-    seg.data[i + 1] = table_[y][u][v];
-  }
-}
-/**
- * @brief Color the segmented image for visualisation only.
- * @details Each pixel is colored according to its class.
- *
- * @param seg The input segmented image. It should be in MONO8 encoding.
- * @param rgb The output color image.
- */
-void CameraNode::ColorSegmentedImage(const sensor_msgs::Image& seg,
-                                     sensor_msgs::Image& rgb) {
-  // Popoulate the new image buffer
-  for (size_t i = 0, j = 0; i < seg.data.size(); ++i, j += 3) {
-    // Choose color based on the pixel class
-    switch (seg.data[i]) {
-      case Nothing: {
-        // Gray
-        rgb.data[j]     = 128;
-        rgb.data[j + 1] = 128;
-        rgb.data[j + 2] = 128;
-        break;
-      }
-      case Ball: {
-        // Orange
-        rgb.data[j]     = 255;
-        rgb.data[j + 1] = 128;
-        rgb.data[j + 2] = 0;
-        break;
-      }
-      case GoalAndLines: {
-        // White
-        rgb.data[j]     = 255;
-        rgb.data[j + 1] = 255;
-        rgb.data[j + 2] = 255;
-        break;
-      }
-      case Field: {
-        // Field
-        rgb.data[j]     = 64;
-        rgb.data[j + 1] = 255;
-        rgb.data[j + 2] = 64;
-        break;
-      }
-      case TeamRed: {
-        // Red
-        rgb.data[j]     = 255;
-        rgb.data[j + 1] = 0;
-        rgb.data[j + 2] = 0;
-        break;
-      }
-      case TeamBlue: {
-        // Blue
-        rgb.data[j]     = 0;
-        rgb.data[j + 1] = 0;
-        rgb.data[j + 2] = 255;
-        break;
-      }
-    }
-  }
-}
-/**
  * @brief Set the currently active camera (top or bottom).
  *
  * @param req Service request.
@@ -457,34 +380,21 @@ void CameraNode::ColorSegmentedImage(const sensor_msgs::Image& seg,
  */
 bool CameraNode::set_active_camera(camera_msgs::SetActiveCamera::Request&  req,
                                    camera_msgs::SetActiveCamera::Response& res) {
-  int new_active_cam_id;
   Camera* new_active_cam;
-  std::string new_active_cam_frame;
   switch (req.active_camera) {
     case 0:
-      new_active_cam_id = AL::kTopCamera;
       new_active_cam = top_cam_;
-      new_active_cam_frame = "CameraTop";
       break;
     case 1:
-      new_active_cam_id = AL::kBottomCamera;
       new_active_cam = bot_cam_;
-      new_active_cam_frame = "CameraBottom";
       break;
     default:
       res.result = false;
       return true;
   }
 
-  //res.result = camera_proxy_->setActiveCamera(module_name_, new_active_cam_id);
-
   if (res.result) {
     active_cam_ = new_active_cam;
-    active_camera_frame_name_ = new_active_cam_frame;
-    //camera_proxy_->setColorSpace(module_name_, active_color_space_);
-    //camera_proxy_->setResolution(module_name_, active_resolution_);
-    //camera_proxy_->setFrameRate(module_name_, active_fps_);
-
   }
 
   return true;

@@ -22,6 +22,8 @@
 
 #include <camera_info_manager/camera_info_manager.h>
 
+#include "camera/color_table.hpp"
+
 /**
  * @brief Represents a physical camera device
  * @details The class represents a physical camera device - top or bottom
@@ -58,6 +60,9 @@ class Camera {
 
   void SetImage(const AL::ALImage* alimage, ros::Time stamp);
   void SetGreyscaleImage(const AL::ALImage* alimage, ros::Time stamp);
+  void SetSegmentedImage(const AL::ALImage* alimage,
+                         PixelClass table[][kTableSize][kTableSize],
+                         ros::Time stamp);
 
   void Update();
   void UpdateImage();
@@ -95,6 +100,12 @@ class Camera {
   const sensor_msgs::Image& greyscale_image() const {
     return greyscale_image_;
   }
+
+  const sensor_msgs::Image& segmented_image() const {
+    return segmented_image_;
+  }
+
+  const sensor_msgs::Image& segmented_rgb_image();
 
  private:
   static int fps_;
@@ -136,6 +147,12 @@ class Camera {
 
   // Greyscale image
   sensor_msgs::Image greyscale_image_;
+
+  // Segmented image
+  sensor_msgs::Image segmented_image_;
+
+  // Segmented image
+  sensor_msgs::Image segmented_rgb_image_;
 
   // Manager of the camera info (used for camera calibration)
   camera_info_manager::CameraInfoManager* cam_info_manager_;

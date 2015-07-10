@@ -5,6 +5,8 @@
 *      @desc: Color table definitions
 */
 
+#ifndef COLOR_TABLE_HPP
+#define COLOR_TABLE_HPP
 // TODO(svepe): Use this header for the camera color calibration.
 // If you change the enum, remember to update camera_color_calibration.hpp
 enum PixelClass {
@@ -15,3 +17,8 @@ enum PixelClass {
   TeamRed = 96,
   TeamBlue = 128
 };
+
+const size_t kTableSize = 64;
+const size_t kTableLen = kTableSize * kTableSize * kTableSize;
+
+#endif
