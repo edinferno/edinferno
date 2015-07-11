@@ -17,17 +17,18 @@
 int main(int argc, char** argv) {
   ros::init(argc, argv, "motion_planning");
   ros::NodeHandle nh("motion_planning");
+  ros::AsyncSpinner spinner(2);
+  spinner.start();
   ROS_INFO("Running Motion Planning");
+  Monitor monitor(&nh);
   SetupAction setup(nh, "setup");
   StandUpAction stand(nh, "stand_up");
   SitDownAction sit(nh, "sit_down");
   SitRestAction rest(nh, "sit_rest");
   KickStrongAction kick(nh, "kick_strong");
   TransitionAction await(nh, "transition");
-  Monitor monitor(&nh);
 
-  ros::spin();
-
+  ros::waitForShutdown();
   ros::shutdown();
 
   return 0;

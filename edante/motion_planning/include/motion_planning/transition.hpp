@@ -21,6 +21,7 @@
 #include <std_msgs/UInt8.h>
 #include <std_msgs/Bool.h>
 // #include <comms_msgs/GameState.h>
+#include <motion_msgs/SetPosture.h>
 #include <motion_planning_msgs/TransitionAction.h>
 #include <signalling_msgs/signalling_values.hpp>
 #include <spl_msgs/RoboCupGameControlData.h>
@@ -44,13 +45,18 @@ class TransitionAction {
 
   void preemptCB();
 
+  void init();
+
   void checkChestTransition(const std_msgs::UInt8::ConstPtr& msg);
   void checkGCTransition(const std_msgs::UInt8::ConstPtr& msg);
   void checkFallenTransition(const std_msgs::Bool::ConstPtr& msg);
   void checkPenalizedTransition(const std_msgs::UInt8::ConstPtr& msg);
+  void checkSmachOnline(const std_msgs::Bool::ConstPtr& msg);
 
  private:
   // Flags
+  bool smach_online_;
+  bool disabled_;
 
   // Variables
   uint8_t state_;
@@ -58,10 +64,17 @@ class TransitionAction {
   uint8_t chest_presses_;
 
   // ROS
+  std_srvs::Empty wakeup_srv_;
+  motion_msgs::SetPosture stand_srv_;
+  ros::ServiceClient wakeup_client_;
+  ros::ServiceClient stand_client_;
+  std_srvs::Empty rest_srv_;
+  ros::ServiceClient rest_client_;
   ros::Subscriber chest_sub_;
   ros::Subscriber game_state_sub_;
   ros::Subscriber has_fallen_sub_;
   ros::Subscriber penalized_sub_;
+  ros::Subscriber smach_online_sub_;
   std_srvs::Empty stop_move_srv_;
   ros::ServiceClient stop_move_client_;
   ros::Publisher manual_penalized_pub_;

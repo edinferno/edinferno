@@ -20,6 +20,7 @@
 #include <std_srvs/Empty.h>
 #include <std_msgs/Bool.h>
 #include <motion_planning_msgs/SetupAction.h>
+#include <motion_planning_msgs/MonitorMode.h>
 #include <signalling_msgs/FadeRGB.h>
 #include <signalling_msgs/signalling_values.hpp>
 
@@ -63,6 +64,8 @@ class SetupAction {
   ros::ServiceClient fade_rgb_client_;
   std_srvs::Empty stop_move_srv_;
   ros::ServiceClient stop_move_client_;
+  ros::ServiceClient monitor_client_;
+  motion_planning_msgs::MonitorMode clear_face_leds_srv_;
 };
 
 

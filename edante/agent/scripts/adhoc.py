@@ -13,6 +13,7 @@ import smach_ros
 from actionlib import *
 from actionlib_msgs.msg import *
 from agent import *
+from std_msgs.msg import Bool
 from motion_planning_msgs.msg import SetupAction, SetupGoal
 from motion_planning_msgs.msg import TransitionAction, TransitionGoal
 
@@ -63,6 +64,9 @@ def transition_all_term_cb(outcome_map):
 def main():
     rospy.init_node('agent_game_smach')
 
+    pub = rospy.Publisher('/smach/online', std_msgs.msg.Bool, queue_size=1, latch=True)
+
+    pub.publish(std_msgs.msg.Bool(True))
     # GAME STATES
     INITIAL = 0
     READY=1

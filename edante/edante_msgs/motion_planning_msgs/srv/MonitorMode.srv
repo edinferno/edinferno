@@ -1,9 +1,11 @@
 # Monitor modes
-# 0		Disable
-# 1		Bottom Camera
-# 2		Top Camera
-# 3		Ball Seen
-# 4		Ball Lost
+# 0   Disable
+# 1   Bottom Camera
+# 2   Top Camera
+# 3   Ball Seen
+# 4   PTAM Active
+# 5   Ball Lost
+# 6   PTAM Lost
 #
 uint8 monitor_mode
 ---

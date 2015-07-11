@@ -18,6 +18,9 @@ SetupAction::SetupAction(ros::NodeHandle nh, std::string name) :
   fade_rgb_client_ = nh_.serviceClient<signalling_msgs::FadeRGB>(
                        "/signalling/fade_rgb", true);
   fade_rgb_client_.waitForExistence();
+  monitor_client_ = nh_.serviceClient<motion_planning_msgs::MonitorMode>(
+                      "/motion_planning/monitor_mode", true);
+  monitor_client_.waitForExistence();
   ROS_INFO("Starting Setup action server");
   this->init();
   as_.start();
@@ -48,6 +51,7 @@ void SetupAction::init() {
   reset_rgb_srv_.request.name = "ChestLeds";
   reset_rgb_srv_.request.rgb = Colors::BLACK;
   reset_rgb_srv_.request.duration = 0.0;
+  clear_face_leds_srv_.request.monitor_mode = MonitorMode::DISABLE;
 }
 
 void SetupAction::goalCB() {
@@ -65,6 +69,7 @@ void SetupAction::executeCB() {
   ROS_INFO("Executing goal for %s", action_name_.c_str());
   bool going = true;
   bool success = true;
+  monitor_client_.call(clear_face_leds_srv_);
 
   if (as_.isPreemptRequested() || !ros::ok()) {
     ROS_INFO("%s: Preempted", action_name_.c_str());

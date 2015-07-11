@@ -24,10 +24,21 @@ TransitionAction::TransitionAction(ros::NodeHandle nh, std::string name) :
                                   &TransitionAction::checkFallenTransition, this);
   penalized_sub_ = nh_.subscribe("/comms/penalized", 1,
                                  &TransitionAction::checkPenalizedTransition, this);
+  smach_online_sub_ = nh_.subscribe("/smach/online", 1,
+                                    &TransitionAction::checkSmachOnline, this);
   manual_penalized_pub_ =
     nh_.advertise<std_msgs::UInt8>("/world/manually_penalized", 1, true);
-
+  rest_client_ = nh_.serviceClient<std_srvs::Empty>(
+                   "/motion/rest", true);
+  rest_client_.waitForExistence();
+  wakeup_client_ = nh_.serviceClient<std_srvs::Empty>(
+                     "/motion/wake_up", true);
+  wakeup_client_.waitForExistence();
+  stand_client_ = nh_.serviceClient<motion_msgs::SetPosture>(
+                    "/motion/goto_posture", true);
+  stand_client_.waitForExistence();
   ROS_INFO("Starting Transition action server");
+  this->init();
   as_.start();
 }
 
@@ -41,6 +52,13 @@ void TransitionAction::goalCB() {
 
 void TransitionAction::preemptCB() {
   as_.setPreempted();
+}
+
+void TransitionAction::init() {
+  disabled_ = false;
+  smach_online_ = false;
+  stand_srv_.request.posture_name = "Stand";
+  stand_srv_.request.speed = 1.0f;
 }
 
 void TransitionAction::checkChestTransition(const std_msgs::UInt8::ConstPtr&
@@ -76,8 +94,15 @@ void TransitionAction::checkChestTransition(const std_msgs::UInt8::ConstPtr&
       going = false;
     }
   } else if (chest_presses_ == 2) {
-    ROS_INFO("Chest Button twice");
     result_.outcome = state_;
+    if (!disabled_) {
+      rest_client_.call(rest_srv_);
+      disabled_ = true;
+    } else if (disabled_) {
+      wakeup_client_.call(wakeup_srv_);
+      stand_client_.call(stand_srv_);
+      disabled_ = false;
+    }
     // going = false;
     // } else if (chest_presses_ == 3) {
     //   ROS_INFO("Chest Button thrice");
@@ -95,44 +120,49 @@ void TransitionAction::checkChestTransition(const std_msgs::UInt8::ConstPtr&
 
 void TransitionAction::checkGCTransition(const std_msgs::UInt8::ConstPtr&
                                          msg) {
-  game_state_ = msg->data;
-  ROS_INFO("Executing goal for %s", action_name_.c_str());
-  bool going = true;
-  bool success = true;
+  if (smach_online_) {
+    game_state_ = msg->data;
+    ROS_INFO("Executing goal for %s", action_name_.c_str());
+    bool going = true;
+    bool success = true;
 
-  if (as_.isPreemptRequested() || !ros::ok()) {
-    ROS_INFO("%s: Preempted", action_name_.c_str());
-    as_.setPreempted();
-    success = false;
-    going = false;
-  }
+    if (as_.isPreemptRequested() || !ros::ok()) {
+      ROS_INFO("%s: Preempted", action_name_.c_str());
+      as_.setPreempted();
+      success = false;
+      going = false;
+    }
 
-  switch (game_state_) {
-  case GameState::INITIAL:
-    result_.outcome = "initial";
-    break;
-  case GameState::READY:
-    result_.outcome = "ready";
-    break;
-  case GameState::SET:
-    result_.outcome = "set";
-    break;
-  case GameState::PLAYING:
-    result_.outcome = "playing";
-    break;
-  case GameState::FINISHED:
-    result_.outcome = "finished";
-    break;
-  default:
-    success = false;
-  }
+    switch (game_state_) {
+    case GameState::INITIAL:
+      result_.outcome = "initial";
+      as_.setSucceeded(result_);
+      break;
+    case GameState::READY:
+      result_.outcome = "ready";
+      as_.setSucceeded(result_);
+      break;
+    case GameState::SET:
+      result_.outcome = "set";
+      as_.setSucceeded(result_);
+      break;
+    case GameState::PLAYING:
+      result_.outcome = "playing";
+      as_.setSucceeded(result_);
+      break;
+    case GameState::FINISHED:
+      result_.outcome = "finished";
+      as_.setSucceeded(result_);
+      break;
+    default:
+      success = false;
+    }
 
-  if (success) {
-    as_.setSucceeded(result_);
-  } else {
-    result_.outcome = "abort";
-    ROS_INFO("%s: Failed!", action_name_.c_str());
-    as_.setAborted(result_);
+    if (!success) {
+      result_.outcome = "abort";
+      ROS_INFO("%s: Failed!", action_name_.c_str());
+      as_.setAborted(result_);
+    }
   }
 }
 
@@ -147,29 +177,36 @@ void TransitionAction::checkFallenTransition(const std_msgs::Bool::ConstPtr&
 
 void TransitionAction::checkPenalizedTransition(const std_msgs::UInt8::ConstPtr&
                                                 msg) {
-  if (state_ != GameState::PENALIZED && msg->data != PENALTY_NONE) {
-    result_.outcome = "penalized";
-    as_.setSucceeded(result_);
-  } else if (state_ == GameState::PENALIZED && msg->data == PENALTY_NONE) {
-    switch (game_state_) {
-    case GameState::INITIAL:
-      result_.outcome = "initial";
-      break;
-    case GameState::READY:
-      result_.outcome = "ready";
-      break;
-    case GameState::SET:
-      result_.outcome = "set";
-      break;
-    case GameState::PLAYING:
-      result_.outcome = "playing";
-      break;
-    case GameState::FINISHED:
-      result_.outcome = "finished";
-      break;
-    default:
-      ROS_INFO("ERROR, got %d game_state", game_state_);
+  if (smach_online_) {
+    if (state_ != GameState::PENALIZED && msg->data != PENALTY_NONE) {
+      result_.outcome = "penalized";
+      as_.setSucceeded(result_);
+    } else if (state_ == GameState::PENALIZED && msg->data == PENALTY_NONE) {
+      switch (game_state_) {
+      case GameState::INITIAL:
+        result_.outcome = "initial";
+        break;
+      case GameState::READY:
+        result_.outcome = "ready";
+        break;
+      case GameState::SET:
+        result_.outcome = "set";
+        break;
+      case GameState::PLAYING:
+        result_.outcome = "playing";
+        break;
+      case GameState::FINISHED:
+        result_.outcome = "finished";
+        break;
+      default:
+        ROS_INFO("ERROR, got %d game_state", game_state_);
+      }
+      as_.setSucceeded(result_);
     }
-    as_.setSucceeded(result_);
   }
+}
+
+void TransitionAction::checkSmachOnline(const std_msgs::Bool::ConstPtr&
+                                        msg) {
+  smach_online_ = msg->data;
 }
