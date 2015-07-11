@@ -10,6 +10,4 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
 
 <launch>
     <rosparam file="/home/nao/config/world/pitch.yaml" command="load" />
-    <node name="localization" pkg="localization" type="localization" output="screen">
-    </node>
 </launch>

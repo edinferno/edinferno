@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   signalling_msgs
   vision_msgs
   std_msgs
+  geometry_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -115,6 +116,9 @@ include_directories(
 add_executable(navigation
  src/navigation.cpp
  src/move_to.cpp
+ src/align_to_pose.cpp
+ src/turn_to_pose.cpp
+ src/walk_to_pose.cpp
  src/walk_to_ball.cpp
  src/search_for_ball.cpp
  )
@@ -127,7 +131,8 @@ add_dependencies(navigation
   navigation_msgs_gencpp
   signalling_msgs_gencpp
   vision_msgs_gencpp
-  std_msgs_gencpp)
+  std_msgs_gencpp
+  geometry_msgs_gencpp)
 
 # Specify libraries to link a library or executable target against
 target_link_libraries(navigation

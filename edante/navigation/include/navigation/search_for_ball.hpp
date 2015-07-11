@@ -19,7 +19,7 @@
 #include <camera_msgs/SetActiveCamera.h>
 #include <motion_planning_msgs/MonitorMode.h>
 // Navigation values
-#include "navigation/navigation_values.hpp"
+#include "motion_msgs/motion_values.hpp"
 // Signalling values
 #include "signalling_msgs/signalling_values.hpp"
 
