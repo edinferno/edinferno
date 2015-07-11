@@ -7,6 +7,7 @@ project(comms)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
+  geometry_msgs
   net
   spl_msgs
 )

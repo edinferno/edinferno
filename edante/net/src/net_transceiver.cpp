@@ -13,7 +13,7 @@
 
 #include <arpa/inet.h>
 
-NetTransceiver::NetTransceiver() {
+NetTransceiver::NetTransceiver(int team_number) {
   // Socket option
   int yes = 1;
   // Set read timeout to 1ms
@@ -30,7 +30,7 @@ NetTransceiver::NetTransceiver() {
   sockaddr_in game_data_server;
   memset(&game_data_server, 0, sizeof(game_data_server));
   game_data_server.sin_family = AF_INET;
-  game_data_server.sin_port = htons(kGameDataPort);
+  game_data_server.sin_port = htons(GAMECONTROLLER_PORT);
   game_data_server.sin_addr.s_addr = INADDR_ANY;
   bind(game_data_sd_,
        reinterpret_cast<sockaddr*>(&game_data_server),
@@ -44,7 +44,7 @@ NetTransceiver::NetTransceiver() {
              sizeof(read_timeout));
   memset(&broadcast_spl_server_, 0, sizeof(broadcast_spl_server_));
   broadcast_spl_server_.sin_family = AF_INET;
-  broadcast_spl_server_.sin_port = htons(kTeamBroadcastPort);
+  broadcast_spl_server_.sin_port = htons(10000 + team_number);
   broadcast_spl_server_.sin_addr.s_addr = inet_addr("255.255.255.255");
   bind(boradcast_spl_sd_,
        reinterpret_cast<sockaddr*>(&broadcast_spl_server_),
@@ -58,7 +58,7 @@ NetTransceiver::NetTransceiver() {
              sizeof(read_timeout));
   memset(&broadcast_coach_server_, 0, sizeof(broadcast_coach_server_));
   broadcast_coach_server_.sin_family = AF_INET;
-  broadcast_coach_server_.sin_port = htons(kCoachBroadcastPort);
+  broadcast_coach_server_.sin_port = htons(SPL_COACH_MESSAGE_PORT);
   broadcast_coach_server_.sin_addr.s_addr = inet_addr("255.255.255.255");
   bind(boradcast_coach_sd_,
        reinterpret_cast<sockaddr*>(&broadcast_coach_server_),
@@ -95,7 +95,7 @@ bool NetTransceiver::ReceiveGameData(
   }
 
   // Respond to the game controller
-  game_controller.sin_port = htons(kReturnGameDataPort);
+  game_controller.sin_port = htons(GAMECONTROLLER_PORT);
   sendto(game_data_sd_,
          &return_data,
          sizeof(return_data),
