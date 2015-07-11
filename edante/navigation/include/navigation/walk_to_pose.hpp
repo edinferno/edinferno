@@ -49,6 +49,7 @@ class WalkToPoseAction {
   // Variables
 
   // ROS
+  ros::Publisher walking_to_pub_;
   geometry_msgs::Pose2D target_pose_;
   geometry_msgs::Pose2D rel_target_pose_;
   ros::ServiceClient get_robot_pose_client_;

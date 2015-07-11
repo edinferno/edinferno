@@ -20,7 +20,7 @@ TransitionAction::TransitionAction(ros::NodeHandle nh, std::string name) :
                              &TransitionAction::checkChestTransition, this);
   game_state_sub_ = nh_.subscribe("/comms/game_state", 1,
                                   &TransitionAction::checkGCTransition, this);
-  has_fallen_sub_ = nh_.subscribe("/motion/has_fallen", 1,
+  has_fallen_sub_ = nh_.subscribe("/world/has_fallen", 1,
                                   &TransitionAction::checkFallenTransition, this);
   penalized_sub_ = nh_.subscribe("/comms/penalized", 1,
                                  &TransitionAction::checkPenalizedTransition, this);

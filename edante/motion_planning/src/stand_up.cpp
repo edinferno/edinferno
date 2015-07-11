@@ -20,7 +20,7 @@ StandUpAction::StandUpAction(ros::NodeHandle nh, std::string name) :
                              this);
   wake_up_client_ = nh_.serviceClient<std_srvs::Empty>("/motion/wake_up", true);
   wake_up_client_.waitForExistence();
-  has_fallen_pub_ = nh_.advertise<std_msgs::Bool>("/motion/has_fallen", 10);
+  has_fallen_pub_ = nh_.advertise<std_msgs::Bool>("/world/has_fallen", 10);
   get_posture_family_client_ = nh_.serviceClient<motion_msgs::GetPostureFamily>(
                                  "/motion/get_posture_family", true);
   get_posture_family_client_.waitForExistence();

@@ -14,7 +14,13 @@ int main(int argc, char** argv) {
   ROS_INFO("Running Localization");
   PTAMWrapper ptam_wrapper(nh);
 
-  ros::spin();
+  ros::Rate r(10);
+
+  while (ros::ok()) {
+    ptam_wrapper.update();
+    ros::spinOnce();
+    r.sleep();
+  }
 
   ros::shutdown();
 

@@ -45,6 +45,10 @@ void Monitor::init() {
   right_eye_leds_.request.duration = 0.0f;
   left_eye_top_.request.name = "FaceLedsLeftTop";
   left_eye_bottom_.request.name = "FaceLedsLeftBottom";
+  right_eye_top_.request.name = "FaceLedsRightTop";
+  right_eye_top_.request.duration = 0.0f;
+  right_eye_bottom_.request.name = "FaceLedsRightBottom";
+  right_eye_bottom_.request.duration = 0.0f;
   face_leds_.request.name = "FaceLeds";  // Left Face controlled from Vision
 }
 
@@ -69,12 +73,20 @@ bool Monitor::setMonitorMode(motion_planning_msgs::MonitorMode::Request& req,
     set_intensity_led_.call(left_eye_top_);
     // Turn on red LEDs on right eye
   } else if (req.monitor_mode == MonitorMode::BALL_SEEN) {
-    right_eye_leds_.request.rgb = Colors::RED;
-    fade_rgb_led_.call(right_eye_leds_);
-    // Turn off LEDs on right eye
+    right_eye_top_.request.rgb = Colors::RED;
+    fade_rgb_led_.call(right_eye_top_);
+    // Turn on blue LEDs on right eye
+  } else if (req.monitor_mode == MonitorMode::PTAM_ACTIVE) {
+    right_eye_bottom_.request.rgb = Colors::BLUE;
+    fade_rgb_led_.call(right_eye_bottom_);
+    // Turn off LEDs on right eye top
   } else if (req.monitor_mode == MonitorMode::BALL_LOST) {
-    right_eye_leds_.request.rgb = Colors::BLACK;
-    fade_rgb_led_.call(right_eye_leds_);
+    right_eye_top_.request.rgb = Colors::BLACK;
+    fade_rgb_led_.call(right_eye_top_);
+    // Turn off LEDs on right eye bottom
+  } else if (req.monitor_mode == MonitorMode::PTAM_LOST) {
+    right_eye_bottom_.request.rgb = Colors::BLACK;
+    fade_rgb_led_.call(right_eye_bottom_);
   }
 
   return true;

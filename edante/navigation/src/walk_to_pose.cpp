@@ -27,6 +27,8 @@ void WalkToPoseAction::rosSetup() {
   get_robot_pose_client_ = nh_.serviceClient<localization_msgs::GetRobotPose>(
                              "/localization/get_robot_pose", true);
   get_robot_pose_client_.waitForExistence();
+  walking_to_pub_ = nh_.advertise <geometry_msgs::Pose2D>
+                    ("/world/walking_to", 1, true);
   move_toward_client_ = nh_.serviceClient<motion_msgs::MoveToward>(
                           "/motion/move_toward", true);
   move_toward_client_.waitForExistence();
@@ -57,7 +59,7 @@ void WalkToPoseAction::executeCB() {
     }
     // Get absolute robot pose
     get_robot_pose_client_.call(curr_pose_);
-
+    walking_to_pub_.publish(target_pose_);
     // Calculate vector and angle to target pose
     float rel_target_theta_;
     rel_target_pose_.x = target_pose_.x - curr_pose_.response.pose.x;

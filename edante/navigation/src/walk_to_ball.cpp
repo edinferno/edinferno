@@ -12,6 +12,10 @@ WalkToBallAction::WalkToBallAction(ros::NodeHandle nh, std::string name) :
   get_pose_client_ = nh_.serviceClient<motion_msgs::GetRobotPosition>(
                        "/motion/get_robot_position", true);
   get_pose_client_.waitForExistence();
+  walking_to_pub_ = nh_.advertise <geometry_msgs::Pose2D>
+                    ("/world/walking_to", 1, true);
+  intention_pub_ = nh_.advertise <std_msgs::Int8>
+                   ("/world/intention", 1, true);
   move_toward_client_ = nh_.serviceClient<motion_msgs::MoveToward>(
                           "/motion/move_toward", true);
   move_toward_client_.waitForExistence();
@@ -85,6 +89,10 @@ void WalkToBallAction::executeCB() {
       going = false;
     }
 
+    std_msgs::Int8 play_ball;
+    play_ball.data = 3;
+    intention_pub_.publish(play_ball);
+    // walking_to_pub_.publish(absolute_ball_pos_); // Waiting for Svet
     // Calculate Distance and Orientation error
     target_distance_ = ball_pos_.x;
     if (ball_pos_.x != 0.0f) {
