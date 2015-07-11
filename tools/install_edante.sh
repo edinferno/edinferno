@@ -11,7 +11,7 @@ cp ./resources/pitch.yaml /home/nao/config/world/
 
 # Update autload.ini so that naoqi loads the camera module
 cp ./resources/nao_autoload.ini /home/nao/naoqi/preferences/autoload.ini
-sudo cp ./resources/sys_autoload.ini /etc/naoqi/preferences/autoload.ini
+sudo cp ./resources/sys_autoload.ini /etc/naoqi/autoload.ini
 
 # Add ros service
 sudo /resources/ros /etc/init.d/
