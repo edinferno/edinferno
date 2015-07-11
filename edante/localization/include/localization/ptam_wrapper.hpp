@@ -32,6 +32,8 @@ class PTAMWrapper {
 
   void rosSetup();
 
+  void update();
+
   void loadParams();
 
   void poseCB(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg);
@@ -43,6 +45,8 @@ class PTAMWrapper {
 
   bool getRobotPose(localization_msgs::GetRobotPose::Request& req,
                     localization_msgs::GetRobotPose::Response& res);
+
+  void calcCurrPose();
 
  private:
   // Constants
@@ -57,6 +61,7 @@ class PTAMWrapper {
   ros::Subscriber ptam_pose_sub_;
   ros::Subscriber ptam_info_sub_;
   ros::ServiceClient get_odom_pose_client_;
+  ros::Publisher robot_pose_pub_;
   ros::ServiceServer srv_set_pose_offset_;
   ros::ServiceServer srv_get_robot_pose_;
   motion_msgs::GetRobotPosition get_robot_pos_srv_;

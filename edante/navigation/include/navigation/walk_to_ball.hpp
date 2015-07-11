@@ -7,6 +7,7 @@
 #include <ros/ros.h>
 #include <actionlib/server/simple_action_server.h>
 // Messages
+#include <std_msgs/Int8.h>
 #include <std_srvs/Empty.h>
 #include <motion_msgs/MoveToward.h>
 #include <motion_msgs/GetRobotPosition.h>
@@ -59,6 +60,8 @@ class WalkToBallAction {
   motion_msgs::GetRobotPosition start_position_;
   ros::ServiceClient get_pose_client_;
   motion_msgs::MoveToward move_toward_srv_;
+  ros::Publisher walking_to_pub_;
+  ros::Publisher intention_pub_;
   ros::ServiceClient move_toward_client_;
   std_srvs::Empty stop_move_srv_;
   ros::ServiceClient stop_move_client_;
