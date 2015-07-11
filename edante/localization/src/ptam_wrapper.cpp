@@ -36,8 +36,8 @@ void PTAMWrapper::rosSetup() {
 }
 
 void PTAMWrapper::loadParams() {
-  ros::param::param("field_length", field_length_, 9000.0f);
-  ros::param::param("field_width", field_width_, 6000.0f);
+  ros::param::param("field_length", field_length_, 9.0f);
+  ros::param::param("field_width", field_width_, 6.0f);
 }
 
 void PTAMWrapper::poseCB(const

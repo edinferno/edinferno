@@ -9,6 +9,7 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
 -->
 
 <launch>
+    <rosparam file="/home/nao/config/world/pitch.yaml" command="load" />
     <node name="motion" pkg="motion" type="motion" output="screen">
     </node>
     <node name="sensing" pkg="sensing" type="sensing" output="screen">
@@ -16,6 +17,8 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
     <node name="signalling" pkg="signalling" type="signalling" output="screen">
     </node>
     <node name="vision" pkg="vision" type="vision" output="screen">
+    </node>
+    <node name="localization" pkg="localization" type="localization" output="screen">
     </node>
     <node name="motion_planning" pkg="motion_planning" type="motion_planning" output="screen">
     </node>

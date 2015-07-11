@@ -9,5 +9,5 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
 -->
 
 <launch>
-    <rosparam file="/home/nao/ros/src/edinferno/tools/resources/pitch.yaml" command="load" />
+    <rosparam file="/home/nao/config/world/pitch.yaml" command="load" />
 </launch>
