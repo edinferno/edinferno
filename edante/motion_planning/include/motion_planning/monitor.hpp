@@ -47,6 +47,8 @@ class Monitor {
   ros::ServiceClient set_intensity_led_;
   signalling_msgs::SetIntensity left_eye_top_;
   signalling_msgs::SetIntensity left_eye_bottom_;
+  signalling_msgs::FadeRGB right_eye_top_;
+  signalling_msgs::FadeRGB right_eye_bottom_;
   signalling_msgs::SetIntensity face_leds_;
   ros::ServiceClient speak_text_;
 };
