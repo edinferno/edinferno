@@ -69,6 +69,14 @@ class CameraNode : public AL::ALModule {
   ~CameraNode();
 
  private:
+  // Default
+  static const uint8_t default_fps_ = 30;
+  // Color table
+  static const char* table_file_name_;
+  PixelClass table_[kTableSize][kTableSize][kTableSize];
+  // Shared memory
+  static const size_t kShdMemSize = 1280 * 960 + 128;  // k4VGA + misc
+
   // Module related
   std::string module_name_;
   boost::thread* module_thread_;
@@ -81,13 +89,12 @@ class CameraNode : public AL::ALModule {
   image_transport::CameraPublisher segmented_image_pub_;
   image_transport::Publisher segmented_rgb_image_pub_;
 
-  // Message structs
-  sensor_msgs::Image image_;
-  sensor_msgs::Image segmented_image_;
-  sensor_msgs::Image segmented_rgb_image_;
-
   // NaoQi related members
-  AL::ALVideoDeviceProxy* camera_proxy_;
+  AL::ALVideoDeviceProxy* cameras_proxy_;
+  std::vector<int> camera_ids_;
+  std::vector<int> camera_resolutions_;
+  std::vector<int> camera_color_spaces_;
+
   AL::ALMotionProxy* motion_proxy_;
 
   // Camera instances
@@ -95,30 +102,10 @@ class CameraNode : public AL::ALModule {
   Camera* bot_cam_;
 
   // Active settings
-  const Camera* active_cam_;
-
-  // AL::kQQVGA  160*120px
-  // AL::kQVGA   320*240px
-  // AL::kVGA    640*480px
-  // AL::k4VGA   1280*960px
-  int active_resolution_;
-
-  // AL::kYUV422ColorSpace  0xY’Y’VVYYUU - native format (2 pixels)
-  // AL::kYUVColorSpace     0xVVUUYY
-  // AL::kRGBColorSpace     0xBBGGRR
-  // AL::kHSYColorSpace     0xYYSSHH
-  // AL::kBGRColorSpace     0xRRGGBB
-  int active_color_space_;
+  Camera* active_cam_;
 
   // 1 - 30 FPS
-  int active_fps_;
   ros::Rate* active_rate_;
-
-  // Camera calibration info
-  sensor_msgs::CameraInfo active_cam_info_;
-
-  // Camera frame name
-  std::string active_camera_frame_name_;
 
   // ROS service servers
   ros::ServiceServer set_active_camera_server_;
@@ -128,18 +115,17 @@ class CameraNode : public AL::ALModule {
   ros::ServiceServer set_color_table_server_;
   ros::ServiceServer get_color_table_server_;
 
-  // Color table
-  static const char* table_file_name_;
-  static const size_t kTableSize = 64;
-  static const size_t kTableLen = kTableSize * kTableSize * kTableSize;
-  PixelClass table_[kTableSize][kTableSize][kTableSize];
+  // Shared memory for the active camera image
+  boost::interprocess::shared_memory_object active_shdmem_;
+  boost::interprocess::mapped_region* active_shdmem_region_;
+  uint8_t* active_shdmem_ptr_;
+  boost::interprocess::named_mutex* active_shdmem_mtx_;
 
-  // Shared memory
-  static const size_t kShdMemSize = 1280 * 960 + 128;  // k4VGA + misc
-  boost::interprocess::shared_memory_object shdmem_;
-  boost::interprocess::mapped_region* shdmem_region_;
-  uint8_t* shdmem_ptr_;
-  boost::interprocess::named_mutex* shdmem_mtx_;
+  // Shared memory for the top camera greyscale image
+  boost::interprocess::shared_memory_object grey_shdmem_;
+  boost::interprocess::mapped_region* grey_shdmem_region_;
+  uint8_t* grey_shdmem_ptr_;
+  boost::interprocess::named_mutex* grey_shdmem_mtx_;
 
   /**
   * @brief Initialised the module
@@ -173,41 +159,12 @@ class CameraNode : public AL::ALModule {
   * @param transform The camera frame transformation to be copied to memory
   * @param transform The head angles to be copied to memory
   */
-  void WriteToSharedMemory(const sensor_msgs::Image& image,
+  void WriteToSharedMemory(boost::interprocess::named_mutex* mtx,
+                           uint8_t* shdmem_ptr,
+                           const sensor_msgs::Image& image,
                            const sensor_msgs::CameraInfo& cam_info,
                            const std::vector<float>& transform,
                            const std::vector<float>& head_angles);
-  /**
-  * @brief Segments the image using the color look up table
-  * @details The 3 color channels of a pixel are used as indecies to the color
-  *          lookup table in order to classify them.
-  * @param raw A YUV442 encoded input image.
-  * @param seg The segmented image in MONO8 encoding. The values are determined
-  *            by the PixelClass enumeration.
-  */
-  void SegmentImage(const sensor_msgs::Image& raw, sensor_msgs::Image& seg);
-  /**
-  * @brief Color the segmented image for visualisation only.
-  * @details Each pixel is colored according to its class.
-  *
-  * @param seg The input segmented image. It should be in MONO8 encoding.
-  * @param rgb The output color image.
-  */
-  void ColorSegmentedImage(const sensor_msgs::Image& seg,
-                           sensor_msgs::Image& rgb);
-  /**
-  * @brief Updates the manually allocated images and camera_info.
-  */
-  void Update();
-  /**
-  * @brief Updates the allocated images to reflect the currently active camera settings.
-  */
-  void UpdateImage();
-  /**
-  * @brief Updates the currently active camera_info to reflect the active camera settings.
-  */
-  void UpdateCameraInfo();
-
   // Service callbacks
   /**
   * @brief Set the currently active camera (top or bottom).
@@ -217,8 +174,8 @@ class CameraNode : public AL::ALModule {
   *
   * @return Return true on successful completion.
   */
-  bool set_active_camera(camera_msgs::SetActiveCamera::Request&  req,
-                         camera_msgs::SetActiveCamera::Response& res);
+  bool SetActiveCameraService(camera_msgs::SetActiveCamera::Request&  req,
+                              camera_msgs::SetActiveCamera::Response& res);
   /**
   * @brief Set the currently active resolution.
   *
@@ -227,8 +184,8 @@ class CameraNode : public AL::ALModule {
   *
   * @return Return true on successful completion.
   */
-  bool set_resolution(camera_msgs::SetResolution::Request&  req,
-                      camera_msgs::SetResolution::Response& res);
+  bool SetResolutionService(camera_msgs::SetResolution::Request&  req,
+                            camera_msgs::SetResolution::Response& res);
   /**
   * @brief Set the currently active frame rate.
   *
@@ -237,8 +194,8 @@ class CameraNode : public AL::ALModule {
   *
   * @return Return true on successful completion.
   */
-  bool set_frame_rate(camera_msgs::SetFrameRate::Request&  req,
-                      camera_msgs::SetFrameRate::Response& res);
+  bool SetFrameRateServce(camera_msgs::SetFrameRate::Request&  req,
+                          camera_msgs::SetFrameRate::Response& res);
   /**
   * @brief Set the color space in which images are captured.
   *
@@ -247,8 +204,8 @@ class CameraNode : public AL::ALModule {
   *
   * @return Return true on successful completion.
   */
-  bool set_color_space(camera_msgs::SetColorSpace::Request&  req,
-                       camera_msgs::SetColorSpace::Response& res);
+  bool SetColorSpaceServce(camera_msgs::SetColorSpace::Request&  req,
+                           camera_msgs::SetColorSpace::Response& res);
   /**
   * @brief Set the color table to be used.
   * @details The service receives a serialised color table and stores
@@ -261,8 +218,8 @@ class CameraNode : public AL::ALModule {
   *
   * @return Return true on successful completion.
   */
-  bool set_color_table(camera_msgs::SetColorTable::Request&  req,
-                       camera_msgs::SetColorTable::Response& res);
+  bool SetColorTableServce(camera_msgs::SetColorTable::Request&  req,
+                           camera_msgs::SetColorTable::Response& res);
   /**
   * @brief Returns the currently used color table.
   * @details The current color table is serialised and sent back.
@@ -272,8 +229,8 @@ class CameraNode : public AL::ALModule {
   *
   * @return Return true on successful completion.
   */
-  bool get_color_table(camera_msgs::GetColorTable::Request&  req,
-                       camera_msgs::GetColorTable::Response& res);
+  bool GetColorTableServce(camera_msgs::GetColorTable::Request&  req,
+                           camera_msgs::GetColorTable::Response& res);
 };
 
 #endif
