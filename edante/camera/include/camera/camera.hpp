@@ -32,9 +32,6 @@
  */
 class Camera {
  public:
-  static int fps() { return fps_; }
-  static void fps(int fps) { fps_ = fps; }
-
   /**
   * @brief Constructor
   *
@@ -63,11 +60,6 @@ class Camera {
   void SetSegmentedImage(const AL::ALImage* alimage,
                          PixelClass table[][kTableSize][kTableSize],
                          ros::Time stamp);
-
-  void Update();
-  void UpdateImage();
-  void UpdateCameraInfo();
-
   /**
    * @brief Getter of the camera name.
    */
@@ -81,11 +73,19 @@ class Camera {
    */
   int id() const { return id_; }
   /**
+   * @brief Setter of the camera resolution.
+   */
+  void resolution(int resolution) { resolution_ = resolution; Update(); }
+  /**
    * @brief Getter of the camera resolution.
    */
   int resolution() const { return resolution_; }
   /**
-   * @brief Getter of the camera color_space.
+   * @brief Setter of the color space.
+   */
+  void color_space(int color_space) { color_space_ = color_space; Update(); }
+  /**
+   * @brief Getter of the camera color space.
    */
   int color_space() const { return color_space_; }
   /**
@@ -108,8 +108,6 @@ class Camera {
   const sensor_msgs::Image& segmented_rgb_image();
 
  private:
-  static int fps_;
-
   // Node Handle
   ros::NodeHandle nh_;
 
@@ -161,5 +159,10 @@ class Camera {
    * @brief Initialises the camera and reads the camera info.
    */
   void Init();
+
+
+  void Update();
+  void UpdateImage();
+  void UpdateCameraInfo();
 };
 #endif

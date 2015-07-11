@@ -59,13 +59,7 @@ extern "C" {
     return 0;
   }
 }
-/**
- * @brief Constructor
- * @details Initialises and starts the camera node.
- *
- * @param broker Broker used for creating the module.
- * @param module_name The name of the module.
- */
+
 CameraNode::CameraNode(boost::shared_ptr<AL::ALBroker> broker,
                        const std::string& module_name) :
   AL::ALModule(broker, module_name),
@@ -76,10 +70,7 @@ CameraNode::CameraNode(boost::shared_ptr<AL::ALBroker> broker,
   grey_shdmem_(open_or_create, "grey_camera", read_write) {
   Init();
 }
-/**
- * @brief Destructor
- * @details Stops the module thread and releases memory.
- */
+
 CameraNode::~CameraNode() {
   // Stop the spinning thread
   is_module_closing_ = true;
@@ -94,13 +85,6 @@ CameraNode::~CameraNode() {
   delete cameras_proxy_;
 }
 
-/**
- * @brief Initialised the module
- * @details The function initialises all components of the modue.
- *          It initialises ROS and advertises the supported services and
- *          topics. Allocates memory for the current images and eventually
- *          starts the spinning thread.
- */
 void CameraNode::Init() {
   // Initialise ROS
   int argc = 0;
@@ -122,32 +106,31 @@ void CameraNode::Init() {
   // Advertise services
   set_active_camera_server_ = nh_->advertiseService(
                                 "set_active_camera",
-                                &CameraNode::set_active_camera,
+                                &CameraNode::SetActiveCameraService,
                                 this);
   set_resolution_server_ = nh_->advertiseService(
                              "set_resolution",
-                             &CameraNode::set_resolution,
+                             &CameraNode::SetResolutionService,
                              this);
   set_frame_rate_server_ = nh_->advertiseService(
                              "set_frame_rate",
-                             &CameraNode::set_frame_rate,
+                             &CameraNode::SetFrameRateServce,
                              this);
   set_color_space_server_ = nh_->advertiseService(
                               "set_color_space",
-                              &CameraNode::set_color_space,
+                              &CameraNode::SetColorSpaceServce,
                               this);
   set_color_table_server_ = nh_->advertiseService(
                               "set_color_table",
-                              &CameraNode::set_color_table,
+                              &CameraNode::SetColorTableServce,
                               this);
   get_color_table_server_ = nh_->advertiseService(
                               "get_color_table",
-                              &CameraNode::get_color_table,
+                              &CameraNode::GetColorTableServce,
                               this);
   // TODO(svepe): Add a service to control the rest of the camera params
 
   // Create both cameras
-  Camera::fps(30);
   top_cam_ = new Camera(*nh_, "top", "CameraTop",
                         AL::kTopCamera,
                         AL::kQVGA,
@@ -159,7 +142,7 @@ void CameraNode::Init() {
 
   // Set the default active camera to be the top one
   active_cam_ = top_cam_;
-  active_rate_ = new ros::Rate(Camera::fps());
+  active_rate_ = new ros::Rate(default_fps_);
 
   camera_ids_.push_back(top_cam_->id());
   camera_ids_.push_back(bot_cam_->id());
@@ -174,7 +157,7 @@ void CameraNode::Init() {
                    camera_ids_,
                    camera_resolutions_,
                    camera_color_spaces_,
-                   Camera::fps());
+                   default_fps_);
 
   // Read the color table
   LoadColorTable();
@@ -199,12 +182,6 @@ void CameraNode::Init() {
   module_thread_ = new boost::thread(boost::bind(&CameraNode::Spin, this));
   is_module_closing_ = false;
 }
-/**
- * @brief Loads the color table from a file.
- * @details Loads the color table from a file into the table array.
- *          The location of the file is stored in table_file_name_.
- *          Currently it is set to /home/nao/config/camera/table.c64
- */
 void CameraNode::LoadColorTable() {
   PixelClass* table_ptr = reinterpret_cast<PixelClass*>(table_);
 
@@ -243,11 +220,7 @@ void CameraNode::LoadColorTable() {
     table_pos += len;
   } while (table_pos < kTableLen);
 }
-/**
- * @brief Worker function of the module
- * @details The function reads images from the camera, applies segmentation
- *          and then publishes them over ROS. It runs on a separate thread.
- */
+
 void CameraNode::Spin() {
 
   ros::Time stamp;
@@ -319,17 +292,7 @@ void CameraNode::Spin() {
 
   cameras_proxy_->unsubscribe(module_name_);
 }
-/**
- * @brief Write the captured data to shared memory
- * @details Copy the captured image, camera info, camera frame transformation
- *          and head angles to shared memory in orderto optimize access time
- *          for locally running nodes.
- *
- * @param image The image to be copied to memory
- * @param cam_info The camera info to be copied to memory
- * @param transform The camera frame transformation to be copied to memory
- * @param transform The head angles to be copied to memory
- */
+
 void CameraNode::WriteToSharedMemory(boost::interprocess::named_mutex* mtx,
                                      uint8_t* shdmem_ptr,
                                      const sensor_msgs::Image& image,
@@ -370,151 +333,102 @@ void CameraNode::WriteToSharedMemory(boost::interprocess::named_mutex* mtx,
   // Release the shared memory
   mtx->unlock();
 }
-/**
- * @brief Set the currently active camera (top or bottom).
- *
- * @param req Service request.
- * @param res Service response.
- *
- * @return Return true on successful completion.
- */
-bool CameraNode::set_active_camera(camera_msgs::SetActiveCamera::Request&  req,
-                                   camera_msgs::SetActiveCamera::Response& res) {
-  Camera* new_active_cam;
+
+bool CameraNode::SetActiveCameraService(
+  camera_msgs::SetActiveCamera::Request& req,
+  camera_msgs::SetActiveCamera::Response& res) {
+  res.result = true;
   switch (req.active_camera) {
     case 0:
-      new_active_cam = top_cam_;
+      active_cam_ = top_cam_;
       break;
     case 1:
-      new_active_cam = bot_cam_;
+      active_cam_ = bot_cam_;
       break;
     default:
       res.result = false;
       return true;
   }
-
-  if (res.result) {
-    active_cam_ = new_active_cam;
-  }
-
   return true;
 }
-/**
- * @brief Set the currently active resolution.
- *
- * @param req Service request.
- * @param res Service response.
- *
- * @return Return true on successful completion.
- */
-bool CameraNode::set_resolution(camera_msgs::SetResolution::Request&  req,
-                                camera_msgs::SetResolution::Response& res) {
-  int new_resolution;
+
+bool CameraNode::SetResolutionService(
+  camera_msgs::SetResolution::Request&  req,
+  camera_msgs::SetResolution::Response& res) {
+  res.result = true;
   switch (req.resolution) {
     case 0:
-      new_resolution = AL::kQQVGA;
+      active_cam_->resolution(AL::kQQVGA);
       break;
     case 1:
-      new_resolution = AL::kQVGA;
+      active_cam_->resolution(AL::kQVGA);
       break;
     case 2:
-      new_resolution = AL::kVGA;
+      active_cam_->resolution(AL::kVGA);
       break;
     case 3:
-      new_resolution = AL::k4VGA;
+      active_cam_->resolution(AL::k4VGA);
       break;
     default:
       res.result = false;
       return true;
   }
-
-  //res.result = camera_proxy_->setResolution(module_name_, new_resolution);
-
-  // if (res.result) {
-  //   active_resolution_ = new_resolution;
-  // }
+  camera_resolutions_[active_cam_->id()] = active_cam_->resolution();
+  cameras_proxy_->setResolutions(module_name_, camera_resolutions_);
 
   return true;
 }
-/**
-* @brief Set the currently active frame rate.
-*
-* @param req Service request.
-* @param res Service response.
-*
-* @return Return true on successful completion.
-*/
-bool CameraNode::set_frame_rate(camera_msgs::SetFrameRate::Request&  req,
-                                camera_msgs::SetFrameRate::Response& res) {
+
+bool CameraNode::SetFrameRateServce(
+  camera_msgs::SetFrameRate::Request&  req,
+  camera_msgs::SetFrameRate::Response& res) {
   if (req.frame_rate < 1 || req.frame_rate > 30) {
     res.result = false;
     return true;
   }
 
-  //res.result = camera_proxy_->setFrameRate(module_name_, req.frame_rate);
+  res.result = cameras_proxy_->setFrameRate(module_name_, req.frame_rate);
 
-  //if (res.result) {
-  //active_fps_ = req.frame_rate;
-  //delete active_rate_;
-  //active_rate_ = new ros::Rate(active_fps_);
-  //}
-
+  if (res.result) {
+    delete active_rate_;
+    active_rate_ = new ros::Rate(req.frame_rate);
+  }
   return true;
 }
-/**
-* @brief Set the color space in which images are captured.
-*
-* @param req Service request.
-* @param res Service response.
-*
-* @return Return true on successful completion.
-*/
-bool CameraNode::set_color_space(camera_msgs::SetColorSpace::Request&  req,
-                                 camera_msgs::SetColorSpace::Response& res) {
-  int new_color_space;
+
+bool CameraNode::SetColorSpaceServce(
+  camera_msgs::SetColorSpace::Request&   req,
+  camera_msgs::SetColorSpace::Response& res) {
+  res.result = true;
   switch (req.color_space) {
     case 0:
-      new_color_space = AL::kYUV422ColorSpace;
+      active_cam_->color_space(AL::kYUV422ColorSpace);
       break;
     case 1:
-      new_color_space = AL::kYUVColorSpace;
+      active_cam_->color_space(AL::kYUVColorSpace);
       break;
     case 2:
-      new_color_space = AL::kRGBColorSpace;
+      active_cam_->color_space(AL::kRGBColorSpace);
       break;
     case 3:
-      new_color_space = AL::kHSYColorSpace;
+      active_cam_->color_space(AL::kHSYColorSpace);
       break;
     case 4:
-      new_color_space = AL::kBGRColorSpace;
+      active_cam_->color_space(AL::kBGRColorSpace);
       break;
     default:
       res.result = false;
       return true;
   }
-
-  //res.result = camera_proxy_->setColorSpace(module_name_, new_color_space);
-
-  // if (res.result) {
-  //   active_color_space_ = new_color_space;
-  // }
+  camera_color_spaces_[active_cam_->id()] = active_cam_->color_space();
+  cameras_proxy_->setColorSpaces(module_name_, camera_color_spaces_);
 
   return true;
 }
-/**
- * @brief Set the color table to be used.
- * @details The service receives a serialised color table and stores
- *          it to a file. The filename is stored in table_file_name_
- *          and currently is /home/nao/config/camera/table.c64
- *          Once the file is created, the table is loaded from there.
- *
- * @param req Service request.
- * @param res Service response.
- *
- * @return Return true on successful completion.
- */
-bool CameraNode::set_color_table(camera_msgs::SetColorTable::Request&  req,
-                                 camera_msgs::SetColorTable::Response& res) {
+
+bool CameraNode::SetColorTableServce(
+  camera_msgs::SetColorTable::Request&   req,
+  camera_msgs::SetColorTable::Response& res) {
   std::ofstream table_file;
   table_file.open(table_file_name_, std::ios::binary);
 
@@ -532,17 +446,10 @@ bool CameraNode::set_color_table(camera_msgs::SetColorTable::Request&  req,
   res.result = true;
   return true;
 }
-/**
- * @brief Returns the currently used color table.
- * @details The current color table is serialised and sent back.
- *
- * @param req Service request.
- * @param res Service response.
- *
- * @return Return true on successful completion.
- */
-bool CameraNode::get_color_table(camera_msgs::GetColorTable::Request&  req,
-                                 camera_msgs::GetColorTable::Response& res) {
+
+bool CameraNode::GetColorTableServce(
+  camera_msgs::GetColorTable::Request&   req,
+  camera_msgs::GetColorTable::Response& res) {
   PixelClass* table_ptr = reinterpret_cast<PixelClass*>(table_);
   for (size_t i = 0; i < kTableLen; ++i) {
     PixelClass c = table_ptr[i];

@@ -69,6 +69,14 @@ class CameraNode : public AL::ALModule {
   ~CameraNode();
 
  private:
+  // Default
+  static const uint8_t default_fps_ = 30;
+  // Color table
+  static const char* table_file_name_;
+  PixelClass table_[kTableSize][kTableSize][kTableSize];
+  // Shared memory
+  static const size_t kShdMemSize = 1280 * 960 + 128;  // k4VGA + misc
+
   // Module related
   std::string module_name_;
   boost::thread* module_thread_;
@@ -107,12 +115,6 @@ class CameraNode : public AL::ALModule {
   ros::ServiceServer set_color_table_server_;
   ros::ServiceServer get_color_table_server_;
 
-  // Color table
-  static const char* table_file_name_;
-  PixelClass table_[kTableSize][kTableSize][kTableSize];
-
-
-  static const size_t kShdMemSize = 1280 * 960 + 128;  // k4VGA + misc
   // Shared memory for the active camera image
   boost::interprocess::shared_memory_object active_shdmem_;
   boost::interprocess::mapped_region* active_shdmem_region_;
@@ -172,8 +174,8 @@ class CameraNode : public AL::ALModule {
   *
   * @return Return true on successful completion.
   */
-  bool set_active_camera(camera_msgs::SetActiveCamera::Request&  req,
-                         camera_msgs::SetActiveCamera::Response& res);
+  bool SetActiveCameraService(camera_msgs::SetActiveCamera::Request&  req,
+                              camera_msgs::SetActiveCamera::Response& res);
   /**
   * @brief Set the currently active resolution.
   *
@@ -182,8 +184,8 @@ class CameraNode : public AL::ALModule {
   *
   * @return Return true on successful completion.
   */
-  bool set_resolution(camera_msgs::SetResolution::Request&  req,
-                      camera_msgs::SetResolution::Response& res);
+  bool SetResolutionService(camera_msgs::SetResolution::Request&  req,
+                            camera_msgs::SetResolution::Response& res);
   /**
   * @brief Set the currently active frame rate.
   *
@@ -192,8 +194,8 @@ class CameraNode : public AL::ALModule {
   *
   * @return Return true on successful completion.
   */
-  bool set_frame_rate(camera_msgs::SetFrameRate::Request&  req,
-                      camera_msgs::SetFrameRate::Response& res);
+  bool SetFrameRateServce(camera_msgs::SetFrameRate::Request&  req,
+                          camera_msgs::SetFrameRate::Response& res);
   /**
   * @brief Set the color space in which images are captured.
   *
@@ -202,8 +204,8 @@ class CameraNode : public AL::ALModule {
   *
   * @return Return true on successful completion.
   */
-  bool set_color_space(camera_msgs::SetColorSpace::Request&  req,
-                       camera_msgs::SetColorSpace::Response& res);
+  bool SetColorSpaceServce(camera_msgs::SetColorSpace::Request&  req,
+                           camera_msgs::SetColorSpace::Response& res);
   /**
   * @brief Set the color table to be used.
   * @details The service receives a serialised color table and stores
@@ -216,8 +218,8 @@ class CameraNode : public AL::ALModule {
   *
   * @return Return true on successful completion.
   */
-  bool set_color_table(camera_msgs::SetColorTable::Request&  req,
-                       camera_msgs::SetColorTable::Response& res);
+  bool SetColorTableServce(camera_msgs::SetColorTable::Request&  req,
+                           camera_msgs::SetColorTable::Response& res);
   /**
   * @brief Returns the currently used color table.
   * @details The current color table is serialised and sent back.
@@ -227,8 +229,8 @@ class CameraNode : public AL::ALModule {
   *
   * @return Return true on successful completion.
   */
-  bool get_color_table(camera_msgs::GetColorTable::Request&  req,
-                       camera_msgs::GetColorTable::Response& res);
+  bool GetColorTableServce(camera_msgs::GetColorTable::Request&  req,
+                           camera_msgs::GetColorTable::Response& res);
 };
 
 #endif

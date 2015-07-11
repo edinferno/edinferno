@@ -12,20 +12,6 @@
 
 #include <sensor_msgs/image_encodings.h>
 
-int Camera::fps_ = 30;
-
-/**
- * @brief Constructor
- *
- * @param nh The ROS node hande used by the camera
- * @param name Name of camera e.g. "top"
- * @param id ID of the camera (AL::kTopCamera or AL::kBottomCamera)
- * @param resolution Resolution of the camera (AL::kQQVGA, AL::kQVGA,
- *                   AL::kVGA, AL::k4VGA)
- * @param color_space Color space of the camera (AL::kYUV422ColorSpace,
- *                    AL::kYUVColorSpace, AL::kRGBColorSpace,
- *                    AL::kHSYColorSpace, AL::kBGRColorSpace)
- */
 Camera::Camera(ros::NodeHandle& nh,
                const char* name,
                const char* frame_name,
@@ -42,9 +28,6 @@ Camera::Camera(ros::NodeHandle& nh,
   Init();
 }
 
-/**
- * @brief Destructor
- */
 Camera::~Camera() {
   delete cam_info_manager_;
 }
@@ -269,9 +252,6 @@ const sensor_msgs::Image& Camera::segmented_rgb_image() {
   return segmented_rgb_image_;
 }
 
-/**
- * @brief Initialises the camera and reads the camera info.
- */
 void Camera::Init() {
   cam_info_manager_ = new camera_info_manager::CameraInfoManager(nh_, name_);
   // Check if the calibration file exists
