@@ -18,7 +18,7 @@ int main(int argc, const char** argv) {
   RoboCupGameControlReturnData return_data;
   RoboCupGameControlData game_data;
 
-  NetTransceiver net;
+  NetTransceiver net(9);
   SPLStandardMessage spl_msg;
   vector<SPLStandardMessage> spl_msg_rec;
   SPLCoachMessage cch_msg;

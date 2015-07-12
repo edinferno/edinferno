@@ -17,7 +17,7 @@
 
 class NetTransceiver {
  public:
-  NetTransceiver();
+  explicit NetTransceiver(int team_number);
   // Game Controller communication
   bool ReceiveGameData(const RoboCupGameControlReturnData& return_data,
                        RoboCupGameControlData& game_data);
@@ -29,12 +29,6 @@ class NetTransceiver {
   bool BroadcastSPLCoachMessage(const SPLCoachMessage& msg);
 
  private:
-  static const int kGameDataPort = GAMECONTROLLER_PORT;
-  static const int kReturnGameDataPort = GAMECONTROLLER_PORT;
-  // TODO(svepe): Read ROS params
-  static const int kTeamBroadcastPort = 10009;
-  static const int kCoachBroadcastPort = SPL_COACH_MESSAGE_PORT;
-
   int game_data_sd_;
 
   int boradcast_spl_sd_;

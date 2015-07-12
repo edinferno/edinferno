@@ -35,7 +35,12 @@
 
 #include <ros/ros.h>
 
+#include <std_msgs/Bool.h>
+#include <std_msgs/Int8.h>
 #include <std_msgs/UInt8.h>
+
+
+#include <geometry_msgs/Pose2D.h>
 
 #include <spl_msgs/RoboCupGameControlData.h>
 #include <spl_msgs/SPLStandardMessage.h>
@@ -45,16 +50,10 @@
 class CommsNode {
  public:
   CommsNode();
+  ~CommsNode();
   void Spin();
 
  private:
-  static const uint8_t kStateUnknown = 255;
-  static const uint8_t kPenaltyUnknown = 255;
-  static const uint8_t kColorUnknown = 255;
-
-  int team_number_;
-  int player_number_;
-
   // ROS
   ros::NodeHandle nh_;
 
@@ -67,22 +66,42 @@ class CommsNode {
   ros::Publisher team_color_pub_;
   std_msgs::UInt8 team_color_msg_;
 
+  ros::Publisher kickoff_attack_pub_;
+  std_msgs::Bool kickoff_attack_msg_;
+
   ros::Subscriber man_penalised_sub_;
+  ros::Subscriber has_fallen_sub_;
+  ros::Subscriber intention_sub_;
+  ros::Subscriber robot_pose_sub_;
+  ros::Subscriber walking_to_sub_;
+
   // Network
-  NetTransceiver net_;
+  NetTransceiver* net_;
 
   RoboCupGameControlData game_data_;
   RoboCupGameControlReturnData game_return_data_;
+  bool first_game_data_;
 
   SPLStandardMessage send_msg_;
   std::vector<SPLStandardMessage> recv_msgs_;
+
+  // PLayer data
+  int team_number_;
+  int player_number_;
+
+  void InitSPLMessage();
 
   void Publish();
   void PublishGameState();
   void PublishPenalised();
   void PublishTeamColor();
+  void PublishKickoffAttack();
 
   void ManuallyPenalisedCallback(const std_msgs::UInt8& msg);
+  void HasFallenCallback(const std_msgs::Bool& msg);
+  void IntentionCallback(const std_msgs::Int8& msg);
+  void RobotPoseCallback(const geometry_msgs::Pose2D& msg);
+  void WalkingToCallback(const geometry_msgs::Pose2D& msg);
 };
 
 #endif
