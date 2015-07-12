@@ -54,10 +54,6 @@ class CommsNode {
   void Spin();
 
  private:
-  static const uint8_t kStateUnknown = 255;
-  static const uint8_t kPenaltyUnknown = 255;
-  static const uint8_t kColorUnknown = 255;
-
   // ROS
   ros::NodeHandle nh_;
 
@@ -84,6 +80,7 @@ class CommsNode {
 
   RoboCupGameControlData game_data_;
   RoboCupGameControlReturnData game_return_data_;
+  bool first_game_data_;
 
   SPLStandardMessage send_msg_;
   std::vector<SPLStandardMessage> recv_msgs_;

@@ -23,8 +23,9 @@ CommsNode::CommsNode() :
   robot_pose_sub_(nh_.subscribe("/world/robot_pose", 1,
                                 &CommsNode::RobotPoseCallback, this)),
   walking_to_sub_(nh_.subscribe("/world/walking_to", 1,
-                                &CommsNode::WalkingToCallback, this)) {
-  // TODO(svepe): Read ROS params
+                                &CommsNode::WalkingToCallback, this)),
+  first_game_data_(true) {
+
   nh_.getParam("/player_number", player_number_);
   nh_.getParam("/team_number", team_number_);
   net_ = new NetTransceiver(team_number_);
@@ -34,11 +35,6 @@ CommsNode::CommsNode() :
   game_return_data_.team = team_number_;
   game_return_data_.player = player_number_;
   game_return_data_.message = GAMECONTROLLER_RETURN_MSG_ALIVE;
-
-  game_state_msg_.data = kStateUnknown;
-  penalised_msg_.data = kPenaltyUnknown;
-  team_color_msg_.data = kColorUnknown;
-  kickoff_attack_msg_.data = false;
 }
 
 CommsNode::~CommsNode() {
@@ -101,10 +97,11 @@ void CommsNode::Publish() {
   PublishPenalised();
   PublishTeamColor();
   PublishKickoffAttack();
+  first_game_data_ = false;
 }
 
 void CommsNode::PublishGameState() {
-  if (game_state_msg_.data != game_data_.state) {
+  if (game_state_msg_.data != game_data_.state || first_game_data_) {
     game_state_msg_.data = game_data_.state;
     game_state_pub_.publish(game_state_msg_);
   }
@@ -113,7 +110,7 @@ void CommsNode::PublishGameState() {
 void CommsNode::PublishPenalised() {
   int t = (game_data_.teams[0].teamNumber == team_number_) ? 0 : 1;
   int penalty = game_data_.teams[t].players[player_number_ - 1].penalty;
-  if (penalised_msg_.data != penalty) {
+  if (penalised_msg_.data != penalty || first_game_data_) {
     penalised_msg_.data = penalty;
     penalised_pub_.publish(penalised_msg_);
   }
@@ -121,14 +118,19 @@ void CommsNode::PublishPenalised() {
 
 void CommsNode::PublishTeamColor() {
   int t = (game_data_.teams[0].teamNumber == team_number_) ? 0 : 1;
-  if (team_color_msg_.data != game_data_.teams[t].teamColour)  {
-    team_color_msg_.data = game_data_.teams[t].teamColour;
+  int color = game_data_.teams[t].teamColour;
+  if (team_color_msg_.data != color || first_game_data_)  {
+    team_color_msg_.data = color;
     team_color_pub_.publish(team_color_msg_);
   }
 }
 
 void CommsNode::PublishKickoffAttack() {
-  // TODO: Finish
+  bool attack = (game_data_.kickOffTeam == team_number_);
+  if (kickoff_attack_msg_.data != attack || first_game_data_) {
+    kickoff_attack_msg_.data = attack;
+    kickoff_attack_pub_.publish(kickoff_attack_msg_);
+  }
 }
 
 void CommsNode::ManuallyPenalisedCallback(const std_msgs::UInt8& msg) {
