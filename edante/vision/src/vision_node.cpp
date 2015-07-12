@@ -69,7 +69,8 @@ void VisionNode::Spin() {
 
       // Get a shared cv::Mat from the image message
       Mat mat = Mat(image.height, image.width, CV_8UC1, image.data.data());
-      ball_detector_.ProcessImage(mat, image.header, cam_model, transform);
+      ball_detector_.ProcessImage(mat, horizon_level, image.header, cam_model,
+                                  transform);
       head_tracker_.Track(ball_detector_.ball(), head_angles[1]);
 
       // Disable line tracking for now

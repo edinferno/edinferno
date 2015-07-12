@@ -12,6 +12,7 @@
 
 // OpenCV
 #include <opencv2/core/core.hpp>
+#include <opencv2/video/tracking.hpp>
 
 // ROS
 #include <ros/ros.h>
@@ -39,7 +40,8 @@ class BallDetector {
    * @param cam_model The calibrated camera model.
    * @param transform The camera frame transformation at frame capture
    */
-  void ProcessImage(const cv::Mat& image,
+  void ProcessImage(cv::Mat& image,
+                    int horizon,
                     const std_msgs::Header& header,
                     const image_geometry::PinholeCameraModel& cam_model,
                     const std::vector<float>& transform);
@@ -49,15 +51,24 @@ class BallDetector {
   const vision_msgs::BallDetection& ball() const { return ball_detection_; }
 
  private:
+  static const int kImageKFStateSize = 6;
+  static const int kImageKFMeasurementSize = 4;
+  static const float kMaxStateVariance = 1000;
+  static const float kMaxPositionVariance = 25;
+
   // Ball radius in meters
-  static const double kBallRadius;
+  static const double kBallRadius = 0.03;
 
   // The processed image
   cv::Mat image_;
+  int horizon_;
   // Detected contours
   std::vector< std::vector<cv::Point> > contours_;
   // Information about the detected ball
   vision_msgs::BallDetection ball_detection_;
+
+  cv::KalmanFilter kf_2d_;
+
   // Publisher of the detected ball
   ros::Publisher ball_detection_pub_;
 
