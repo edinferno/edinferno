@@ -28,7 +28,9 @@ class ReadySM(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['succeeded','aborted', 'preempted'])
         with self:
+
             p = Params()
+
             # Stand up
             smach.StateMachine.add('STAND_UP',
                     smach_ros.SimpleActionState('motion_planning/stand_up',
@@ -37,6 +39,7 @@ class ReadySM(smach.StateMachine):
                    {'succeeded':'TURN_TO_POSE',
                    'aborted':'STAND_UP',
                    'preempted':'preempted'})
+
             # Turn towards target pose
             smach.StateMachine.add('TURN_TO_POSE',
                     smach_ros.SimpleActionState('navigation/turn_to_pose',

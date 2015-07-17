@@ -17,6 +17,7 @@ class SetSM(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['succeeded','aborted', 'preempted'])
         with self:
+
             # Stand up
             smach.StateMachine.add('STAND_UP',
                     smach_ros.SimpleActionState('motion_planning/stand_up',
