@@ -68,6 +68,7 @@ add_action_files(
   WalkToBall.action
   SearchForBall.action
   LookAtPose.action
+  LookAtBall.action
 )
 
 ## Generate added messages and services with any dependencies listed here

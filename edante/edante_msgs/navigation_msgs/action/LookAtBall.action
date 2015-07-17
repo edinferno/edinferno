@@ -1,0 +1,8 @@
+#goal definition
+bool start_tracking
+---
+#result definition
+string outcome
+---
+#feedback
+geometry_msgs/Pose2D ball_pose

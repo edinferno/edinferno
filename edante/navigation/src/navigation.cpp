@@ -5,6 +5,7 @@
 #include "navigation/walk_to_ball.hpp"
 #include "navigation/search_for_ball.hpp"
 #include "navigation/look_at_pose.hpp"
+#include "navigation/look_at_ball.hpp"
 
 int main(int argc, char** argv) {
   ros::init(argc, argv, "navigation");
@@ -19,6 +20,7 @@ int main(int argc, char** argv) {
   WalkToBallAction walk_to_ball(nh, "walk_to_ball");
   SearchForBallAction search_for_ball(nh, "search_for_ball");
   LookAtPoseAction look_at_pose(nh, "look_at_pose");
+  LookAtBallAction look_at_ball(nh, "look_at_ball");
 
   ros::spin();
   // ros::waitForShutdown();

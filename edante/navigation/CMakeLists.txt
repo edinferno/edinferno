@@ -122,6 +122,7 @@ add_executable(navigation
  src/walk_to_ball.cpp
  src/search_for_ball.cpp
  src/look_at_pose.cpp
+ src/look_at_ball.cpp
  )
 
 ## Add cmake target dependencies of the executable/library
