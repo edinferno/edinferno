@@ -16,3 +16,6 @@ class Params():
     self.opp_penalty = rospy.get_param('/field_poses/opp_penalty')
     self.OPP_PENALTY = Pose2D();
     self.OPP_PENALTY.x, self.OPP_PENALTY.y, self.OPP_PENALTY.theta = self.opp_penalty['x'], self.opp_penalty['y'], self.opp_penalty['theta'];
+    self.opp_goal = rospy.get_param('/field_poses/opp_goal')
+    self.OPP_GOAL = Pose2D();
+    self.OPP_GOAL.x, self.OPP_GOAL.y, self.OPP_GOAL.theta = self.opp_goal['x'], self.opp_goal['y'], self.opp_goal['theta'];

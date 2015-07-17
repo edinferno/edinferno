@@ -55,6 +55,7 @@ void Monitor::init() {
 // Left Eye: Camera selection. Right Eye: State monitoring
 bool Monitor::setMonitorMode(motion_planning_msgs::MonitorMode::Request& req,
                              motion_planning_msgs::MonitorMode::Response& res) {
+  // ROS_INFO("YO");
   // Turn off all Face LEDs
   if (req.monitor_mode == MonitorMode::DISABLE) {
     face_leds_.request.intensity = 0.0f;
