@@ -1,0 +1,9 @@
+#goal definition
+geometry_msgs/Pose2D target_pose
+---
+#result definition
+string outcome
+# bool success
+---
+#feedback
+geometry_msgs/Pose2D error
