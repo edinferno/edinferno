@@ -22,10 +22,7 @@ HeadTracker::HeadTracker(ros::NodeHandle& nh) :
                         this)),
   set_active_camera_client_(
     nh.serviceClient<camera_msgs::SetActiveCamera>("/camera/set_active_camera",
-                                                   true)),
-  change_angles_client_(
-    nh.serviceClient<motion_msgs::ChangeAngles>("/motion/change_angles",
-                                                true)),
+        true)),
   is_enabled_(false) {
   // Preallocate the ChangeAngles message
   change_angles_srv_.request.names.push_back("HeadYaw");
@@ -33,6 +30,10 @@ HeadTracker::HeadTracker(ros::NodeHandle& nh) :
   change_angles_srv_.request.changes.push_back(0.0f);
   change_angles_srv_.request.changes.push_back(0.0f);
   change_angles_srv_.request.fraction_max_speed = 0.8f;
+
+  ros::service::waitForService("/motion/change_angles");
+  change_angles_client_ =
+    nh.serviceClient<motion_msgs::ChangeAngles>("/motion/change_angles", true);
 }
 /**
  * @brief This function moves the head toward the object of interest
@@ -62,7 +63,7 @@ void HeadTracker::Track(const vision_msgs::BallDetection& ball,
   // Check if a camera switch is needed.
   // If the head is tilted down too much and the top camera is used
   // then switch to bottom camera.
-  if (head_pitch > 0.45 && ball.header.frame_id == "top_camera") {
+  if (head_pitch > 0.45 && ball.header.frame_id == "CameraTop") {
     // Activate bottom camera
     set_active_camera_srv_.request.active_camera = 1;
     set_active_camera_client_.call(set_active_camera_srv_);
@@ -77,7 +78,7 @@ void HeadTracker::Track(const vision_msgs::BallDetection& ball,
   }
   // If the head is tilted up too much and the bottom camera is used
   // then switch to top camera.
-  if (head_pitch < -0.4 && ball.header.frame_id == "bottom_camera") {
+  if (head_pitch < -0.4 && ball.header.frame_id == "CameraBottom") {
     // Activate top camera
     set_active_camera_srv_.request.active_camera = 0;
     set_active_camera_client_.call(set_active_camera_srv_);
@@ -99,7 +100,11 @@ void HeadTracker::Track(const vision_msgs::BallDetection& ball,
   change_angles_srv_.request.changes[0] = 0.1 * d_yaw;
   change_angles_srv_.request.changes[1] = -0.1 * d_pitch;
   // Send the command to motion
-  change_angles_client_.call(change_angles_srv_);
+  if (!change_angles_client_.call(change_angles_srv_)) {
+    ROS_ERROR("Unable to call %s", change_angles_client_.getService().c_str());
+  }
+
+
 }
 bool HeadTracker::start_head_tracking(
   vision_msgs::StartHeadTracking::Request& req,

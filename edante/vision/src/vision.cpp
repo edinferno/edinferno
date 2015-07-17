@@ -12,6 +12,7 @@ int main(int argc, char* argv[]) {
   ros::init(argc, argv, "vision_node");
 
   VisionNode vision_node;
+  ROS_INFO("Spining vision node...");
   vision_node.Spin();
   return 0;
 }

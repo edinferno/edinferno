@@ -40,13 +40,13 @@ void JointControl::rosSetup(ros::NodeHandle* nh) {
   ROS_INFO_STREAM("Setting up Joint Control services");
 
   srv_angle_interp_ = nh_->advertiseService("angle_interp",
-                                            &JointControl::angleInterp, this);
+                      &JointControl::angleInterp, this);
   srv_angle_interp_speed_ = nh_->advertiseService("angle_interp_speed",
-                                                  &JointControl::angleInterpSpeed, this);
+                            &JointControl::angleInterpSpeed, this);
   srv_set_angles_ = nh_->advertiseService("set_angles",
                                           &JointControl::setAngles, this);
   srv_change_angles_ = nh_->advertiseService("change_angles",
-                                             &JointControl::changeAngles, this);
+                       &JointControl::changeAngles, this);
   srv_get_angles_ = nh_->advertiseService("get_angles",
                                           &JointControl::getAngles, this);
   srv_close_hand_ = nh_->advertiseService("close_hand",
@@ -83,7 +83,7 @@ bool JointControl::angleInterpSpeed(
   motion_msgs::AngleInterpSpeed::Response& res) {
   try {
     mProxy_.post.angleInterpolationWithSpeed(req.names, req.target_angles,
-                                             req.max_speed_fraction);
+        req.max_speed_fraction);
     res.res = true;
   } catch (const std::exception& e) {
     res.res = false;
