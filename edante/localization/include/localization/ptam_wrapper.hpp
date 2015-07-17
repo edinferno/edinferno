@@ -38,7 +38,7 @@ class PTAMWrapper {
 
   void loadParams();
 
-  void poseCB(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg);
+  void poseCB(const geometry_msgs::PoseStamped::ConstPtr& msg);
 
   void infoCB(const ptam_com::ptam_info::ConstPtr& msg);
 
@@ -57,6 +57,7 @@ class PTAMWrapper {
 
   // Flags
   bool outside_field_;
+  int ptam_rec_;
 
   ros::NodeHandle nh_;
 
@@ -74,7 +75,7 @@ class PTAMWrapper {
   motion_planning_msgs::MonitorMode ptam_inactive_srv_;
   geometry_msgs::Pose2D odom_diff_;
   geometry_msgs::Pose2D pose_offset_;
-  geometry_msgs::PoseWithCovarianceStamped ptam_pose_;
+  geometry_msgs::PoseStamped ptam_pose_;
   geometry_msgs::Pose2D curr_robot_pose_;
   ptam_com::ptam_info ptam_info_;
 };
