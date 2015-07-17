@@ -19,6 +19,11 @@ from navigation_msgs.msg import TurnToPoseAction, TurnToPoseGoal
 from navigation_msgs.msg import AlignToPoseAction, AlignToPoseGoal
 from geometry_msgs.msg import Pose2D
 
+def success_cb(userdata, status, result):
+    if status == GoalStatus.SUCCEEDED:
+        userdata.outcome = result.outcome
+        return result.outcome
+
 class ReadySM(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['succeeded','aborted', 'preempted'])
@@ -36,18 +41,26 @@ class ReadySM(smach.StateMachine):
             smach.StateMachine.add('TURN_TO_POSE',
                     smach_ros.SimpleActionState('navigation/turn_to_pose',
                         TurnToPoseAction,
-                        goal = TurnToPoseGoal(target_pose=p.OPP_PENALTY)),
-                   {'succeeded':'WALK_TO_POSE',
-                   'aborted':'STAND_UP',
-                   'preempted':'preempted'})
+                        result_cb=success_cb,
+                        outcomes = ['arrived','preempted'],
+                        goal = TurnToPoseGoal(target_pose=p.OPP_PENALTY),
+                        output_keys=['outcome']),
+                        transitions={'arrived':'WALK_TO_POSE',
+                                     # 'turn_to_pose':'TURN_TO_POSE',
+                                     # 'aborted':'STAND_UP',
+                                     'preempted':'preempted'})
             # Walks directly towards target pose
             smach.StateMachine.add('WALK_TO_POSE',
                     smach_ros.SimpleActionState('navigation/walk_to_pose',
                         WalkToPoseAction,
-                        goal = WalkToPoseGoal(target_pose=p.OPP_PENALTY)),
-                   {'succeeded':'ALIGN_TO_POSE',
-                   'aborted':'STAND_UP',
-                   'preempted':'preempted'})
+                        result_cb=success_cb,
+                        outcomes = ['arrived','turn_to_pose','preempted'],
+                        goal = WalkToPoseGoal(target_pose=p.OPP_PENALTY),
+                        output_keys=['outcome']),
+                        transitions={'arrived':'ALIGN_TO_POSE',
+                                     'turn_to_pose':'TURN_TO_POSE',
+                                     # 'aborted':'STAND_UP',
+                                     'preempted':'preempted'})
             # Aligns to the required pose
             smach.StateMachine.add('ALIGN_TO_POSE',
                     smach_ros.SimpleActionState('navigation/align_to_pose',
