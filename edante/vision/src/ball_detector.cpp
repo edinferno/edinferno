@@ -110,7 +110,7 @@ void BallDetector::ProcessImage(
   const image_geometry::PinholeCameraModel& cam_model,
   const std::vector<float>& transform) {
   // Make a subimage under the horizon line
-  horizon_ = horizon;
+  horizon_ = (0 < horizon && horizon < image.rows) ? horizon : 0;
   image_ = Mat(image.rows - horizon_,
                image.cols, CV_8UC1,
                image.data + horizon_ * image.cols);

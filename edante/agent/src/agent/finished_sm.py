@@ -17,6 +17,7 @@ class FinishedSM(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['succeeded','aborted', 'preempted'])
         with self:
+
             # Sit rest
             smach.StateMachine.add('SIT_REST',
                     smach_ros.SimpleActionState('motion_planning/sit_rest',

@@ -6,6 +6,9 @@
  * @copyright (MIT) 2015 Edinferno
  */
 
+#ifndef MOTION_VALUES_HPP
+#define MOTION_VALUES_HPP
+
 const float PI = 3.1415927;
 const float HALF_PI = 1.5707963;
 
@@ -25,3 +28,5 @@ const float HALF_PI = 1.5707963;
 #define AXIS_MASK_ROT 56
 #define AXIS_MASK_ALL 63
 #define AXIS_MASK_NONE 0
+
+#endif /* MOTION_VALUES_HPP */

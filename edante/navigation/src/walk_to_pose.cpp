@@ -46,7 +46,6 @@ void WalkToPoseAction::preemptCB() {
 
 void WalkToPoseAction::executeCB() {
   bool going = true;
-  bool success = true;
   ros::Rate r(10);
   ROS_INFO("Executing goal for %s", action_name_.c_str());
 
@@ -54,12 +53,15 @@ void WalkToPoseAction::executeCB() {
     if (as_.isPreemptRequested() || !ros::ok()) {
       ROS_INFO("%s: Preempted", action_name_.c_str());
       as_.setPreempted();
-      success = false;
       going = false;
     }
     // Get absolute robot pose
     get_robot_pose_client_.call(curr_pose_);
     walking_to_pub_.publish(target_pose_);
+    ROS_INFO("Curr Pose: %f, %f, %f", curr_pose_.response.pose.x,
+             curr_pose_.response.pose.y, curr_pose_.response.pose.theta);
+    ROS_INFO("Targ Pose: %f, %f, %f", target_pose_.x, target_pose_.y,
+             target_pose_.theta);
     // Calculate vector and angle to target pose
     float rel_target_theta_;
     rel_target_pose_.x = target_pose_.x - curr_pose_.response.pose.x;
@@ -69,11 +71,13 @@ void WalkToPoseAction::executeCB() {
     } else {
       rel_target_theta_ = 0.0f;
     }
+    ROS_INFO("Targ Pose: %f, %f", rel_target_pose_.x, rel_target_pose_.y);
     // Calculate relative angle given current orientation
     float rel_distance_error_ = sqrt(pow(rel_target_pose_.x, 2) +
                                      pow(rel_target_pose_.y, 2));
     float rel_theta_error_ = rel_target_theta_ - curr_pose_.response.pose.theta;
 
+    ROS_INFO("Error: Dis=%f, Theta=%f", rel_distance_error_, rel_theta_error_);
     // Reset velocities in-case we have reached a threshold
     move_toward_srv_.request.norm_velocity.x = 0.0f;
     move_toward_srv_.request.norm_velocity.theta = 0.0f;
@@ -87,14 +91,15 @@ void WalkToPoseAction::executeCB() {
     else if (x_vel > 1.0) {x_vel = 1.0;}
     move_toward_srv_.request.norm_velocity.x = x_vel;
 
+    ROS_INFO("Vel: x=%f, Theta=%f", x_vel, theta_vel);
     if ((fabs(rel_distance_error_) < dist_thresh_) &&
         (fabs(rel_theta_error_) < theta_thresh_)) {
       ROS_INFO("%s: Arrived", action_name_.c_str());
-      success = true;
+      result_.outcome = "arrived";
       going = false;
     } else if (fabs(rel_theta_error_) > theta_thresh_) {
       ROS_INFO("%s: Need to Turn", action_name_.c_str());
-      success = false;
+      result_.outcome = "turn_to_pose";
       going = false;
     }
     move_toward_client_.call(move_toward_srv_);
@@ -103,14 +108,7 @@ void WalkToPoseAction::executeCB() {
   }
   // stop_move_client_.call(stop_move_srv_);
 
-  if (success) {
-    result_.success = true;
-    ROS_INFO("%s: Succeeded!", action_name_.c_str());
-    as_.setSucceeded(result_);
-  } else {
-    result_.success = false;
-    ROS_INFO("%s: Failed!", action_name_.c_str());
-    as_.setSucceeded(result_);
-  }
+  ROS_INFO("%s: End", action_name_.c_str());
+  as_.setSucceeded(result_);
   // move_init_client_.call(move_init_srv_);
 }

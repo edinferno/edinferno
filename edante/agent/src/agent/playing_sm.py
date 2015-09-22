@@ -18,11 +18,21 @@ from motion_planning_msgs.msg import StandUpAction, StandUpGoal
 from motion_planning_msgs.msg import SitDownAction, SitDownGoal
 from motion_planning_msgs.msg import SitRestAction, SitRestGoal
 from motion_planning_msgs.msg import TransitionAction, TransitionGoal
+from motion_planning_msgs.msg import KickStrongAction, KickStrongGoal
 
 class PlayingSM(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['succeeded','aborted', 'preempted'])
         with self:
+
+            # Stand up
+            smach.StateMachine.add('STAND_UP',
+                    smach_ros.SimpleActionState('motion_planning/stand_up',
+                        StandUpAction,
+                        goal = StandUpGoal(stand_up=True)),
+                   {'succeeded':'SEARCH_FOR_BALL',
+                   'aborted':'STAND_UP',
+                   'preempted':'preempted'})
 
             # Search for ball
             smach.StateMachine.add('SEARCH_FOR_BALL',
@@ -38,32 +48,15 @@ class PlayingSM(smach.StateMachine):
                     smach_ros.SimpleActionState('navigation/walk_to_ball',
                         WalkToBallAction,
                         goal = WalkToBallGoal(start_walk=True)),
-                   {'succeeded':'SIT_DOWN',
+                   {'succeeded':'KICK_STRONG',
                    'aborted':'SEARCH_FOR_BALL',
                    'preempted':'preempted'})
 
-            # Stand up
-            smach.StateMachine.add('STAND_UP',
-                    smach_ros.SimpleActionState('motion_planning/stand_up',
-                        StandUpAction,
-                        goal = StandUpGoal(stand_up=True)),
+            # Sit rest
+            smach.StateMachine.add('KICK_STRONG',
+                    smach_ros.SimpleActionState('motion_planning/kick_strong',
+                        KickStrongAction,
+                        goal = KickStrongGoal(kick_type=1)),
                    {'succeeded':'SEARCH_FOR_BALL',
                    'aborted':'STAND_UP',
-                   'preempted':'preempted'})
-            # Sit down
-            smach.StateMachine.add('SIT_DOWN',
-                    smach_ros.SimpleActionState('motion_planning/sit_down',
-                        SitDownAction,
-                        goal = SitDownGoal(sit_down=True)),
-                   {'succeeded':'succeeded',
-                   'aborted':'aborted',
-                   'preempted':'preempted'})
-
-            # Sit rest
-            smach.StateMachine.add('SIT_REST',
-                    smach_ros.SimpleActionState('motion_planning/sit_rest',
-                        SitRestAction,
-                        goal = SitRestGoal(sit_rest=True)),
-                   {'succeeded':'succeeded',
-                   'aborted':'aborted',
                    'preempted':'preempted'})
