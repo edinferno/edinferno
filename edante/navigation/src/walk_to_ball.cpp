@@ -134,7 +134,7 @@ void WalkToBallAction::executeCB() {
   stop_head_track_srv_.request.object_type = 0;
   stop_head_track_client_.call(stop_head_track_srv_);
 
-  // stop_move_client_.call(stop_move_srv_);
+  stop_move_client_.call(stop_move_srv_);
 
   if (success) {
     result_.success = true;

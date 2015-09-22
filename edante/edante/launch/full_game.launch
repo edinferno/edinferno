@@ -10,20 +10,21 @@ or enable the USE_SETCAP flag in the cmake file and recompile again.
 
 <launch>
     <rosparam file="/home/nao/config/world/pitch.yaml" command="load" />
-    <node name="motion" pkg="motion" type="motion" output="screen">
+    <rosparam file="/home/nao/config/player/player.yaml" command="load" />
+    <node name="motion" pkg="motion" type="motion" output="screen" respawn="true">
     </node>
-    <node name="sensing" pkg="sensing" type="sensing" output="screen">
+    <node name="sensing" pkg="sensing" type="sensing" output="screen" respawn="true">
     </node>
-    <node name="signalling" pkg="signalling" type="signalling" output="screen">
+    <node name="signalling" pkg="signalling" type="signalling" output="screen" respawn="true">
     </node>
-    <node name="comms" pkg="comms" type="comms" output="screen">
+    <node name="comms" pkg="comms" type="comms" output="screen" respawn="true">
     </node>
-    <node name="vision" pkg="vision" type="vision" output="screen">
+    <node name="vision" pkg="vision" type="vision" output="screen" respawn="true">
     </node>
-    <node name="localization" pkg="localization" type="localization" output="screen">
+    <node name="localization" pkg="localization" type="localization" output="screen" respawn="true">
     </node>
-    <node name="motion_planning" pkg="motion_planning" type="motion_planning" output="screen">
+    <node name="motion_planning" pkg="motion_planning" type="motion_planning" output="screen" respawn="true">
     </node>
-    <node name="navigation" pkg="navigation" type="navigation" output="screen">
+    <node name="navigation" pkg="navigation" type="navigation" output="screen" respawn="true">
     </node>
 </launch>

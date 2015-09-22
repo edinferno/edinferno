@@ -48,7 +48,7 @@ void TurnToPoseAction::executeCB() {
   ros::Rate r(10);
   ROS_INFO("Executing goal for %s", action_name_.c_str());
 
-  while (going == true) {
+  while (going) {
     if (as_.isPreemptRequested() || !ros::ok()) {
       ROS_INFO("%s: Preempted", action_name_.c_str());
       as_.setPreempted();
@@ -79,24 +79,15 @@ void TurnToPoseAction::executeCB() {
     move_toward_client_.call(move_toward_srv_);
 
     if (fabs(rel_theta_error_) < theta_thresh_) {
-      ROS_INFO("%s: Arrived", action_name_.c_str());
-      success = true;
+      result_.outcome = "arrived";
       going = false;
     }
-
     ros::spinOnce();
     r.sleep();
   }
   // stop_move_client_.call(stop_move_srv_);
 
-  if (success) {
-    result_.success = true;
-    ROS_INFO("%s: Succeeded!", action_name_.c_str());
-    as_.setSucceeded(result_);
-  } else {
-    result_.success = false;
-    ROS_INFO("%s: Failed!", action_name_.c_str());
-    as_.setSucceeded(result_);
-  }
+  ROS_INFO("%s: %s", action_name_.c_str(), result_.outcome.c_str());
+  as_.setSucceeded(result_);
   // move_init_client_.call(move_init_srv_);
 }

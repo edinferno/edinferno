@@ -13,9 +13,11 @@ import smach_ros
 from actionlib import *
 from actionlib_msgs.msg import *
 from agent import *
+from params import Params
 from std_msgs.msg import Bool
 from motion_planning_msgs.msg import SetupAction, SetupGoal
 from motion_planning_msgs.msg import TransitionAction, TransitionGoal
+from navigation_msgs.msg import LookAtPoseAction, LookAtPoseGoal
 
 def transition_cb(userdata, status, result):
     if status == GoalStatus.SUCCEEDED:
@@ -64,6 +66,7 @@ def transition_all_term_cb(outcome_map):
 def main():
     rospy.init_node('agent_game_smach')
 
+    p = Params()
     pub = rospy.Publisher('/smach/online', std_msgs.msg.Bool, queue_size=1, latch=True)
 
     pub.publish(std_msgs.msg.Bool(True))
@@ -135,7 +138,7 @@ def main():
                    {'succeeded':'READY_CC'})
 
             # creating the concurrence state machine
-            ready_cc = smach.Concurrence(outcomes=['stand_up','initial','ready','set','penalized','playing','finished', 'aborted'],
+            ready_cc = smach.Concurrence(outcomes=['stand_up','initial','ready','set','penalized','playing','finished', 'preempted','aborted'],
                              default_outcome='aborted',
                              # input_keys=['sm_input'],
                              # output_keys=['sm_output'],
@@ -151,6 +154,14 @@ def main():
                         outcomes = ['stand_up','initial','ready','set','penalized','playing','finished','aborted'],
                         goal = TransitionGoal(state=READY),
                         output_keys=['outcome']))
+
+                # smach.Concurrence.add('LOOK_AT_POSE',
+                #     smach_ros.SimpleActionState('navigation/look_at_pose',
+                #         LookAtPoseAction,
+                #         result_cb=transition_cb,
+                #         outcomes = ['preempted'],
+                #         goal = LookAtPoseGoal(target_pose=p.OPP_GOAL),
+                #         output_keys=['outcome']))
 
                 smach.Concurrence.add('READY_SM', ReadySM())
 
@@ -179,7 +190,7 @@ def main():
                    {'succeeded':'SET_CC'})
 
             # creating the concurrence state machine
-            set_cc = smach.Concurrence(outcomes=['stand_up','initial','ready','set','penalized','playing','finished', 'aborted'],
+            set_cc = smach.Concurrence(outcomes=['stand_up','initial','ready','set','penalized','playing','finished','aborted','preempted'],
                              default_outcome='aborted',
                              # input_keys=['sm_input'],
                              # output_keys=['sm_output'],
@@ -192,14 +203,23 @@ def main():
                     smach_ros.SimpleActionState('motion_planning/transition',
                         TransitionAction,
                         result_cb=transition_cb,
-                        outcomes = ['stand_up','initial','ready','set','penalized','playing','finished','aborted'],
+                        outcomes = ['stand_up','initial','ready','set','penalized','playing','finished','aborted','preempted'],
                         goal = TransitionGoal(state=SET),
+                        output_keys=['outcome']))
+
+                smach.Concurrence.add('LOOK_AT_POSE',
+                    smach_ros.SimpleActionState('navigation/look_at_pose',
+                        LookAtPoseAction,
+                        result_cb=transition_cb,
+                        outcomes = ['preempted'],
+                        goal = LookAtPoseGoal(target_pose=p.OPP_GOAL),
                         output_keys=['outcome']))
 
                 smach.Concurrence.add('SET_SM', SetSM())
 
             smach.StateMachine.add('SET_CC', set_cc,
-                                   transitions={'stand_up':'SET_CC'})
+                                   transitions={'stand_up':'SET_CC',
+                                                'preempted':'preempted'})
 
         # Set state machine description
         smach.StateMachine.add('SET', set_state_sm,

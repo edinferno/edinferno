@@ -71,6 +71,7 @@ void StandUpAction::executeCB() {
     going = false;
   }
 
+  stop_move_client_.call(stop_move_srv_);
   // Check what posture family we are on (NOT posture)
   std::string curr_pos;
   get_posture_family_client_.call(get_posture_family_srv_);
