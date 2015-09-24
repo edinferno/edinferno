@@ -15,12 +15,12 @@ SetupAction::SetupAction(ros::NodeHandle nh, std::string name) :
   //register the goal and feeback callbacks
   as_.registerGoalCallback(boost::bind(&SetupAction::goalCB, this));
   as_.registerPreemptCallback(boost::bind(&SetupAction::preemptCB, this));
+  ros::service::waitForService("/signalling/fade_rgb");
   fade_rgb_client_ = nh_.serviceClient<signalling_msgs::FadeRGB>(
                        "/signalling/fade_rgb", true);
-  fade_rgb_client_.waitForExistence();
+  ros::service::waitForService("/motion_planning/monitor_mode");
   monitor_client_ = nh_.serviceClient<motion_planning_msgs::MonitorMode>(
                       "/motion_planning/monitor_mode", true);
-  monitor_client_.waitForExistence();
   ROS_INFO("Starting Setup action server");
   this->init();
   as_.start();

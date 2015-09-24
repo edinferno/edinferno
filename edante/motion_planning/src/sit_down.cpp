@@ -17,17 +17,17 @@ SitDownAction::SitDownAction(ros::NodeHandle nh, std::string name) :
   as_.registerPreemptCallback(boost::bind(&SitDownAction::preemptCB, this));
   awake_sub_ = nh_.subscribe("/motion/is_awake", 1, &SitDownAction::awakeCB,
                              this);
+  ros::service::waitForService("/motion/wake_up");
   wake_up_client_ = nh_.serviceClient<std_srvs::Empty>("/motion/wake_up", true);
-  wake_up_client_.waitForExistence();
+  ros::service::waitForService("/motion/get_posture_family");
   get_posture_family_client_ = nh_.serviceClient<motion_msgs::GetPostureFamily>(
                                  "/motion/get_posture_family", true);
-  get_posture_family_client_.waitForExistence();
+  ros::service::waitForService("/motion/stop_move");
   stop_move_client_ = nh_.serviceClient<std_srvs::Empty>(
                         "/motion/stop_move", true);
-  stop_move_client_.waitForExistence();
+  ros::service::waitForService("/motion/goto_posture");
   set_posture_client_ = nh_.serviceClient<motion_msgs::SetPosture>(
                           "/motion/goto_posture", true);
-  set_posture_client_.waitForExistence();
   ROS_INFO("Starting Sit down action server");
   this->init();
   as_.start();

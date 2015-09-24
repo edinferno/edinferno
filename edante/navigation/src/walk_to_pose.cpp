@@ -24,14 +24,14 @@ void WalkToPoseAction::init() {
 }
 
 void WalkToPoseAction::rosSetup() {
-  get_robot_pose_client_ = nh_.serviceClient<localization_msgs::GetRobotPose>(
-                             "/localization/get_robot_pose", true);
-  get_robot_pose_client_.waitForExistence();
   walking_to_pub_ = nh_.advertise <geometry_msgs::Pose2D>
                     ("/world/walking_to", 1, true);
+  ros::service::waitForService("/localization/get_robot_pose");
+  get_robot_pose_client_ = nh_.serviceClient<localization_msgs::GetRobotPose>(
+                             "/localization/get_robot_pose", true);
+  ros::service::waitForService("/motion/move_toward");
   move_toward_client_ = nh_.serviceClient<motion_msgs::MoveToward>(
                           "/motion/move_toward", true);
-  move_toward_client_.waitForExistence();
 }
 
 void WalkToPoseAction::goalCB() {

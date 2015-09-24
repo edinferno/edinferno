@@ -18,18 +18,18 @@ StandUpAction::StandUpAction(ros::NodeHandle nh, std::string name) :
                                           this));
   awake_sub_ = nh_.subscribe("/motion/is_awake", 1, &StandUpAction::awakeCB,
                              this);
-  wake_up_client_ = nh_.serviceClient<std_srvs::Empty>("/motion/wake_up", true);
-  wake_up_client_.waitForExistence();
   has_fallen_pub_ = nh_.advertise<std_msgs::Bool>("/world/has_fallen", 10);
+  ros::service::waitForService("/motion/wake_up");
+  wake_up_client_ = nh_.serviceClient<std_srvs::Empty>("/motion/wake_up", true);
+  ros::service::waitForService("/motion/get_posture_family");
   get_posture_family_client_ = nh_.serviceClient<motion_msgs::GetPostureFamily>(
                                  "/motion/get_posture_family", true);
-  get_posture_family_client_.waitForExistence();
+  ros::service::waitForService("/motion/stop_move");
   stop_move_client_ = nh_.serviceClient<std_srvs::Empty>(
                         "/motion/stop_move", true);
-  stop_move_client_.waitForExistence();
+  ros::service::waitForService("/motion/goto_posture");
   set_posture_client_ = nh_.serviceClient<motion_msgs::SetPosture>(
                           "/motion/goto_posture", true);
-  set_posture_client_.waitForExistence();
   ROS_INFO("Starting Stand up action server");
   this->init();
   as_.start();

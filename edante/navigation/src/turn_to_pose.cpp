@@ -23,12 +23,12 @@ void TurnToPoseAction::init() {
 }
 
 void TurnToPoseAction::rosSetup() {
+  ros::service::waitForService("/localization/get_robot_pose");
   get_robot_pose_client_ = nh_.serviceClient<localization_msgs::GetRobotPose>(
                              "/localization/get_robot_pose", true);
-  get_robot_pose_client_.waitForExistence();
+  ros::service::waitForService("/motion/move_toward");
   move_toward_client_ = nh_.serviceClient<motion_msgs::MoveToward>(
                           "/motion/move_toward", true);
-  move_toward_client_.waitForExistence();
   move_toward_srv_.request.norm_velocity.x = 0.0f;
 }
 

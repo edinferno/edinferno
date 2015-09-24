@@ -7,18 +7,18 @@ MoveToAction::MoveToAction(ros::NodeHandle nh, std::string name) :
   //register the goal and feeback callbacks
   as_.registerGoalCallback(boost::bind(&MoveToAction::goalCB, this));
   as_.registerPreemptCallback(boost::bind(&MoveToAction::preemptCB, this));
+  ros::service::waitForService("/motion/get_robot_position");
   get_pose_client_ = nh_.serviceClient<motion_msgs::GetRobotPosition>(
                        "/motion/get_robot_position", true);
-  get_pose_client_.waitForExistence();
+  ros::service::waitForService("/motion/move_to");
   move_to_client_ = nh_.serviceClient<motion_msgs::MoveTo>(
                       "/motion/move_to", true);
-  move_to_client_.waitForExistence();
+  ros::service::waitForService("/motion/stop_move");
   stop_move_client_ = nh_.serviceClient<std_srvs::Empty>(
                         "/motion/stop_move", true);
-  stop_move_client_.waitForExistence();
+  ros::service::waitForService("/motion/move_init");
   move_init_client_ = nh_.serviceClient<std_srvs::Empty>(
                         "/motion/move_init", true);
-  move_init_client_.waitForExistence();
   start_position_.request.use_sensors = true;
   get_pose_srv_.request.use_sensors = true;
   this->init();

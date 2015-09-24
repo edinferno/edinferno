@@ -17,12 +17,12 @@ SitRestAction::SitRestAction(ros::NodeHandle nh, std::string name) :
   as_.registerPreemptCallback(boost::bind(&SitRestAction::preemptCB, this));
   awake_sub_ = nh_.subscribe("/motion/is_awake", 1, &SitRestAction::awakeCB,
                              this);
+  ros::service::waitForService("/motion/rest");
   rest_client_ = nh_.serviceClient<std_srvs::Empty>(
                    "/motion/rest", true);
-  rest_client_.waitForExistence();
+  ros::service::waitForService("/motion/stop_move");
   stop_move_client_ = nh_.serviceClient<std_srvs::Empty>(
                         "/motion/stop_move", true);
-  stop_move_client_.waitForExistence();
   ROS_INFO("Starting Sit rest action server");
   this->init();
   as_.start();

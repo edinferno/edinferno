@@ -9,27 +9,27 @@ LookAtPoseAction::LookAtPoseAction(ros::NodeHandle nh, std::string name) :
   as_.registerPreemptCallback(boost::bind(&LookAtPoseAction::preemptCB, this));
   ball_pos_sub_ = nh_.subscribe("/vision/ball", 1,
                                 &LookAtPoseAction::ballCB, this);
+  ros::service::waitForService("/motion/set_angles");
   look_client_ = nh_.serviceClient<motion_msgs::SetAngles>(
                    "/motion/set_angles", true);
-  look_client_.waitForExistence();
+  ros::service::waitForService("/camera/set_active_camera");
   camera_client_ = nh_.serviceClient<camera_msgs::SetActiveCamera>(
                      "/camera/set_active_camera", true);
-  camera_client_.waitForExistence();
+  ros::service::waitForService("/motion/are_resources_available");
   resource_avail_client_ = nh_.serviceClient<motion_msgs::AreResourcesAvailable>(
                              "/motion/are_resources_available", true);
-  resource_avail_client_.waitForExistence();
+  ros::service::waitForService("/motion/move_is_active");
   move_is_active_client_ = nh_.serviceClient<motion_msgs::IsEnabled>(
                              "/motion/move_is_active", true);
-  move_is_active_client_.waitForExistence();
+  ros::service::waitForService("/motion/kill_tasks_using_resources");
   kill_task_client_ = nh_.serviceClient<motion_msgs::TaskResource>(
                         "/motion/kill_tasks_using_resources", true);
-  kill_task_client_.waitForExistence();
+  ros::service::waitForService("/motion_planning/monitor_mode");
   monitor_client_ = nh_.serviceClient<motion_planning_msgs::MonitorMode>(
                       "/motion_planning/monitor_mode", true);
-  monitor_client_.waitForExistence();
+  ros::service::waitForService("/localization/get_robot_pose");
   curr_pose_client_ = nh_.serviceClient<localization_msgs::GetRobotPose>(
                         "/localization/get_robot_pose", true);
-  curr_pose_client_.waitForExistence();
   this->init();
   ROS_INFO("Starting LookAtPose server");
   as_.start();

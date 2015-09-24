@@ -28,15 +28,15 @@ TransitionAction::TransitionAction(ros::NodeHandle nh, std::string name) :
                                     &TransitionAction::checkSmachOnline, this);
   manual_penalized_pub_ =
     nh_.advertise<std_msgs::UInt8>("/world/manually_penalized", 1, true);
+  ros::service::waitForService("/motion/rest");
   rest_client_ = nh_.serviceClient<std_srvs::Empty>(
                    "/motion/rest", true);
-  rest_client_.waitForExistence();
+  ros::service::waitForService("/motion/wake_up");
   wakeup_client_ = nh_.serviceClient<std_srvs::Empty>(
                      "/motion/wake_up", true);
-  wakeup_client_.waitForExistence();
+  ros::service::waitForService("/motion/goto_posture");
   stand_client_ = nh_.serviceClient<motion_msgs::SetPosture>(
                     "/motion/goto_posture", true);
-  stand_client_.waitForExistence();
   ROS_INFO("Starting Transition action server");
   this->init();
   as_.start();

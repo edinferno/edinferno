@@ -9,31 +9,31 @@ WalkToBallAction::WalkToBallAction(ros::NodeHandle nh, std::string name) :
   as_.registerPreemptCallback(boost::bind(&WalkToBallAction::preemptCB, this));
   ball_pos_sub_ = nh_.subscribe("/vision/ball", 1,
                                 &WalkToBallAction::ballCB, this);
-  get_pose_client_ = nh_.serviceClient<motion_msgs::GetRobotPosition>(
-                       "/motion/get_robot_position", true);
-  get_pose_client_.waitForExistence();
   walking_to_pub_ = nh_.advertise <geometry_msgs::Pose2D>
                     ("/world/walking_to", 1, true);
   intention_pub_ = nh_.advertise <std_msgs::Int8>
                    ("/world/intention", 1, true);
+  ros::service::waitForService("/motion/get_robot_position");
+  get_pose_client_ = nh_.serviceClient<motion_msgs::GetRobotPosition>(
+                       "/motion/get_robot_position", true);
+  ros::service::waitForService("/motion/move_toward");
   move_toward_client_ = nh_.serviceClient<motion_msgs::MoveToward>(
                           "/motion/move_toward", true);
-  move_toward_client_.waitForExistence();
+  ros::service::waitForService("/motion/stop_move");
   stop_move_client_ = nh_.serviceClient<std_srvs::Empty>(
                         "/motion/stop_move", true);
-  stop_move_client_.waitForExistence();
+  ros::service::waitForService("/motion/move_init");
   move_init_client_ = nh_.serviceClient<std_srvs::Empty>(
                         "/motion/move_init", true);
-  move_init_client_.waitForExistence();
+  ros::service::waitForService("/vision/start_head_tracking");
   start_head_track_client_ = nh_.serviceClient<vision_msgs::StartHeadTracking>(
                                "/vision/start_head_tracking", true);
-  start_head_track_client_.waitForExistence();
+  ros::service::waitForService("/vision/stop_head_tracking");
   stop_head_track_client_ = nh_.serviceClient<vision_msgs::StopHeadTracking>(
                               "/vision/stop_head_tracking", true);
-  stop_head_track_client_.waitForExistence();
+  ros::service::waitForService("/motion_planning/monitor_mode");
   monitor_client_ = nh_.serviceClient<motion_planning_msgs::MonitorMode>(
                       "/motion_planning/monitor_mode", true);
-  monitor_client_.waitForExistence();
   start_position_.request.use_sensors = true;
   get_pose_srv_.request.use_sensors = true;
   this->init();

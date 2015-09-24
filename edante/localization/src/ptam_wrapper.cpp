@@ -29,12 +29,12 @@ void PTAMWrapper::rosSetup() {
                                  this);
   // ptam_info_sub_ = nh_.subscribe("/vslam/info", 1, &PTAMWrapper::infoCB,
   //                                this);
+  ros::service::waitForService("/motion/get_robot_position");
   get_odom_pose_client_ = nh_.serviceClient<motion_msgs::GetRobotPosition>(
                             "/motion/get_robot_position", true);
-  get_odom_pose_client_.waitForExistence();
+  ros::service::waitForService("/motion_planning/monitor_mode");
   monitor_client_ = nh_.serviceClient<motion_planning_msgs::MonitorMode>(
                       "/motion_planning/monitor_mode", true);
-  monitor_client_.waitForExistence();
   robot_pose_pub_ = nh_.advertise <geometry_msgs::Pose2D>
                     ("/world/robot_pose", 1, true);
   srv_set_pose_offset_ =

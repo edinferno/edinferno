@@ -16,22 +16,22 @@ KickStrongAction::KickStrongAction(ros::NodeHandle nh, std::string name) :
   as_.registerGoalCallback(boost::bind(&KickStrongAction::goalCB, this));
   as_.registerPreemptCallback(boost::bind(&KickStrongAction::preemptCB,
                                           this));
-  move_init_client_ = nh_.serviceClient<std_srvs::Empty>("/motion/move_init",
-                                                         true);
-  move_init_client_.waitForExistence();
+  ros::service::waitForService("/motion/move_init");
+  move_init_client_ =
+    nh_.serviceClient<std_srvs::Empty>("/motion/move_init", true);
+  ros::service::waitForService("/motion/enable_balance");
   balance_client_ =
     nh_.serviceClient<motion_msgs::Enable>("/motion/enable_balance", true);
-  balance_client_.waitForExistence();
+  ros::service::waitForService("/motion/position_interpolation");
   pos_interp_client_ =
     nh_.serviceClient<motion_msgs::PositionInterpolation>("/motion/position_interpolation",
                                                           true);
-  pos_interp_client_.waitForExistence();
-  foot_client_ = nh_.serviceClient<motion_msgs::FootState>("/motion/foot_state",
-                                                           true);
-  foot_client_.waitForExistence();
+  ros::service::waitForService("/motion/foot_state");
+  foot_client_ =
+    nh_.serviceClient<motion_msgs::FootState>("/motion/foot_state", true);
+  ros::service::waitForService("/motion/goto_balance");
   goto_balance_client_ =
     nh_.serviceClient<motion_msgs::GoToBalance>("/motion/goto_balance", true);
-  goto_balance_client_.waitForExistence();
   ROS_INFO("Starting KickStrong action server");
   this->init();
   as_.start();

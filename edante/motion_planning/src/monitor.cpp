@@ -13,27 +13,27 @@ Monitor::Monitor(ros::NodeHandle* nh) {
   ROS_INFO_STREAM("Setting up Monitoring services");
   srv_monitor_mode_ = nh_->advertiseService("monitor_mode",
                                             &Monitor::setMonitorMode, this);
+  ros::service::waitForService("/signalling/create_led_group");
   create_led_group_ = nh_->serviceClient<signalling_msgs::CreateLedGroup>(
                         "/signalling/create_led_group", true);
-  create_led_group_.waitForExistence();
+  ros::service::waitForService("/signalling/ear_leds_set_angle");
   ear_leds_angle_ = nh_->serviceClient<signalling_msgs::EarLedsSetAngle>(
                       "/signalling/ear_leds_set_angle", true);
-  ear_leds_angle_.waitForExistence();
+  ros::service::waitForService("/signalling/fade");
   fade_led_ = nh_->serviceClient<signalling_msgs::Fade>(
                 "/signalling/fade", true);
-  fade_led_.waitForExistence();
+  ros::service::waitForService("/signalling/fade_rgb");
   fade_rgb_led_ = nh_->serviceClient<signalling_msgs::FadeRGB>(
                     "/signalling/fade_rgb", true);
-  fade_rgb_led_.waitForExistence();
+  ros::service::waitForService("/signalling/rotate_eyes");
   rotate_eyes_ = nh_->serviceClient<signalling_msgs::RotateEyes>(
                    "/signalling/rotate_eyes", true);
-  rotate_eyes_.waitForExistence();
+  ros::service::waitForService("/signalling/set_intensity");
   set_intensity_led_ = nh_->serviceClient<signalling_msgs::SetIntensity>(
                          "/signalling/set_intensity", true);
-  set_intensity_led_.waitForExistence();
+  ros::service::waitForService("/signalling/say_text");
   speak_text_ = nh_->serviceClient<signalling_msgs::SayText>(
                   "/signalling/say_text", true);
-  speak_text_.waitForExistence();
   this->init();
 }
 
